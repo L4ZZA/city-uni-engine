@@ -2,6 +2,7 @@
 
 #include "pyro/core.h"
 #include "pyro/events/event.h"
+#include "graphics/renderer.h"
 
 namespace pyro
 {
@@ -19,6 +20,8 @@ namespace pyro
         /// \brief Runs when application calls the on_update method.
         /// Should happen every frame.
         virtual void on_update() {}
+        /// \brief Render method.
+        virtual void on_render(const pyro::renderer &renderer) {}
         /// \brief Render method specific to imgui.
         virtual void on_imgui_render() {}
         /// \brief Runs whenever an event gets sent to the layer.
