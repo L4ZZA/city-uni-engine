@@ -1,7 +1,7 @@
 ﻿#include "pyro_pch.h"
 #include "application.h"
-#include "glad/glad.h"
-#include "pyro/input.h"
+#include "graphics/loader.h"
+#include "graphics/renderer.h"
 
 pyro::application* pyro::application::s_instance{ nullptr };
 
@@ -21,26 +21,19 @@ pyro::application::~application()
 
 void pyro::application::run()
 {
-    while (m_running)
+    while(m_running)
     {
-        glClearColor(1, 0, 1, 1);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        for (auto* layer : m_layers_stack)
+        m_renderer.prepare();
+        for(auto* layer : m_layers_stack)
         {
             layer->on_update();
-
-            auto imgui_layer = (pyro::imgui_layer*)layer;
-            if(imgui_layer)
-            {
-                imgui_layer->begin();
-                imgui_layer->on_imgui_render();
-                imgui_layer->end();
-            }
+            layer->on_render(m_renderer);
         }
 
         m_window->on_update();
     }
+
+    loader::cleanup();
 }
 
 void pyro::application::on_event(event& p_event)
@@ -51,11 +44,11 @@ void pyro::application::on_event(event& p_event)
     //PYRO_CORE_TRACE("{0}", p_event);
 
     // events are executed from top of the stack to bottom (aka end to start of the list)
-    for (auto it = m_layers_stack.end(); it != m_layers_stack.begin(); )
+    for(auto it = m_layers_stack.end(); it != m_layers_stack.begin(); )
     {
         (*--it)->on_event(p_event);
         // stop event propagation to next layer if flagged as handled
-        if (p_event.handled)
+        if(p_event.handled)
             break;
     }
 }

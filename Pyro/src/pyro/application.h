@@ -7,6 +7,7 @@
 #include "events/event.h"
 #include "events/application_event.h"
 #include "imgui/imgui_layer.h"
+#include "graphics/renderer.h"
 
 
 namespace pyro
@@ -40,6 +41,7 @@ namespace pyro
         std::unique_ptr<window>         m_window;
         bool                            m_running{ true };
         layers_stack                    m_layers_stack;
+        renderer                        m_renderer;
 
     private:
         static application*             s_instance;
