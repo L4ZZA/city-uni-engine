@@ -45,6 +45,8 @@ project "Pyro"
         -- ** means recursively search down that folder
         "%{prj.name}/src/**.h", 
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.shader",
+        "%{prj.name}/res/**.shader",
         "%{prj.name}/external/glm/glm/**.hpp", 
         "%{prj.name}/external/glm/glm/**.inl",
     }
@@ -112,7 +114,9 @@ project "Sandbox"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.shader",
+        "%{prj.name}/res/**.shader",
     }
 
     includedirs
