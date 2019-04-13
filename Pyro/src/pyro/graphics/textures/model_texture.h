@@ -5,10 +5,7 @@ namespace pyro
     class model_texture
     {
     public:
-        model_texture(unsigned int id)
-            : m_id(id)
-        {
-        }
+        model_texture(unsigned int id);
 
         unsigned int id() const { return m_id; }
 
