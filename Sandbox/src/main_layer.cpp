@@ -4,20 +4,22 @@
 #include "pyro/input.h"
 #include "pyro/graphics/loader.h"
 
-
 std::vector<float> vertices
 {
- -0.5f,  0.5f, 0.f,
- -0.5f, -0.5f, 0.f,
-  0.5f, -0.5f, 0.f,
-  0.5f, -0.5f, 0.f,
-  0.5f,  0.5f, 0.f,
- -0.5f,  0.5f, 0.f
+    -0.5f,  0.5f, 0.f,//v0
+    -0.5f, -0.5f, 0.f,//v1
+     0.5f, -0.5f, 0.f,//v2
+     0.5f,  0.5f, 0.f,//v3
+};
+std::vector<unsigned int> indices
+{
+    0,1,3,//top left triangle (v0, v1, v3)
+    3,1,2//bottom right triangle (v3, v1, v2)
 };
 
 void main_layer::on_attach()
 {
-    m_model = pyro::loader::load_model(vertices);
+    m_model = pyro::loader::load_model(vertices, indices);
 }
 
 void main_layer::on_update()

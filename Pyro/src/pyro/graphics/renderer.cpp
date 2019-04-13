@@ -11,6 +11,6 @@ void pyro::renderer::prepare() const
 void pyro::renderer::render(raw_model model) const
 {
     glBindVertexArray(model.vao_id());
-    glDrawArrays(GL_TRIANGLES, 0, model.vertex_count());
+    glDrawElements(GL_TRIANGLES, model.vertex_count(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
 }

@@ -2,11 +2,12 @@
 #include "loader.h"
 #include "glad/glad.h"
 
-pyro::raw_model pyro::loader::load_model(const std::vector<float> &positions)
+pyro::raw_model pyro::loader::load_model(const std::vector<float> &positions, const std::vector<unsigned int> &indices)
 {
     unsigned int vao = create_vao();
-    store_data_in_attributes_list(0, positions);
-    return raw_model(vao, positions.size() / 3);
+    store_data(0, positions);
+    store_indices(indices);
+    return raw_model(vao, indices.size());
 }
 
 void pyro::loader::cleanup()
@@ -27,16 +28,26 @@ unsigned int pyro::loader::create_vao()
     return vao_id;
 }
 
-void pyro::loader::store_data_in_attributes_list(int attribute_number, const std::vector<float> &data)
+void pyro::loader::store_data(int attribute_number, const std::vector<float> &data)
 {
     unsigned int vbo_id;
     glGenBuffers(1, &vbo_id);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, data.size() * 4, data.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
     glEnableVertexAttribArray(attribute_number);
     glVertexAttribPointer(attribute_number, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     m_vbos.push_back(vbo_id);
+}
+
+void pyro::loader::store_indices(const std::vector<unsigned int> &indices)
+{
+    unsigned int vio_id;
+    glGenBuffers(1, &vio_id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vio_id);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_vbos.push_back(vio_id);
 }
 
 void pyro::loader::bind_vao()
