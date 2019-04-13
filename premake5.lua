@@ -19,6 +19,7 @@ IncludeDir["GLFW"] = "Pyro/external/GLFW/include/"
 IncludeDir["Glad"] = "Pyro/external/Glad/include/"
 IncludeDir["ImGui"] = "Pyro/external/imgui/"
 IncludeDir["glm"] = "Pyro/external/glm/"
+IncludeDir["stb_image"] = "Pyro/external/stb_image/"
 
 -- iclude GLFW premake file
 include "Pyro/external/GLFW/"
@@ -49,6 +50,7 @@ project "Pyro"
         "%{prj.name}/res/**.shader",
         "%{prj.name}/external/glm/glm/**.hpp", 
         "%{prj.name}/external/glm/glm/**.inl",
+        "%{prj.name}/external/stb_image/stb_image.h",
     }
 
     defines
@@ -63,7 +65,8 @@ project "Pyro"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb_image}",
     }
 
     links
