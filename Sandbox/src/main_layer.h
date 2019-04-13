@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "pyro/layer.h"
 #include "pyro/graphics/renderer.h"
+#include "pyro/graphics/shaders/static_shader.h"
 
 //glm::mat4 camera(float Translate, glm::vec2 const & Rotate)
 //{
@@ -19,10 +20,12 @@ public:
     main_layer() = default;
 
     void on_attach() override;
+    void on_detach() override;
     void on_update() override;
     void on_render(const pyro::renderer &renderer) override;
     void on_event(pyro::event& p_event) override;
 
 private:
     pyro::raw_model m_model;
+    pyro::static_shader m_static_shader;
 };

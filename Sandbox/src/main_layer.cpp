@@ -20,6 +20,13 @@ std::vector<unsigned int> indices
 void main_layer::on_attach()
 {
     m_model = pyro::loader::load_model(vertices, indices);
+    m_static_shader.create();
+}
+
+void main_layer::on_detach()
+{
+    m_static_shader.cleanup();
+    pyro::loader::cleanup();
 }
 
 void main_layer::on_update()
@@ -31,7 +38,9 @@ void main_layer::on_update()
 
 void main_layer::on_render(const pyro::renderer& renderer)
 {
+    m_static_shader.start();
     renderer.render(m_model);
+    m_static_shader.stop();
 }
 
 void main_layer::on_event(pyro::event& p_event)
