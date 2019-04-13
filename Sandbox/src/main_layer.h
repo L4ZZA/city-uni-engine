@@ -2,6 +2,8 @@
 #include "pyro/layer.h"
 #include "pyro/graphics/renderer.h"
 #include "pyro/graphics/shaders/static_shader.h"
+#include "pyro/graphics/textures/model_texture.h"
+#include "pyro/graphics/models/textured_model.h"
 
 //glm::mat4 camera(float Translate, glm::vec2 const & Rotate)
 //{
@@ -27,5 +29,7 @@ public:
 
 private:
     pyro::raw_model m_model;
+    pyro::model_texture m_texture{0};
+    pyro::textured_model m_textured_model{};
     pyro::static_shader m_static_shader;
 };

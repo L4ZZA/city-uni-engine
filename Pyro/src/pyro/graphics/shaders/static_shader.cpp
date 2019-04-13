@@ -16,4 +16,5 @@ void pyro::static_shader::create()
 void pyro::static_shader::bind_attributes()
 {
     bind_attribute(0, "position");
+    bind_attribute(1, "tex_coords");
 }

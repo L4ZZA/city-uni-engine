@@ -1,6 +1,7 @@
 ﻿#include "pyro_pch.h"
 #include "texture.h"
 #include "glad/glad.h"
+#include "stb_image.h"
 
 pyro::texture::texture(const std::string &path)
 {
