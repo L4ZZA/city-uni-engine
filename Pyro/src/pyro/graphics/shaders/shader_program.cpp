@@ -19,6 +19,8 @@ void pyro::shader_program::create(const std::string& vertex_path, const std::str
     glAttachShader(m_program_id, m_vertex_shader_id);
     glAttachShader(m_program_id, m_fragment_shader_id);
 
+    bind_attributes();
+
     glLinkProgram(m_program_id);
     glValidateProgram(m_program_id);
     check_compile_errors(m_program_id, "PROGRAM");
