@@ -18,6 +18,18 @@
     #error Pyro only supports Windows!
 #endif
 
+#if _DEBUG
+    #define ENABLE_ASSERTS
+#endif
+
+#ifdef ENABLE_ASSERTS
+    #define ASSERT(x, ...) { if(!(x)) {PYRO_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define CORE_ASSERT(x, ...) { if(!(x)) {PYRO_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+#else
+    #define ASSERT(x, ...)
+    #define CORE_ASSERT(x, ...)
+#endif
+
 // 1 shifted by x places
 // 1 << 0 = `0000 0001`
 // 1 << 1 = `0000 0010`
@@ -37,3 +49,7 @@
 #endif
 
 #define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+// macros to safely delete memory allocated on the heap
+#define SAFE_RELEASE(p) if(p) { delete p; p = nullptr; }
+#define SAFE_RELEASES(p) if(p) { delete[] p; p = nullptr; }
