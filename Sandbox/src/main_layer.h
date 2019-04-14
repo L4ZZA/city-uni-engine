@@ -21,7 +21,7 @@
 class main_layer : public pyro::layer
 {
 public:
-    main_layer() = default;
+    main_layer(const pyro::static_shader &shader);
 
     void on_attach() override;
     void on_detach() override;

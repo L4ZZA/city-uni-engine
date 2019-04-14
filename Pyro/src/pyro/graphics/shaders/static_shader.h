@@ -10,6 +10,7 @@ namespace pyro
         static_shader();
         void create();
         void load_transformation(const glm::mat4 &matrix);
+        void load_projection(const glm::mat4 &matrix);
 
     protected:
         void bind_attributes() override;

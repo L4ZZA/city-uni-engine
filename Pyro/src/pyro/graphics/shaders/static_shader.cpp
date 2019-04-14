@@ -18,6 +18,11 @@ void pyro::static_shader::load_transformation(const glm::mat4 &matrix)
     set_uniform("transformation_mat", matrix);
 }
 
+void pyro::static_shader::load_projection(const glm::mat4 &matrix)
+{
+    set_uniform("projection_mat", matrix);
+}
+
 void pyro::static_shader::bind_attributes()
 {
     bind_attribute(0, "position");

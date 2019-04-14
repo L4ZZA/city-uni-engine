@@ -8,6 +8,7 @@
 #include "events/application_event.h"
 #include "imgui/imgui_layer.h"
 #include "graphics/renderer.h"
+#include "graphics/shaders/static_shader.h"
 
 
 namespace pyro
@@ -44,7 +45,10 @@ namespace pyro
         timer* 							m_timer{ nullptr };
         bool                            m_running{ true };
         layers_stack                    m_layers_stack;
+
+    protected:
         renderer                        m_renderer;
+		static_shader					m_static_shader;
 
     private:
         static application*             s_instance;

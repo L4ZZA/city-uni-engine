@@ -11,5 +11,8 @@ pyro::application * pyro::create_application()
 
 sandbox_app::sandbox_app()
 {
-    push_layer(new main_layer());
+    m_static_shader.create();
+	m_renderer.init(m_static_shader);
+	auto layer = new main_layer(m_static_shader);
+    push_layer(layer);
 }
