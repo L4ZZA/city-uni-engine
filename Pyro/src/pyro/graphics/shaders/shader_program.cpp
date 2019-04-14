@@ -3,12 +3,12 @@
 #include "glad/glad.h"
 #include <fstream>
 
-pyro::shader_program::shader_program(const std::string & vertex_path, const std::string & fragment_path)
+pyro::shader_program::shader_program(const std::string  &vertex_path, const std::string  &fragment_path)
 {
     create(vertex_path, fragment_path);
 }
 
-void pyro::shader_program::create(const std::string& vertex_path, const std::string& fragment_path)
+void pyro::shader_program::create(const std::string &vertex_path, const std::string &fragment_path)
 {
     m_vertex_shader_id = load_shader(vertex_path, GL_VERTEX_SHADER);
     check_compile_errors(m_vertex_shader_id, "VERTEX");
@@ -48,12 +48,89 @@ void pyro::shader_program::stop() const
     glUseProgram(0);
 }
 
-void pyro::shader_program::bind_attribute(int attribute, const std::string& name)
+void pyro::shader_program::bind_attribute(int attribute, const std::string &name)
 {
     glBindAttribLocation(m_program_id, attribute, name.c_str());
 }
 
-unsigned int pyro::shader_program::load_shader(const std::string& file_path, unsigned int type)
+void pyro::shader_program::set_uniforms(const std::string &name, const int *values, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniform1iv(location, count, values);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, int value)
+{
+    set_uniforms(name, &value, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const float *values, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniform1fv(location, count, values);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, float value)
+{
+    set_uniforms(name, &value, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const glm::vec2 *vectors, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniform2fv(location, count, (float*)vectors);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, const glm::vec2 &vector)
+{
+    set_uniforms(name, &vector, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const glm::vec3 *vectors, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniform3fv(location, count, (float*)vectors);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, const glm::vec3 &vector)
+{
+    set_uniforms(name, &vector, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const glm::vec4 *vectors, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniform4fv(location, count, (float*)vectors);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, const glm::vec4 &vector)
+{
+    set_uniforms(name, &vector, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const glm::mat3 *matrices, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniformMatrix3fv(location, count, false, (float*)matrices);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, const glm::mat3 &matrix)
+{
+    set_uniforms(name, &matrix, 1);
+}
+
+void pyro::shader_program::set_uniforms(const std::string &name, const glm::mat4 *matrices, int count /*= 1*/)
+{
+    int location = get_uniform_location(name);
+    glUniformMatrix4fv(location, count, false, (float*)matrices);
+}
+
+void pyro::shader_program::set_uniform(const std::string &name, const glm::mat4 &matrix)
+{
+    set_uniforms(name, &matrix, 1);
+}
+
+unsigned int pyro::shader_program::load_shader(const std::string &file_path, unsigned int type)
 {
     std::string shader = parse_shader(file_path);
     if(shader.empty())
@@ -61,7 +138,7 @@ unsigned int pyro::shader_program::load_shader(const std::string& file_path, uns
     return compile_shader(shader, type);
 }
 
-std::string pyro::shader_program::parse_shader(const std::string& file_path)
+std::string pyro::shader_program::parse_shader(const std::string &file_path)
 {
     std::ifstream stream(file_path);
 
@@ -75,7 +152,7 @@ std::string pyro::shader_program::parse_shader(const std::string& file_path)
     return ss.str();
 }
 
-unsigned int pyro::shader_program::compile_shader(const std::string& source, unsigned int type)
+unsigned int pyro::shader_program::compile_shader(const std::string &source, unsigned int type)
 {
     unsigned int id = glCreateShader(type);
     const char *src = source.c_str();
@@ -99,14 +176,14 @@ std::string pyro::shader_program::get_compilation_error(unsigned int id)
 {
     int length;
     glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-    char* message = (char*)alloca(length * sizeof(char));
+    char *message = (char*)alloca(length  *sizeof(char));
     glGetShaderInfoLog(id, length, &length, message);
     std::string error(message);
 
     return error;
 }
 
-void pyro::shader_program::check_compile_errors(unsigned int shader, const std::string& type)
+void pyro::shader_program::check_compile_errors(unsigned int shader, const std::string &type)
 {
     int success;
     char infoLog[1024];
@@ -128,4 +205,19 @@ void pyro::shader_program::check_compile_errors(unsigned int shader, const std::
             PYRO_CORE_ERROR("ERROR::PROGRAM_LINKING_ERROR of type: {0}\n{1}\n -- --------------------------------------------------- -- ", type, infoLog);
         }
     }
+}
+
+int pyro::shader_program::get_uniform_location(const std::string &name)
+{
+    // if uniform already exists
+    if(m_uniforms_cache.find(name) != m_uniforms_cache.end())
+        return m_uniforms_cache[name];
+
+    // if doesn't exists, yet find it and cache it
+    int location = glGetUniformLocation(m_program_id, name.c_str());
+    if(location == -1)
+        PYRO_CORE_WARN("Shader n_{} Uniform {} doesn't exist!", m_program_id, name);
+
+    m_uniforms_cache[name] = location;
+    return location;
 }

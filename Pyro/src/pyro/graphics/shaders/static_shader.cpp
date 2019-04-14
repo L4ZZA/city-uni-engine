@@ -13,6 +13,11 @@ void pyro::static_shader::create()
     shader_program::create(s_vertex_file, s_fragment_file);
 }
 
+void pyro::static_shader::load_transformation(const glm::mat4& matrix)
+{
+    set_uniform("transformation_mat", matrix);
+}
+
 void pyro::static_shader::bind_attributes()
 {
     bind_attribute(0, "position");

@@ -9,9 +9,11 @@ namespace pyro
     public:
         static_shader();
         void create();
+        void load_transformation(const glm::mat4 &matrix);
+
     protected:
         void bind_attributes() override;
-
+        
     private:
         static const std::string s_vertex_file;
         static const std::string s_fragment_file;

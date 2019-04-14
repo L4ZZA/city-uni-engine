@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 #include "pyro/logger.h"
 #include "pyro/core.h"
