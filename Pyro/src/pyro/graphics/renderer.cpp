@@ -12,7 +12,7 @@ void pyro::renderer::prepare() const
     glClearColor(1, 0, 0, 1);
 }
 
-void pyro::renderer::render(const entity &entity, static_shader &shader)
+void pyro::renderer::render(const entity &entity, static_shader &shader) const
 {
     textured_model model = entity.model();
     auto raw_model = model.raw();

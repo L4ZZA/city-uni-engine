@@ -10,6 +10,6 @@ namespace  pyro
     public:
         void prepare() const;
 
-        void render(const entity &model, static_shader &shader);
+        void render(const entity &model, static_shader &shader) const;
     };
 }
