@@ -19,7 +19,7 @@ namespace pyro
         virtual void on_detach() {}
         /// \brief Runs when application calls the on_update method.
         /// Should happen every frame.
-        virtual void on_update() {}
+        virtual void on_update(double dt) {}
         /// \brief Render method.
         virtual void on_render(renderer &renderer) {}
         /// \brief Render method specific to imgui.

@@ -1,4 +1,4 @@
-﻿#include "main_layer.h"
+#include "main_layer.h"
 #include "pyro/key_codes.h"
 #include "pyro/events/key_event.h"
 #include "pyro/input.h"
@@ -39,7 +39,7 @@ void main_layer::on_detach()
     pyro::loader::cleanup();
 }
 
-void main_layer::on_update()
+void main_layer::on_update(double dt)
 {
     if(pyro::input::key_pressed(pyro::key_codes::KEY_TAB))
         PYRO_INFO("Tab pressed (poll)");

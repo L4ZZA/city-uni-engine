@@ -25,7 +25,7 @@ public:
 
     void on_attach() override;
     void on_detach() override;
-    void on_update() override;
+    void on_update(double dt) override;
     void on_render(pyro::renderer &renderer) override;
     void on_event(pyro::event& event) override;
 

@@ -12,6 +12,8 @@
 
 namespace pyro
 {
+	class timer;
+
     class PYRO_API application
     {
     public:
@@ -39,12 +41,15 @@ namespace pyro
 
     private:
         std::unique_ptr<window>         m_window;
+        timer* 							m_timer{ nullptr };
         bool                            m_running{ true };
         layers_stack                    m_layers_stack;
         renderer                        m_renderer;
 
     private:
         static application*             s_instance;
+        inline static const double		s_fps = 60.0;
+        inline static const double		s_secondsPerFrame = 1.0 / s_fps;
 
     };
 
