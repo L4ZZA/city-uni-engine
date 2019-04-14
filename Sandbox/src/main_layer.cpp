@@ -1,4 +1,4 @@
-#include "main_layer.h"
+﻿#include "main_layer.h"
 #include "pyro/key_codes.h"
 #include "pyro/events/key_event.h"
 #include "pyro/input.h"
@@ -41,9 +41,8 @@ void main_layer::on_detach()
 
 void main_layer::on_update(double dt)
 {
-    if(pyro::input::key_pressed(pyro::key_codes::KEY_TAB))
-        PYRO_INFO("Tab pressed (poll)");
-    //PYRO_INFO("ExampleLayer::on_update()");
+	m_entity.increase_translation({0.2f * dt, 0.f, 0.f});
+	m_entity.increase_rotation({0, 1.f * dt, 0.f});
 }
 
 void main_layer::on_render(pyro::renderer& renderer)
