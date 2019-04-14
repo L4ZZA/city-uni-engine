@@ -13,20 +13,20 @@ namespace pyro
 {
     static bool s_glfw_initialized = false;
 
-    static void glfw_error_callback(int p_error_code, const char * p_description)
+    static void glfw_error_callback(int error_code, const char * description)
     {
-        PYRO_CORE_ERROR("GLFW Error ({0}): {1}", p_error_code, p_description);
+        PYRO_CORE_ERROR("GLFW Error ({0}): {1}", error_code, description);
     }
 }
 
-pyro::window* pyro::window::create(window_props const& p_props)
+pyro::window* pyro::window::create(window_props const& props)
 {
-    return new win_window(p_props);
+    return new win_window(props);
 }
 
-pyro::win_window::win_window(window_props const& p_props)
+pyro::win_window::win_window(window_props const& props)
 {
-    init(p_props);
+    init(props);
 }
 
 pyro::win_window::~win_window()
@@ -40,14 +40,14 @@ void pyro::win_window::on_update()
     glfwSwapBuffers(m_window);
 }
 
-void pyro::win_window::vsync(bool p_enabled)
+void pyro::win_window::vsync(bool enabled)
 {
-    if (p_enabled)
+    if (enabled)
         glfwSwapInterval(1);
     else
         glfwSwapInterval(0);
 
-    m_data.vsync = p_enabled;
+    m_data.vsync = enabled;
 }
 
 bool pyro::win_window::vsync()
@@ -55,13 +55,13 @@ bool pyro::win_window::vsync()
     return m_data.vsync;
 }
 
-void pyro::win_window::init(window_props const& p_props)
+void pyro::win_window::init(window_props const& props)
 {
-    m_data.title = p_props.m_title;
-    m_data.width = p_props.m_width;
-    m_data.height = p_props.m_height;
+    m_data.title = props.m_title;
+    m_data.width = props.m_width;
+    m_data.height = props.m_height;
 
-    PYRO_CORE_INFO("Creating window {0} [{1},{2}]", p_props.m_title, p_props.m_width, p_props.m_height);
+    PYRO_CORE_INFO("Creating window {0} [{1},{2}]", props.m_title, props.m_width, props.m_height);
 
     if (!s_glfw_initialized)
     {
@@ -72,9 +72,9 @@ void pyro::win_window::init(window_props const& p_props)
     }
 
     m_window = glfwCreateWindow(
-        static_cast<int>(p_props.m_width),
-        static_cast<int>(p_props.m_height),
-        p_props.m_title.c_str(),
+        static_cast<int>(props.m_width),
+        static_cast<int>(props.m_height),
+        props.m_title.c_str(),
         nullptr, nullptr);
 
     glfwMakeContextCurrent(m_window);
