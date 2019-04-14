@@ -1,4 +1,4 @@
-﻿#include "pyro_pch.h"
+#include "pyro_pch.h"
 #include "static_shader.h"
 
 // Keep in mind these paths should be relative to the sandbox project, until I fix it.
@@ -13,7 +13,7 @@ void pyro::static_shader::create()
     shader_program::create(s_vertex_file, s_fragment_file);
 }
 
-void pyro::static_shader::load_transformation(const glm::mat4& matrix)
+void pyro::static_shader::load_transformation(const glm::mat4 &matrix)
 {
     set_uniform("transformation_mat", matrix);
 }

@@ -21,7 +21,7 @@ namespace pyro
         /// Should happen every frame.
         virtual void on_update() {}
         /// \brief Render method.
-        virtual void on_render(const pyro::renderer &renderer) {}
+        virtual void on_render(renderer &renderer) {}
         /// \brief Render method specific to imgui.
         virtual void on_imgui_render() {}
         /// \brief Runs whenever an event gets sent to the layer.

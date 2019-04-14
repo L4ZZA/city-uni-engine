@@ -29,7 +29,8 @@ void main_layer::on_attach()
     m_model = pyro::loader::load_model(vertices, tex_coords, indices);
     m_static_shader.create();
     m_texture = pyro::loader::load_texture("res/textures/face.png");
-    m_textured_model.create(m_model, m_texture);
+    m_static_model.create(m_model, m_texture);
+    m_entity.create(m_static_model, { 0,0,0 }, { 0,0,0 }, 0);
 }
 
 void main_layer::on_detach()
@@ -45,20 +46,13 @@ void main_layer::on_update()
     //PYRO_INFO("ExampleLayer::on_update()");
 }
 
-void main_layer::on_render(const pyro::renderer& renderer)
+void main_layer::on_render(pyro::renderer& renderer)
 {
     m_static_shader.start();
-    renderer.render(m_textured_model);
+    renderer.render(m_entity, m_static_shader);
     m_static_shader.stop();
 }
 
-void main_layer::on_event(pyro::event& p_event)
+void main_layer::on_event(pyro::event& event)
 {
-    if(p_event.event_type() == pyro::event_type_e::key_pressed)
-    {
-        auto& e = dynamic_cast<pyro::key_pressed_event&>(p_event);
-        if(e.key_code() == pyro::key_codes::KEY_TAB)
-            PYRO_TRACE("Tab pressed (event)");
-        PYRO_TRACE("{0}", static_cast<char>(e.key_code()));
-    }
 }

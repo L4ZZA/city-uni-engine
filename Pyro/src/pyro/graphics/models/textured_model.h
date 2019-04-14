@@ -12,7 +12,7 @@ namespace pyro
         textured_model(const raw_model &model, const model_texture &texture);
         void create(const raw_model &model, const model_texture &texture);
 
-        raw_model model() const;
+        raw_model raw() const;
         model_texture texture() const;
 
     private:

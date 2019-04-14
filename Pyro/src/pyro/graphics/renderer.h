@@ -2,13 +2,14 @@
 
 namespace  pyro
 {
-    class textured_model;
+    class entity;
+    class static_shader;
 
     class renderer
     {
     public:
         void prepare() const;
 
-        void render(const textured_model &model) const;
+        void render(const entity &model, static_shader &shader);
     };
 }

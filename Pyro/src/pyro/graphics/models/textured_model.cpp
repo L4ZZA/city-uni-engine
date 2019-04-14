@@ -12,7 +12,7 @@ void pyro::textured_model::create(const raw_model &model, const model_texture &t
     m_texture = texture;
 }
 
-pyro::raw_model pyro::textured_model::model() const
+pyro::raw_model pyro::textured_model::raw() const
 {
     return m_raw_model;
 }

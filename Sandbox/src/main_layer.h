@@ -4,6 +4,8 @@
 #include "pyro/graphics/shaders/static_shader.h"
 #include "pyro/graphics/textures/model_texture.h"
 #include "pyro/graphics/models/textured_model.h"
+#include "pyro/entities/entity.h"
+#include "pyro/events/key_event.h"
 
 //glm::mat4 camera(float Translate, glm::vec2 const & Rotate)
 //{
@@ -24,12 +26,13 @@ public:
     void on_attach() override;
     void on_detach() override;
     void on_update() override;
-    void on_render(const pyro::renderer &renderer) override;
-    void on_event(pyro::event& p_event) override;
+    void on_render(pyro::renderer &renderer) override;
+    void on_event(pyro::event& event) override;
 
 private:
-    pyro::raw_model m_model;
-    pyro::model_texture m_texture{0};
-    pyro::textured_model m_textured_model{};
-    pyro::static_shader m_static_shader;
+    pyro::raw_model         m_model;
+    pyro::model_texture     m_texture{ 0 };
+    pyro::textured_model    m_static_model{};
+    pyro::static_shader     m_static_shader;
+    pyro::entity            m_entity{};
 };
