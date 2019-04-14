@@ -10,14 +10,14 @@ namespace pyro
     public:
         entity() = default;
         entity(const textured_model &model,
-            const glm::vec3 &pos,
-            const glm::vec3 &rotation,
-            float scale);
+            const glm::vec3 &pos = {0,0,0},
+            const glm::vec3 &rotation = {0,0,0},
+            float scale = 1);
 
         void create(const textured_model &model,
-            const glm::vec3 &pos,
-            const glm::vec3 &rotation,
-            float scale);
+            const glm::vec3 &pos = {0,0,0},
+			const glm::vec3 &rotation = {0,0,0},
+            float scale = 1);
 
         void increase_translation(const glm::vec3 &vec);
         void increase_rotation(const glm::vec3 &vec);

@@ -26,9 +26,9 @@ namespace pyro
     protected:
         /// \brief 
         virtual void bind_attributes() = 0;
-
         virtual void bind_attribute(int attribute, const std::string &name);
 
+    public:
         // Set uniforms 
         // Setting integers 
         void set_uniforms(const std::string& name, const int* values, int count = 1);

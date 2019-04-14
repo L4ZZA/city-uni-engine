@@ -16,8 +16,8 @@ void pyro::renderer::render(const entity &entity, static_shader &shader)
 {
     textured_model model = entity.model();
     auto raw_model = model.raw();
-    //auto mat = maths::create_transformation_matrix(entity.position(), entity.rotation(), entity.scale());
-    //shader.load_transformation(mat);
+    auto mat = maths::create_transformation_matrix(entity.position(), entity.rotation(), entity.scale());
+    shader.load_transformation(mat);
 
     glBindVertexArray(raw_model.vao_id());
     glActiveTexture(GL_TEXTURE0);

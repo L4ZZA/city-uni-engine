@@ -30,7 +30,7 @@ void main_layer::on_attach()
     m_static_shader.create();
     m_texture = pyro::loader::load_texture("res/textures/face.png");
     m_static_model.create(m_model, m_texture);
-    m_entity.create(m_static_model, { 0,0,0 }, { 0,0,0 }, 0);
+    m_entity.create(m_static_model, { -1,0,0 });
 }
 
 void main_layer::on_detach()

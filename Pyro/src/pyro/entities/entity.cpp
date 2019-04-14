@@ -1,12 +1,20 @@
 ﻿#include "pyro_pch.h"
 #include "entity.h"
 
-pyro::entity::entity(const textured_model &model, const glm::vec3 &pos, const glm::vec3 &rotation, float scale)
+pyro::entity::entity(
+	const textured_model &model, 
+	const glm::vec3 &pos /*= {0,0,0}*/, 
+	const glm::vec3 &rotation /*= {0,0,0}*/, 
+	float scale /*= 1*/)
 {
     create(model, pos, rotation, scale);
 }
 
-void pyro::entity::create(const textured_model &model, const glm::vec3 &pos, const glm::vec3 &rotation, float scale)
+void pyro::entity::create(
+	const textured_model &model, 
+	const glm::vec3 &pos /*= {0,0,0}*/, 
+	const glm::vec3 &rotation /*= {0,0,0}*/, 
+	float scale /*= 1*/)
 {
     m_model = model;
     m_position = pos;
