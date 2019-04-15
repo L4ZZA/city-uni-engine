@@ -4,6 +4,7 @@
 #include "pyro/input.h"
 #include "pyro/graphics/loader.h"
 #include "pyro/utils/maths.h"
+#include "pyro/graphics/obj_loader.h"
 
 //std::vector<float> vertices
 //{
@@ -114,6 +115,7 @@ void main_layer::on_attach()
 	m_texture = pyro::loader::load_texture("res/textures/face.png");
 	m_static_model.create(m_model, m_texture);
 	m_entity.create(m_static_model, { 0,0,-5 });
+	pyro::obj_loader::load_obj("stall");
 }
 
 void main_layer::on_detach()
