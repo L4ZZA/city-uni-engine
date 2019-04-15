@@ -158,7 +158,7 @@ namespace pyro
 				vertices_array.push_back(vec.z);
 			}
 
-			return loader::load_model(vertices_array, textures_array, indices);
+			return loader::load_model(vertices_array, textures_array, normals_array, indices);
 		}
 	};
 }

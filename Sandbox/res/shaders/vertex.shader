@@ -2,6 +2,7 @@
 
 in vec3 position;
 in vec2 tex_coords;
+in vec3 normal;
 
 out vec2 pass_tex_coords;
 
