@@ -7,6 +7,7 @@
 #include "pyro/entities/entity.h"
 #include "pyro/events/key_event.h"
 #include "pyro/entities/camera.h"
+#include "pyro/entities/light.h"
 
 //glm::mat4 camera(float Translate, glm::vec2 const & Rotate)
 //{
@@ -37,4 +38,5 @@ private:
     pyro::static_shader     m_static_shader;
     pyro::entity            m_entity{};
 	pyro::camera			m_camera{};
+	pyro::light				m_light{};
 };

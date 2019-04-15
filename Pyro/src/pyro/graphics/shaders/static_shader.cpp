@@ -1,5 +1,6 @@
 #include "pyro_pch.h"
 #include "static_shader.h"
+#include "pyro/entities/light.h"
 
 // Keep in mind these paths should be relative to the sandbox project, until I fix it.
 
@@ -26,6 +27,12 @@ void pyro::static_shader::load_projection(const glm::mat4 &matrix)
 void pyro::static_shader::load_view(const glm::mat4& matrix)
 {
 	set_uniform("view_mat", matrix);
+}
+
+void pyro::static_shader::load_light(const light& light)
+{
+	set_uniform("light_pos", light.position());
+	set_uniform("light_colour", light.colour());
 }
 
 void pyro::static_shader::bind_attributes()

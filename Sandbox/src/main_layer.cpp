@@ -117,8 +117,8 @@ void main_layer::on_attach()
 	m_model = pyro::obj_loader::load_obj("dragon");
 	m_texture = pyro::loader::load_texture("res/textures/dragon.png");
 	m_static_model.create(m_model, m_texture);
-	m_entity.create(m_static_model, { 0,0,-5 });
-	
+	m_entity.create(m_static_model, { 0,0,-25 });
+	m_light.create({ 0,0,-20 }, { 1,1,1 });
 }
 
 void main_layer::on_detach()
@@ -130,7 +130,7 @@ void main_layer::on_detach()
 void main_layer::on_update(double dt)
 {
 	float f_dt = static_cast<float>(dt);
-	m_entity.increase_rotation({0.f, f_dt, 0.f});
+	m_entity.increase_rotation({ 0.f, f_dt, 0.f });
 	m_camera.move(dt);
 }
 
@@ -138,6 +138,7 @@ void main_layer::on_render(pyro::renderer& renderer)
 {
 	m_static_shader.start();
 	m_static_shader.load_view(pyro::maths::create_view_matrix(m_camera));
+	m_static_shader.load_light(m_light);
 	renderer.render(m_entity, m_static_shader);
 	m_static_shader.stop();
 }

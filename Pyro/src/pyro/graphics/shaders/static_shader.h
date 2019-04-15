@@ -3,7 +3,9 @@
 
 namespace pyro
 {
-    /// \brief Used to create all the static (don't move) models in the game.
+	class light;
+
+	/// \brief Used to create all the static (don't move) models in the game.
     class static_shader : public pyro::shader_program
     {
     public:
@@ -12,6 +14,7 @@ namespace pyro
         void load_transformation(const glm::mat4 &matrix);
         void load_projection(const glm::mat4 &matrix);
         void load_view(const glm::mat4 &matrix);
+        void load_light(const light &matrix);
 
     protected:
         void bind_attributes() override;
