@@ -18,8 +18,10 @@ void pyro::renderer::init(static_shader& shader)
 
 void pyro::renderer::prepare() const
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glClearColor(1, 0, 0, 1);
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearDepth(1.0f);
+	glClearColor(0, 0.3f, 0, 1);
 }
 
 void pyro::renderer::render(const entity &entity, static_shader &shader) const
