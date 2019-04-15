@@ -113,9 +113,9 @@ main_layer::main_layer(const pyro::static_shader& shader)
 
 void main_layer::on_attach()
 {
-	// credits: https://www.dropbox.com/sh/7l598pr7b4zx63j/AAB_PzQl3zU2WS5hhlKgMb1Wa?dl=0
-	m_model = pyro::obj_loader::load_obj("stall");
-	m_texture = pyro::loader::load_texture("res/models/stallTexture.png");
+	// credits: https://www.dropbox.com/sh/gscenjij7ny3xz1/AADQ3u6Ve96PP3ajyJP81ETSa?dl=0
+	m_model = pyro::obj_loader::load_obj("dragon");
+	m_texture = pyro::loader::load_texture("res/textures/dragon.png");
 	m_static_model.create(m_model, m_texture);
 	m_entity.create(m_static_model, { 0,0,-5 });
 	
