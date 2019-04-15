@@ -6,6 +6,7 @@
 #include "pyro/graphics/models/textured_model.h"
 #include "pyro/entities/entity.h"
 #include "pyro/events/key_event.h"
+#include "pyro/entities/camera.h"
 
 //glm::mat4 camera(float Translate, glm::vec2 const & Rotate)
 //{
@@ -35,4 +36,5 @@ private:
     pyro::textured_model    m_static_model{};
     pyro::static_shader     m_static_shader;
     pyro::entity            m_entity{};
+	pyro::camera			m_camera{};
 };

@@ -23,6 +23,11 @@ void pyro::static_shader::load_projection(const glm::mat4 &matrix)
     set_uniform("projection_mat", matrix);
 }
 
+void pyro::static_shader::load_view(const glm::mat4& matrix)
+{
+	set_uniform("view_mat", matrix);
+}
+
 void pyro::static_shader::bind_attributes()
 {
     bind_attribute(0, "position");

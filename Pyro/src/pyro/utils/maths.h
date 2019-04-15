@@ -1,5 +1,6 @@
 #pragma once
 #include "pyro_pch.h"
+#include "pyro/entities/camera.h"
 
 namespace pyro
 {
@@ -35,6 +36,19 @@ namespace pyro
 			mat[3][2] = -((2 * near_plane * far_plane) / frustum_length);
 			mat[3][3] = 0;
 			return mat;
+		}
+
+		/// \brief Created the view matrix, which is the opposite of the camera position and rotation.
+		/// from: https://youtu.be/50Y9u7K0PZo?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP&t=936
+		static glm::mat4 create_view_matrix(const camera &camera)
+		{
+			auto view_mat = glm::identity<glm::mat4>();
+			view_mat = glm::rotate(view_mat, glm::radians(camera.pitch()), {1, 0, 0});
+			view_mat = glm::rotate(view_mat, glm::radians(camera.yaw()), {0, 1, 0});
+			glm::vec3 cam_pos = camera.position();
+			glm::vec3 negativeCameraPos = -1.f * cam_pos;
+			view_mat = glm::translate(view_mat, negativeCameraPos);
+			return view_mat;
 		}
 	}
 }

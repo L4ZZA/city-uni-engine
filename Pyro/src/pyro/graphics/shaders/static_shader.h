@@ -11,6 +11,7 @@ namespace pyro
         void create();
         void load_transformation(const glm::mat4 &matrix);
         void load_projection(const glm::mat4 &matrix);
+        void load_view(const glm::mat4 &matrix);
 
     protected:
         void bind_attributes() override;

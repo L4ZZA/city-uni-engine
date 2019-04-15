@@ -12,8 +12,8 @@ namespace  pyro
         void prepare() const;
         void render(const entity &entity, static_shader &shader) const;
 
-		inline static const float s_fov = 70;
-		inline static const float s_near = 0.1;
-		inline static const float s_far = 1000;
+		inline static const float s_fov = 70.f;
+		inline static const float s_near = 0.1f;
+		inline static const float s_far = 1000.f;
     };
 }

@@ -46,12 +46,14 @@ void main_layer::on_detach()
 
 void main_layer::on_update(double dt)
 {
-	m_entity.increase_translation({0, 0.f, -1.f * dt});
+	//m_entity.increase_translation({0, 0.f, -1.f * dt});
+	m_camera.move(dt);
 }
 
 void main_layer::on_render(pyro::renderer& renderer)
 {
     m_static_shader.start();
+	m_static_shader.load_view(pyro::maths::create_view_matrix(m_camera));
     renderer.render(m_entity, m_static_shader);
     m_static_shader.stop();
 }
