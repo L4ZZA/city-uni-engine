@@ -6,6 +6,7 @@
 #include "pyro/utils/maths.h"
 #include "pyro/graphics/obj_loader.h"
 
+// rect data (for future reuse)
 //std::vector<float> vertices
 //{
 //	-0.5f,  0.5f, 0.f,//v0
@@ -26,83 +27,84 @@
 //	1,0,
 //};
 
-std::vector<float> vertices
-{
-	-0.5f,0.5f,-0.5f,
-	-0.5f,-0.5f,-0.5f,
-	0.5f,-0.5f,-0.5f,
-	0.5f,0.5f,-0.5f,
-
-	-0.5f,0.5f,0.5f,
-	-0.5f,-0.5f,0.5f,
-	0.5f,-0.5f,0.5f,
-	0.5f,0.5f,0.5f,
-
-	0.5f,0.5f,-0.5f,
-	0.5f,-0.5f,-0.5f,
-	0.5f,-0.5f,0.5f,
-	0.5f,0.5f,0.5f,
-
-	-0.5f,0.5f,-0.5f,
-	-0.5f,-0.5f,-0.5f,
-	-0.5f,-0.5f,0.5f,
-	-0.5f,0.5f,0.5f,
-
-	-0.5f,0.5f,0.5f,
-	-0.5f,0.5f,-0.5f,
-	0.5f,0.5f,-0.5f,
-	0.5f,0.5f,0.5f,
-
-	-0.5f,-0.5f,0.5f,
-	-0.5f,-0.5f,-0.5f,
-	0.5f,-0.5f,-0.5f,
-	0.5f,-0.5f,0.5f
-};
-
-std::vector<float> tex_coords
-{
-	0,0,
-	0,1,
-	1,1,
-	1,0,
-	0,0,
-	0,1,
-	1,1,
-	1,0,
-	0,0,
-	0,1,
-	1,1,
-	1,0,
-	0,0,
-	0,1,
-	1,1,
-	1,0,
-	0,0,
-	0,1,
-	1,1,
-	1,0,
-	0,0,
-	0,1,
-	1,1,
-	1,0
-};
-
-std::vector<unsigned int> indices
-{
-	0,1,3,
-	3,1,2,
-	4,5,7,
-	7,5,6,
-	8,9,11,
-	11,9,10,
-	12,13,15,
-	15,13,14,
-	16,17,19,
-	19,17,18,
-	20,21,23,
-	23,21,22
-
-};
+// cube data (for future reuse)
+//std::vector<float> vertices
+//{
+//	-0.5f,0.5f,-0.5f,
+//	-0.5f,-0.5f,-0.5f,
+//	0.5f,-0.5f,-0.5f,
+//	0.5f,0.5f,-0.5f,
+//
+//	-0.5f,0.5f,0.5f,
+//	-0.5f,-0.5f,0.5f,
+//	0.5f,-0.5f,0.5f,
+//	0.5f,0.5f,0.5f,
+//
+//	0.5f,0.5f,-0.5f,
+//	0.5f,-0.5f,-0.5f,
+//	0.5f,-0.5f,0.5f,
+//	0.5f,0.5f,0.5f,
+//
+//	-0.5f,0.5f,-0.5f,
+//	-0.5f,-0.5f,-0.5f,
+//	-0.5f,-0.5f,0.5f,
+//	-0.5f,0.5f,0.5f,
+//
+//	-0.5f,0.5f,0.5f,
+//	-0.5f,0.5f,-0.5f,
+//	0.5f,0.5f,-0.5f,
+//	0.5f,0.5f,0.5f,
+//
+//	-0.5f,-0.5f,0.5f,
+//	-0.5f,-0.5f,-0.5f,
+//	0.5f,-0.5f,-0.5f,
+//	0.5f,-0.5f,0.5f
+//};
+//
+//std::vector<float> tex_coords
+//{
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0,
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0,
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0,
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0,
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0,
+//	0,0,
+//	0,1,
+//	1,1,
+//	1,0
+//};
+//
+//std::vector<unsigned int> indices
+//{
+//	0,1,3,
+//	3,1,2,
+//	4,5,7,
+//	7,5,6,
+//	8,9,11,
+//	11,9,10,
+//	12,13,15,
+//	15,13,14,
+//	16,17,19,
+//	19,17,18,
+//	20,21,23,
+//	23,21,22
+//
+//};
 
 main_layer::main_layer(const pyro::static_shader& shader)
 {
@@ -111,11 +113,11 @@ main_layer::main_layer(const pyro::static_shader& shader)
 
 void main_layer::on_attach()
 {
-	m_model = pyro::loader::load_model(vertices, tex_coords, indices);
-	m_texture = pyro::loader::load_texture("res/textures/face.png");
+	m_model = pyro::obj_loader::load_obj("stall");
+	m_texture = pyro::loader::load_texture("res/models/stallTexture.png");
 	m_static_model.create(m_model, m_texture);
 	m_entity.create(m_static_model, { 0,0,-5 });
-	pyro::obj_loader::load_obj("stall");
+	
 }
 
 void main_layer::on_detach()
@@ -127,7 +129,7 @@ void main_layer::on_detach()
 void main_layer::on_update(double dt)
 {
 	float f_dt = static_cast<float>(dt);
-	m_entity.increase_rotation({f_dt, f_dt, 0.f});
+	m_entity.increase_rotation({0.f, f_dt, 0.f});
 	m_camera.move(dt);
 }
 
