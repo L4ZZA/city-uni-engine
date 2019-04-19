@@ -13,3 +13,6 @@
 [submodule "Pyro/external/stb_image"]
 	path = Pyro/external/stb_image
 	url = https://github.com/L4ZZA/stb
+[submodule "Pyro/external/assimp"]
+	path = Pyro/external/assimp
+	url = https://github.com/L4ZZA/assimp/
