@@ -20,11 +20,14 @@ IncludeDir["Glad"] = "Pyro/external/Glad/include/"
 IncludeDir["ImGui"] = "Pyro/external/imgui/"
 IncludeDir["glm"] = "Pyro/external/glm/"
 IncludeDir["stb_image"] = "Pyro/external/stb_image/"
+IncludeDir["assimp"] = "Pyro/external/assimp/include/"
+IncludeDir["assimpcfg"] = "Pyro/external/assimp/config/"
 
 -- iclude GLFW premake file
 include "Pyro/external/GLFW/"
 include "Pyro/external/Glad/"
 include "Pyro/external/ImGui/"
+include "Pyro/external/assimp/"
 
 -- engine core project
 project "Pyro"
@@ -67,6 +70,8 @@ project "Pyro"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.stb_image}",
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.assimpcfg}",
     }
 
     links
@@ -74,7 +79,8 @@ project "Pyro"
         "GLFW",
         "Glad",
         "opengl32.lib",
-        "ImGui"
+        "ImGui",
+        "assimp",
     }
 
     -- filters are used to apply property to some specific configurations only
