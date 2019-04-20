@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-#include "pyro/core.h"
 #include "pyro/events/event.h"
 #include "graphics/renderer.h"
 

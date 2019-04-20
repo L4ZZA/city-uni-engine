@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <memory>
 #include <algorithm>
@@ -19,7 +19,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "pyro/logger.h"
-#include "pyro/core.h"
+#include "pyro/defs.h"
 
 #ifdef PYRO_PLATFORM_WIN
     #include <Windows.h>

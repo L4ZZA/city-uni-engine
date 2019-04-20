@@ -1,6 +1,4 @@
 ﻿#pragma once
-
-#include "pyro/core.h"
 #include "layer.h"
 
 namespace pyro

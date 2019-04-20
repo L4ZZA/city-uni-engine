@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pyro/core.h"
-
 namespace pyro
 {
     /// \brief Base class for input polling.
