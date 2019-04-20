@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include <algorithm>
@@ -15,12 +15,14 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-
 #include "pyro/logger.h"
 #include "pyro/defs.h"
 
 #ifdef PYRO_PLATFORM_WIN
-    #include <Windows.h>
+	#include <Windows.h>
 #endif 
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "pyro/utils/glm_extension.h"
