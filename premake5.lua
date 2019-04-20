@@ -15,6 +15,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
+IncludeDir["spdlog"] = "pyro/external/spdlog/include"
 IncludeDir["GLFW"] = "pyro/external/GLFW/include/"
 IncludeDir["Glad"] = "pyro/external/Glad/include/"
 IncludeDir["ImGui"] = "pyro/external/imgui/"
@@ -51,6 +52,7 @@ project "pyro"
         -- ** means recursively search down that folder
         "%{prj.name}/src/**.h", 
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.hpp",
         "%{prj.name}/src/**.shader",
         "%{prj.name}/res/**.shader",
         "%{prj.name}/external/glm/glm/**.hpp", 
@@ -66,11 +68,11 @@ project "pyro"
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/external/spdlog/include",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.ImGui}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
@@ -80,7 +82,6 @@ project "pyro"
     {
         "GLFW",
         "Glad",
-        "opengl32.lib",
         "ImGui",
         "assimp",
     }
@@ -88,13 +89,16 @@ project "pyro"
     -- filters are used to apply property to some specific configurations only
     filter "system:windows"
         systemversion "latest" -- windows SDK version
+        linkoptions { "/ignore:4221" }
 
         defines
         {
             "PYRO_PLATFORM_WIN",
-            "PYRO_BUILD_DLL",
+            -- "PYRO_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
         }
+
+        links { "opengl32.lib" }
 
     filter "configurations:Debug"
         defines "PYRO_DEBUG"
@@ -128,14 +132,16 @@ project "sandbox"
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/src/**.shader",
         "%{prj.name}/res/**.shader",
+        "%{prj.name}/src/**.glsl",
+        "%{prj.name}/res/**.glsl",
     }
 
     includedirs
     {
-        "pyro/external/spdlog/include",
         "pyro/src",
-        "%{IncludeDir.ImGui}",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.ImGui}",
     }
 
     links
@@ -145,11 +151,11 @@ project "sandbox"
 
     filter "system:windows"
         systemversion "latest"
+        linkoptions { "/ignore:4221" }
 
         defines
         {
             "PYRO_PLATFORM_WIN",
-            "IMGUI_API=__declspec(dllimport)"
         }
 
     filter "configurations:Debug"
