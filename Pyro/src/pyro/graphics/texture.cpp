@@ -1,4 +1,4 @@
-﻿#include "pyro_pch.h"
+#include "pyro_pch.h"
 #include "texture.h"
 #include "glad/glad.h"
 #include "stb_image.h"
@@ -24,6 +24,9 @@ void pyro::texture::create(const std::string &path)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_buffer);
     unbind();
+
+	if (m_buffer)
+		stbi_image_free(m_buffer);
 }
 
 void pyro::texture::cleanup()
