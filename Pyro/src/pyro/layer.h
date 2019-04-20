@@ -1,10 +1,11 @@
 ﻿#pragma once
 
 #include "pyro/events/event.h"
-#include "graphics/renderer.h"
 
 namespace pyro
 {
+	class renderer;
+
     /// \brief Interface/base-class from which implement the layers in your applicaiton.
     class PYRO_API layer
     {
