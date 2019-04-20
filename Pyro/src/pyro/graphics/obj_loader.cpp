@@ -39,16 +39,16 @@ void pyro::obj_loader::process_vertex(
 {
 	// the first element of the triad is the vertex index 
 	// (-1 because the obj starts at 1 and we start at 0)
-	auto current_vertex_index = parse<unsigned int>(components[0]) - 1;
+	const auto current_vertex_index = parse<unsigned int>(components[0]) - 1;
 	indices.push_back(current_vertex_index);
 
 	// the second is the index of the texture in the texture list (aka our container)
-	glm::vec2 current_tex = tex_coords[parse<int>(components[1]) - 1];
+	const glm::vec2 current_tex = tex_coords[parse<int>(components[1]) - 1];
 	textures_array[current_vertex_index * 2 + 0] = current_tex.x;
 	textures_array[current_vertex_index * 2 + 1] = 1.f - current_tex.y;// blender starts from the bottom left
 
 	// the second is the index of the normal in the normals list (aka our container)
-	glm::vec3 current_normal = normals[parse<int>(components[2]) - 1];
+	const glm::vec3 current_normal = normals[parse<int>(components[2]) - 1];
 	normals_array[current_vertex_index * 3 + 0] = current_normal.x;
 	normals_array[current_vertex_index * 3 + 1] = current_normal.y;
 	normals_array[current_vertex_index * 3 + 2] = current_normal.z;

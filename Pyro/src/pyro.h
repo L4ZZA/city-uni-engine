@@ -23,6 +23,15 @@
 #include "pyro/graphics/shader.h"
 #include "pyro/graphics/model.h"
 
+#include "pyro/graphics/models/raw_model.h"
+#include "pyro/graphics/textures/model_texture.h"
+#include "pyro/graphics/models/textured_model.h"
+#include "pyro/entities/camera.h"
+#include "pyro/entities/entity.h"
+#include "pyro/entities/light.h"
+#include "pyro/graphics/obj_loader.h"
+#include "pyro/utils/maths.h"
+
 // ------------- Utils -----------------
 #include "pyro/utils/timer.h"
 

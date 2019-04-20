@@ -109,9 +109,9 @@ class sandbox_app : public pyro::application
 public:
 	sandbox_app()
 	{
-		//m_static_shader.create();
-		//m_renderer.init(m_static_shader);
-		const auto layer = new MainLayer();
+		m_static_shader.create();
+		m_renderer.init(m_static_shader);
+		const auto layer = new main_layer(m_static_shader);
 		push_layer(layer);
 	}
 };
