@@ -3,6 +3,41 @@
 #include "glad/glad.h"
 #include "stb_image.h"
 
+// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
+
+enum class e_texture_filters
+{
+	// Returns the value of the texture element that is nearest (in Manhattan distance) to the specified texture coordinates.
+	nearest = GL_NEAREST,
+	// Returns the weighted average of the four texture elements that are closest to the specified texture coordinates.
+	linear = GL_LINEAR,
+
+	// -- min filter only --
+	//
+	nearest_nearest = GL_NEAREST_MIPMAP_NEAREST,
+	//
+	linear_nearest = GL_LINEAR_MIPMAP_NEAREST,
+	//
+	nearest_linear = GL_NEAREST_MIPMAP_LINEAR,
+	//
+	linear_linear = GL_LINEAR_MIPMAP_LINEAR,
+
+};
+
+enum class e_wrap
+{
+	//
+	clamp_to_edge = GL_CLAMP_TO_EDGE,
+	//
+	clamp_to_border = GL_CLAMP_TO_BORDER,
+	//
+	mirrored_repeat = GL_MIRRORED_REPEAT,
+	//
+	repeat = GL_REPEAT,
+	//
+	mirror_clamp_to_edge = GL_MIRROR_CLAMP_TO_EDGE,
+};
+
 pyro::texture::texture(const std::string &path, const std::string &type /*= ""*/)
 {
     create(path, type);
