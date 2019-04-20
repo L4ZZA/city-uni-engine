@@ -1,7 +1,7 @@
 -- workspace is the solution
-workspace "Pyro"
+workspace "pyro"
     architecture "x64"
-    startproject "Sandbox"
+    startproject "sandbox"
 
     configurations
     {
@@ -15,24 +15,26 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["GLFW"] = "Pyro/external/GLFW/include/"
-IncludeDir["Glad"] = "Pyro/external/Glad/include/"
-IncludeDir["ImGui"] = "Pyro/external/imgui/"
-IncludeDir["glm"] = "Pyro/external/glm/"
-IncludeDir["stb_image"] = "Pyro/external/stb_image/"
-IncludeDir["assimp"] = "Pyro/external/assimp/include/"
-IncludeDir["assimpcfg"] = "Pyro/external/assimp/config/"
+IncludeDir["GLFW"] = "pyro/external/GLFW/include/"
+IncludeDir["Glad"] = "pyro/external/Glad/include/"
+IncludeDir["ImGui"] = "pyro/external/imgui/"
+IncludeDir["glm"] = "pyro/external/glm/"
+IncludeDir["stb_image"] = "pyro/external/stb_image/"
+IncludeDir["assimp"] = "pyro/external/assimp/include/"
+IncludeDir["assimpcfg"] = "pyro/external/assimp/config/"
 
--- iclude GLFW premake file
-include "Pyro/external/GLFW/"
-include "Pyro/external/Glad/"
-include "Pyro/external/ImGui/"
-include "Pyro/external/assimp/"
+group "dependencies"
+    -- iclude other premake files
+    include "pyro/external/GLFW/"
+    include "pyro/external/Glad/"
+    include "pyro/external/ImGui/"
+    include "pyro/external/assimp/"
+group""
 
--- engine core project
-project "Pyro"
+-- === Core Project: pyro =======================================================
+project "pyro"
     -- location makes sure that everything below will be relative to the project directory
-    location "Pyro"
+    location "pyro"
     kind "StaticLib" -- Static library (.lib)
     language "C++"
     cppdialect "C++17"
@@ -42,7 +44,7 @@ project "Pyro"
     objdir ("inter/" .. outputdir .. "/%{prj.name}")
     
     pchheader "pyro_pch.h"
-    pchsource "Pyro/src/pyro_pch.cpp"
+    pchsource "pyro/src/pyro_pch.cpp"
 
     files
     {
@@ -109,9 +111,9 @@ project "Pyro"
         runtime "Release"
         optimize "on"
 
--- sandbox application
-project "Sandbox"
-    location "Sandbox"
+-- === Core Project: sanbox =======================================================
+project "sandbox"
+    location "sandbox"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -130,15 +132,15 @@ project "Sandbox"
 
     includedirs
     {
-        "Pyro/external/spdlog/include",
-        "Pyro/src",
+        "pyro/external/spdlog/include",
+        "pyro/src",
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
     }
 
     links
     {
-        "Pyro",
+        "pyro",
     }
 
     filter "system:windows"
