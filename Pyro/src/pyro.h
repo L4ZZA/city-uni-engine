@@ -23,5 +23,9 @@
 #include "pyro/graphics/shader.h"
 #include "pyro/graphics/model.h"
 
+// ------------- Utils -----------------
+#include "pyro/utils/timer.h"
+
+
 // --------- Entry Point ---------------
-#include "pyro/entry_point.h"
+//#include "pyro/entry_point.h"
