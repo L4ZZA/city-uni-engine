@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace  pyro
+namespace pyro
 {
     class entity;
     class static_shader;

@@ -6,21 +6,21 @@
 #include <regex>
 #include <fstream>
 
-namespace pyro::graphics
+namespace pyro
 {
 
-	Shader::Shader(const char* filename)
-		:programLoaded(false), shaderProgramId(0)
+	shader::shader(const char* filename)
+		: m_program_id(0)
 	{
 		std::string file;
 		std::regex re("(?:#shader\\s+(vertex|fragment|pixel))\\s+([^]+?)(?=#endshader)");
 
-		this->shaderSources = new std::unordered_map<unsigned int, std::string>();
+		m_shaderSources = new std::unordered_map<unsigned int, std::string>();
 
 		std::ifstream is(filename, std::ifstream::binary);
 		if (is) {
 			// Save filename
-			this->filename = filename;
+			filename = filename;
 
 			is.seekg(0, std::ios::end);
 			file.resize(is.tellg());
@@ -35,24 +35,24 @@ namespace pyro::graphics
 			while (next != ender) {
 				std::smatch match = *next;
 
-				uint32 shaderType = this->getShaderTypeFromString(match.str(1));
+				uint32 shaderType = type_from_string(match.str(1));
 				if (shaderType)
-					this->shaderSources->insert({ shaderType, match.str(2) });
+					m_shaderSources->insert({ shaderType, match.str(2) });
 
 				next++;
 			}
 		}
 	}
 
-	Shader::~Shader()
+	shader::~shader()
 	{
-		if (this->programLoaded)
-			glDeleteProgram(this->shaderProgramId);
+		if (m_program_loaded)
+			glDeleteProgram(m_program_id);
 
-		delete this->shaderSources;
+		delete m_shaderSources;
 	}
 
-	void Shader::CompileAndLoad()
+	void shader::compile_and_load()
 	{
 		GLint success;
 		char infoLog[1024];
@@ -60,88 +60,89 @@ namespace pyro::graphics
 		std::vector<GLuint> shaderIds;
 
 		// Set to default status, and false on error
-		programLoaded = true;
+		m_program_loaded = true;
 
-		this->shaderProgramId = glCreateProgram();
+		m_program_id = glCreateProgram();
 
-		for (auto& kv : *(this->shaderSources)) {
+		for (auto& kv : *(m_shaderSources)) {
 			GLint shaderId = glCreateShader(kv.first);
 			const GLchar* source = kv.second.c_str();
 
-			glShaderSource(shaderId, 1, &source, NULL);
+			glShaderSource(shaderId, 1, &source, nullptr);
 			glCompileShader(shaderId);
 
 			// Error check
 			glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
 			if (!success)
 			{
-				glGetShaderInfoLog(shaderId, 1024, NULL, infoLog);
-				PYRO_CORE_WARN("Unable to compile shader {0}: {1}", this->filename, infoLog);
+				glGetShaderInfoLog(shaderId, 1024, nullptr, infoLog);
+				PYRO_CORE_WARN("Unable to compile shader {0}: {1}", m_filename, infoLog);
 				glDeleteShader(shaderId);
 			}
 			else {
-				glAttachShader(this->shaderProgramId, shaderId);
+				glAttachShader(m_program_id, shaderId);
 				shaderIds.push_back(shaderId);
 			}
 		}
 
-		glLinkProgram(this->shaderProgramId);
+		glLinkProgram(m_program_id);
 
 		// Check if successful
-		glGetProgramiv(this->shaderProgramId, GL_LINK_STATUS, &success);
+		glGetProgramiv(m_program_id, GL_LINK_STATUS, &success);
 		if (!success) {
-			glGetProgramInfoLog(this->shaderProgramId, 1024, NULL, infoLog);
-			PYRO_CORE_WARN("Unable to link shader program {0}: {1}", this->filename, infoLog);
-			glDeleteProgram(this->shaderProgramId);
+			glGetProgramInfoLog(m_program_id, 1024, nullptr, infoLog);
+			PYRO_CORE_WARN("Unable to link shader program {0}: {1}", m_filename, infoLog);
+			glDeleteProgram(m_program_id);
 
-			programLoaded = false;
-			this->shaderProgramId = 0;
+			m_program_loaded = false;
+			m_program_id = 0;
 		}
 
 		// Finally, clean up shader programs
 		for (auto shaderId : shaderIds) {
-			glDetachShader(this->shaderProgramId, shaderId);
+			glDetachShader(m_program_id, shaderId);
 			glDeleteShader(shaderId);
 		}
 	}
 
-	void Shader::Bind()
+	void shader::bind()
 	{
-		Command::BindShader::Dispatch(this->shaderProgramId);
+		bind_shader::dispatch(m_program_id);
 	}
 
-	void Shader::SetUniform(const std::string& name, float val)
+	void shader::set_uniform(const std::string& name, float val)
 	{
-		Command::SetUniform1f::Dispatch(this->shaderProgramId, name, val);
+		SetUniform1f::dispatch(m_program_id, name, val);
 	}
 
-	void Shader::SetUniform(const std::string& name, const glm::vec3& vec)
+	void shader::set_uniform(const std::string& name, const glm::vec3& vec)
 	{
-		Command::SetUniform3f::Dispatch(this->shaderProgramId, name, vec);
+		SetUniform3f::dispatch(m_program_id, name, vec);
 	}
 
-	void Shader::SetUniform(const std::string& name, const glm::vec4& vec)
+	void shader::set_uniform(const std::string& name, const glm::vec4& vec)
 	{
-		Command::SetUniform4f(this->shaderProgramId, name, vec);
+		SetUniform4f(m_program_id, name, vec);
 	}
 
-	void Shader::SetUniform(const std::string& name, int32 val)
+	void shader::set_uniform(const std::string& name, int32 val)
 	{
-		Command::SetUniform1i::Dispatch(this->shaderProgramId, name, val);
+		SetUniform1i::dispatch(m_program_id, name, val);
 	}
 
-	void Shader::SetUniform(const std::string& name, const glm::mat4& mat)
+	void shader::set_uniform(const std::string& name, const glm::mat4& mat)
 	{
-		Command::SetUniformMatrix4f::Dispatch(this->shaderProgramId, name, mat);
+		SetUniformMatrix4f::dispatch(m_program_id, name, mat);
 	}
 
-	GLenum Shader::getShaderTypeFromString(const std::string& shaderType)
+	uint32 shader::type_from_string(const std::string& shaderType)
 	{
 		if (shaderType == "vertex")
 			return GL_VERTEX_SHADER;
 		if (shaderType == "fragment" || shaderType == "pixel")
 			return GL_FRAGMENT_SHADER;
-		else return NULL;
+
+		return 0;
 	}
 
 }

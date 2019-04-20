@@ -6,28 +6,28 @@
 
 #include "glad/glad.h"
 
-namespace pyro::graphics 
+namespace pyro 
 {
 
 	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32>& indices, const std::vector<texture>& textures)
 		: vao(0)
 	{
-		this->vertices = vertices;
-		this->indices = indices;
-		this->textures = textures;
+		m_vertices = vertices;
+		m_indices = indices;
+		m_textures = textures;
 
-		glGenVertexArrays(1, &this->vao);
-		glGenBuffers(1, &this->vbo);
-		glGenBuffers(1, &this->ebo);
+		glGenVertexArrays(1, &vao);
+		glGenBuffers(1, &vbo);
+		glGenBuffers(1, &ebo);
 
 
-		glBindVertexArray(this->vao);
+		glBindVertexArray(vao);
 
-		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-		glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Mesh::Vertex), &this->vertices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Mesh::Vertex), &vertices[0], GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(uint32), &this->indices[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), &indices[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
@@ -42,25 +42,25 @@ namespace pyro::graphics
 	Mesh::~Mesh()
 	{ }
 
-	void Mesh::Render(pyro::graphics::Shader& shader)
+	void Mesh::Render(pyro::shader& shader)
 	{
 		uint32 diffuseN = 1, specularN = 1;
-		for (uint32 i = 0; i < this->textures.size(); i++) {
+		for (uint32 i = 0; i < m_textures.size(); i++) {
 
-			std::string num, name = this->textures[i].type();
+			std::string num, name = m_textures[i].type();
 
 			if (name == "diffuse")
 				num = std::to_string(diffuseN++);
 			else if (name == "specular")
 				num = std::to_string(specularN++);
 
-			this->textures[i].bind(i); // Bind the texture to slot i
+			m_textures[i].bind(i); // Bind the texture to slot i
 			// TODO: Should not need cast
-			shader.SetUniform("material." + name + num, (int32)i); // Pass slot i to the shader material struct
+			shader.set_uniform("material." + name + num, (int32)i); // Pass slot i to the shader material struct
 		}
 
 		// Add actual render command
-		Command::RenderMesh::Dispatch(this->vao, this->indices.size());
+		RenderMesh::dispatch(vao, m_indices.size());
 	}
 
 }

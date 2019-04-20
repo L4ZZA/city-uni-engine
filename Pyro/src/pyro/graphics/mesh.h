@@ -3,7 +3,7 @@
 #include "texture.h"
 #include "shader.h"
 
-namespace pyro::graphics 
+namespace pyro 
 {
 
   class Mesh
@@ -20,12 +20,12 @@ namespace pyro::graphics
     Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32>& indices, const std::vector<texture>& textures);
     ~Mesh();
 
-    void Render(pyro::graphics::Shader& shader);
+    void Render(pyro::shader& shader);
 
   private:
-    std::vector<Vertex>   vertices;
-    std::vector<uint32>   indices;
-    std::vector<texture>  textures;
+    std::vector<Vertex>   m_vertices;
+    std::vector<uint32>   m_indices;
+    std::vector<texture>  m_textures;
 
     uint32 vao;
     uint32 vbo;

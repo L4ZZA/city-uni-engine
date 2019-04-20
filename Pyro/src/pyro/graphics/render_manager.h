@@ -4,34 +4,34 @@
 
 #include "render_command_queue.h"
 
-namespace pyro::graphics 
+namespace pyro
 {
 
-	class RenderManager : public pyro::Manager
+	class render_manager : public pyro::Manager
 	{
 	public:
 		typedef void(*RenderCommandFn)(void*);
 
-		RenderManager();
-		virtual ~RenderManager();
+		render_manager();
+		virtual ~render_manager();
 
-		static std::shared_ptr<RenderManager> Create();
+		static std::shared_ptr<render_manager> create();
 
-		void Init() override;
-		void Shutdown() override;
+		void init() override;
+		void shutdown() override;
 
-		void* SubmitToQueue(uint32 size);
-		void Render();
+		void* send_command(uint32 size);
+		void render() const;
 
-		void SetClearColor(float r, float g, float b);
-		void ClearBuffer();
+		void set_clear_color(float r, float g, float b) const;
+		void clear_buffer() const;
 
-		inline static std::shared_ptr<RenderManager> Get() { return RenderManager::instance; }
+		static std::shared_ptr<render_manager> get() { return m_instance; }
 
 	private:
-		static std::shared_ptr <RenderManager> instance;
+		static std::shared_ptr <render_manager> m_instance;
 
-		RenderCommandQueue commandQueue;
+		RenderCommandQueue m_command_queue;
 	};
 
 }

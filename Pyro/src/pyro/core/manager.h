@@ -6,8 +6,8 @@ namespace pyro
 	class Manager
 	{
 	public:
-		virtual void Init() = 0;
-		virtual void Shutdown() = 0;
+		virtual void init() = 0;
+		virtual void shutdown() = 0;
 
 		virtual ~Manager() {}
 	};

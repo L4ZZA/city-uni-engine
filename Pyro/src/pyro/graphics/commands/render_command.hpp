@@ -1,13 +1,14 @@
 #pragma once
 
-namespace pyro::graphics::Command {
+namespace pyro
+{
 
-  class RenderCommand
+  class render_command
   {
   public:
-    virtual ~RenderCommand() {}
+    virtual ~render_command() {}
 
-    virtual void Execute() = 0;
+    virtual void execute() = 0;
   };
 
 }

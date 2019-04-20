@@ -8,54 +8,58 @@
 
 #include "glad/glad.h"
 
-#include <string>
-
-namespace pyro::graphics::Command
+namespace pyro
 {
-  // --------------------------------------------------------------------------
-  // -- SetClearColor                                                        --
-  // --------------------------------------------------------------------------
-  class SetClearColor : Command::RenderCommand {
-  public:
-    SetClearColor(float r, float g, float b)
-      :r(r), g(g), b(b)
-    {}
+	// --------------------------------------------------------------------------
+	// -- SetClearColor                                                        --
+	// --------------------------------------------------------------------------
+	class set_clear_color : render_command
+	{
+	public:
+		set_clear_color(float r, float g, float b)
+			:m_r(r), m_g(g), m_b(b)
+		{}
 
-    void Execute() override {
-      glClearColor(r, g, b, 1.0f);
-      PYRO_RQ_TRACE("[RenderQueue] -- Command::SetClearColor: <{0}, {1}, {2}>", r, g, b);
-    }
+		void execute() override 
+		{
+			glClearColor(m_r, m_g, m_b, 1.0f);
+			PYRO_RQ_TRACE("[RenderQueue] -- SetClearColor: <{0}, {1}, {2}>", r, g, b);
+		}
 
-  private:
-    float r;
-    float g;
-    float b;
+	private:
+		float m_r;
+		float m_g;
+		float m_b;
 
-  public: //STATIC CREATOR
-    static void Dispatch(float r, float g, float b) {
-      auto mem = ::pyro::graphics::RenderManager::Get()->SubmitToQueue(sizeof(SetClearColor));
-      new (mem) SetClearColor(r, g, b);
-    }
-  };
+	public: //STATIC CREATOR
+		static void dispatch(float r, float g, float b) 
+		{
+			auto mem = render_manager::get()->send_command(sizeof(set_clear_color));
+			new (mem) set_clear_color(r, g, b);
+		}
+	};
 
-  // --------------------------------------------------------------------------
-  // -- ClearBuffer                                                          --
-  // --------------------------------------------------------------------------
-  class ClearBuffer : Command::RenderCommand {
-  public:
-    ClearBuffer()
-    {}
+	// --------------------------------------------------------------------------
+	// -- ClearBuffer                                                          --
+	// --------------------------------------------------------------------------
+	class clear_buffer : render_command
+	{
+	public:
+		clear_buffer()
+		{}
 
-    void Execute() override {
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      PYRO_RQ_TRACE("[RenderQueue] -- Command::ClearBuffer");
-    }
+		void execute() override 
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			PYRO_RQ_TRACE("[RenderQueue] -- ClearBuffer");
+		}
 
-  public: //STATIC CREATOR
-    static void Dispatch() {
-      auto mem = ::pyro::graphics::RenderManager::Get()->SubmitToQueue(sizeof(ClearBuffer));
-      new (mem) ClearBuffer();
-    }
-  };
+	public: //STATIC CREATOR
+		static void dispatch() 
+		{
+			auto mem = render_manager::get()->send_command(sizeof(clear_buffer));
+			new (mem) clear_buffer();
+		}
+	};
 
 }

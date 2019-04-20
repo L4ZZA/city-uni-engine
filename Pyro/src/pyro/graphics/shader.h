@@ -1,43 +1,43 @@
 #pragma once
 
 
-namespace pyro::graphics 
+namespace pyro 
 {
 
-	class Shader
+	class shader
 	{
 	public:
-		Shader(const char* filename);
-		~Shader();
+		shader(const char* filename);
+		~shader();
 
-		void CompileAndLoad();
-		void Bind();
+		void compile_and_load();
+		void bind();
 
-		void SetUniform(const std::string& name, float val);
-		void SetUniform(const std::string& name, const glm::vec3& vec);
-		void SetUniform(const std::string& name, const glm::vec4& vec);
-		void SetUniform(const std::string& name, int32 val);
-		void SetUniform(const std::string& name, const glm::mat4& mat);
+		void set_uniform(const std::string& name, float val);
+		void set_uniform(const std::string& name, const glm::vec3& vec);
+		void set_uniform(const std::string& name, const glm::vec4& vec);
+		void set_uniform(const std::string& name, int32 val);
+		void set_uniform(const std::string& name, const glm::mat4& mat);
 
-		inline bool IsLoaded() { return this->programLoaded; }
+		bool is_loaded() const { return m_program_loaded; }
 
-		inline std::string ToString() const { return this->filename; }
+		std::string to_string() const { return m_filename; }
 
 	private: // methods
-		uint32 getShaderTypeFromString(const std::string& shaderType);
+		uint32 type_from_string(const std::string& shaderType);
 
 	private: // fields
-		std::unordered_map<uint32, std::string>* shaderSources;
-		std::string filename;
+		std::unordered_map<uint32, std::string>* m_shaderSources;
+		std::string m_filename;
 
-		uint32 shaderProgramId;
+		uint32 m_program_id;
 
-		bool programLoaded;
+		bool m_program_loaded = false;
 	};
 
-	inline std::ostream& operator<<(std::ostream& os, const Shader& s)
+	inline std::ostream& operator<<(std::ostream& os, const shader& s)
 	{
-		return os << s.ToString();
+		return os << s.to_string();
 	}
 
 }

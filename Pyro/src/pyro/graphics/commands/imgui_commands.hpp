@@ -1,46 +1,42 @@
 #pragma once
 
-#include "renderCommand.hpp"
-#include "pyro/graphics/renderManager.h"
-
-#include "pyro/defs.h"
-#include "pyro/log.h"
+#include "pyro/logger.h"
+#include "pyro/graphics/render_manager.h"
+#include "render_command.hpp"
 #include "pyro/application.h"
 
-#include <string>
-
-namespace pyro::graphics::Command
+namespace pyro
 {
-  // --------------------------------------------------------------------------
-  // -- RenderImGUI                                                          --
-  // --------------------------------------------------------------------------
-  class RenderImGUI : Graphics::Command::RenderCommand
-  {
-  public:
-    RenderImGUI(Application* self)
-      :self(self)
-    {}
 
-    void Execute() override {
-      // Render ImGui interface
-      self->imguiLayer->Begin();
+	class RenderImGUI : render_command
+	{
+	public:
+		RenderImGUI(application* self)
+			:self(self)
+		{}
 
-      for (Layer* layer : self->layerStack)
-        layer->OnImGuiRender();
+		void execute() override 
+		{
+			// Render ImGui interface
+			self->m_imguiLayer->begin();
 
-      self->imguiLayer->End();
+			for (auto* layer : self->m_layers_stack)
+				layer->on_imgui_render();
 
-      PYRO_RQ_TRACE("[RenderQueue] -- Command::RenderImGUI");
-    }
+			self->m_imguiLayer->end();
 
-  private:
-    Application* self;
+			PYRO_RQ_TRACE("[RenderQueue] -- RenderImGUI");
+		}
 
-  public: //STATIC CREATOR
-    static void Dispatch(Application* self) {
-      auto mem = ::pyro::graphics::RenderManager::Get()->SubmitToQueue(sizeof(RenderImGUI));
-      new (mem) RenderImGUI(self);
-    }
-  };
+	private:
+		application* self;
+
+	public: //STATIC CREATOR
+		static void dispatch(application* self) 
+		{
+			auto mem = render_manager::get()->send_command(sizeof(RenderImGUI));
+			new (mem) RenderImGUI(self);
+		}
+	};
 
 }

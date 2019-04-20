@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pyro::graphics
+namespace pyro
 {
 
 	class RenderCommandQueue

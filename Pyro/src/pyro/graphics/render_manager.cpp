@@ -5,28 +5,28 @@
 
 #include "commands/general_commands.hpp"
 
-namespace pyro::graphics 
+namespace pyro 
 {
 
-	std::shared_ptr<RenderManager> RenderManager::instance;
+	std::shared_ptr<render_manager> render_manager::m_instance;
 
-	RenderManager::RenderManager()
-		: commandQueue(1 * 1024 * 1024 /* 1 MB */)
+	render_manager::render_manager()
+		: m_command_queue(1 * 1024 * 1024 /* 1 MB */)
 	{ }
 
-	RenderManager::~RenderManager()
+	render_manager::~render_manager()
 	{
 		std::cout << "RenderManager Destructor" << std::endl;
 	}
 
-	std::shared_ptr<RenderManager> RenderManager::Create()
+	std::shared_ptr<render_manager> render_manager::create()
 	{
-		PYRO_CORE_ASSERT(!instance, "Renderer already created!");
-		instance = std::make_shared<RenderManager>();
-		return instance;
+		PYRO_CORE_ASSERT(!m_instance, "Renderer already created!");
+		m_instance = std::make_shared<render_manager>();
+		return m_instance;
 	}
 
-	void RenderManager::Init()
+	void render_manager::init()
 	{
 		// TODO: Responsible for picking correct RenderApi
 		glEnable(GL_MULTISAMPLE);
@@ -40,29 +40,29 @@ namespace pyro::graphics
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	void RenderManager::Shutdown()
+	void render_manager::shutdown()
 	{
 		std::cout << "RenderManager::Shutdown" << std::endl;
 	}
 
-	void* RenderManager::SubmitToQueue(uint32 size)
+	void* render_manager::send_command(uint32 size)
 	{
-		return this->commandQueue.Allocate(size);
+		return m_command_queue.Allocate(size);
 	}
 
-	void RenderManager::Render()
+	void render_manager::render() const
 	{
-		RenderManager::instance->commandQueue.Execute();
+		m_instance->m_command_queue.Execute();
 	}
 
-	void RenderManager::SetClearColor(float r, float g, float b)
+	void render_manager::set_clear_color(float r, float g, float b) const
 	{
-		Command::SetClearColor::Dispatch(r, g, b);
+		set_clear_color::dispatch(r, g, b);
 	}
 
-	void RenderManager::ClearBuffer()
+	void render_manager::clear_buffer() const
 	{
-		Command::ClearBuffer::Dispatch();
+		clear_buffer::dispatch();
 	}
 
 }

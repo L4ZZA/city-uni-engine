@@ -3,7 +3,7 @@
 
 #include "commands/render_command.hpp"
 
-namespace pyro::graphics 
+namespace pyro 
 {
 
 	RenderCommandQueue::RenderCommandQueue(uint32 size)
@@ -31,7 +31,7 @@ namespace pyro::graphics
 		//m_cmd_queuePtr += sizeof(RenderCommandFn);
 
 		// Save data block size
-		*reinterpret_cast<uint32*>(m_queue_ptr) = size;
+		(*reinterpret_cast<uint32*>(m_queue_ptr)) = size;
 		m_queue_ptr += sizeof(uint32);
 
 		// And skip ahead to end of data block for next function
@@ -54,14 +54,14 @@ namespace pyro::graphics
 			buffer += sizeof(size);
 
 			// Retrieve command functor
-			auto* cmd = reinterpret_cast<Command::RenderCommand*>(buffer);// function = *(RenderCommandFn*)buffer;
+			auto* cmd = reinterpret_cast<render_command*>(buffer);// function = *(RenderCommandFn*)buffer;
 
 			// Invoke queued command
-			cmd->Execute();
+			cmd->execute();
 
 			// Cleanup command
 			//cmd->Destroy();
-			cmd->~RenderCommand();
+			cmd->~render_command();
 
 			// Move to next command
 			buffer += size;

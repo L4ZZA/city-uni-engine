@@ -9,25 +9,24 @@ struct aiMesh;
 struct aiMaterial;
 enum aiTextureType;
 
-namespace pyro::graphics 
+namespace pyro 
 {
-
-  class Model
+  class model
   {
   public:
-    Model(const std::string& path);
-    ~Model();
+    model(const std::string& path);
+    ~model();
 
-    void Render(Shader& shader);
+    void render(shader& shader);
 
   private: // methods
-    void processNode(aiNode* node, const aiScene* scene);
-    Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-    std::vector<texture> loadTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+    void process_node(aiNode* node, const aiScene* scene);
+    Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
+    std::vector<texture> load_textures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
   private: // fields
-    std::vector<Mesh> meshes;
-    std::string directory;
+    std::vector<Mesh> m_meshes;
+    std::string m_directory;
   };
 
 }

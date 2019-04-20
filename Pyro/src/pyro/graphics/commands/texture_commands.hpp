@@ -1,38 +1,39 @@
 #pragma once
 
-#include "renderCommand.hpp"
-#include "pyro/graphics/renderManager.h"
+#include "render_command.hpp"
+#include "pyro/graphics/render_manager.h"
 
 #include "pyro/defs.h"
-#include "pyro/log.h"
+#include "pyro/logger.h"
 
 #include "glad/glad.h"
 
-#include <string>
-
-namespace pyro::graphics::Command
+namespace pyro
 {
   // --------------------------------------------------------------------------
   // -- UnloadTexture                                                        --
   // --------------------------------------------------------------------------
-  class UnloadTexture : Command::RenderCommand {
+  class UnloadTexture : render_command
+{
   public:
     UnloadTexture(uint32 textureId)
       :textureId(textureId)
     {}
 
-    void Execute() override {
+    void execute() override 
+  	{
       glDeleteTextures(1, &textureId);
 
-      PYRO_RQ_TRACE("[RenderQueue] -- Command::UnloadTexture (texture {0})", textureId);
+      PYRO_RQ_TRACE("[RenderQueue] -- UnloadTexture (texture {0})", textureId);
     }
 
   private:
     uint32 textureId;
 
   public: //STATIC CREATOR
-    static void Dispatch(uint32 textureId) {
-      auto mem = ::pyro::graphics::RenderManager::Get()->SubmitToQueue(sizeof(UnloadTexture));
+    static void dispatch(uint32 textureId) 
+  	{
+      auto mem = render_manager::get()->send_command(sizeof(UnloadTexture));
       new (mem) UnloadTexture(textureId);
     }
   };
@@ -40,17 +41,19 @@ namespace pyro::graphics::Command
   // --------------------------------------------------------------------------
   // -- BindTexture                                                        --
   // --------------------------------------------------------------------------
-  class BindTexture : Command::RenderCommand {
+  class BindTexture : render_command
+{
   public:
     BindTexture(uint32 textureId, uint32 slot)
       :textureId(textureId), slot(slot)
     {}
 
-    void Execute() override {
+    void execute() override 
+  	{
       glActiveTexture(GL_TEXTURE0 + slot);
       glBindTexture(GL_TEXTURE_2D, textureId);
 
-      PYRO_RQ_TRACE("[RenderQueue] -- Command::BindTexture (texture {0}): slot {1}", textureId, slot);
+      PYRO_RQ_TRACE("[RenderQueue] -- BindTexture (texture {0}): slot {1}", textureId, slot);
     }
 
   private:
@@ -58,8 +61,9 @@ namespace pyro::graphics::Command
     uint32 slot;
 
   public: //STATIC CREATOR
-    static void Dispatch(uint32 textureId, uint32 slot) {
-      auto mem = ::pyro::graphics::RenderManager::Get()->SubmitToQueue(sizeof(BindTexture));
+    static void dispatch(uint32 textureId, uint32 slot) 
+  	{
+      auto mem = render_manager::get()->send_command(sizeof(BindTexture));
       new (mem) BindTexture(textureId, slot);
     }
   };

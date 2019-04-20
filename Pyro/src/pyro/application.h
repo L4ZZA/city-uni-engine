@@ -17,6 +17,7 @@ namespace pyro
 	class PYRO_API application
 	{
 	public:
+		friend class RenderImGUI;
 		application();
 		virtual ~application();
 
@@ -46,11 +47,12 @@ namespace pyro
 		timer* 							m_timer{ nullptr };
 		bool                            m_running{ true };
 		layers_stack                    m_layers_stack;
+		imgui_layer*					m_imguiLayer;
 
 	protected:
 		renderer                        m_renderer;
 		static_shader					m_static_shader;
-		std::shared_ptr<graphics::RenderManager> renderManager;
+		std::shared_ptr<render_manager>	m_renderManager;
 
 	private:
 		static application*             s_instance;
