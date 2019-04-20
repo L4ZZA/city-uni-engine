@@ -7,6 +7,8 @@ namespace pyro
     class win_input : public input
     {
     public:
+		static void init();
+		static void shutdown();
         bool key_pressed_impl(int key_code) const override;
         bool mouse_button_pressed_impl(int button) const override;
 

@@ -3,10 +3,16 @@
 #include "pyro/application.h"
 #include "GLFW/glfw3.h"
 
-namespace pyro
+pyro::input* pyro::input::s_instance;
+
+void pyro::win_input::init()
 {
-    // some how we'll have to delete this?
-    input* input::s_instance = new win_input();
+	s_instance = new win_input();
+}
+
+void pyro::win_input::shutdown()
+{
+	SAFE_RELEASE(s_instance);
 }
 
 bool pyro::win_input::key_pressed_impl(int key_code) const
