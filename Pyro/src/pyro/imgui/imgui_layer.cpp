@@ -9,11 +9,10 @@
 #include "pyro/application.h"
 
 // temporary
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-pyro::imgui_layer::imgui_layer()
-    : layer("imgui_layer")
+pyro::imgui_layer::imgui_layer(const std::string &name /*= "ImguiLayer"*/)
+    : layer(name)
 {
 }
 

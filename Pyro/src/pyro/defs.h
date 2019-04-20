@@ -70,3 +70,8 @@ typedef int64_t   int64;
 
 #define S(x) #x
 #define SS(x) S(x)
+
+#define MAJOR_VERSION 0
+#define MINOR_VERSION 1
+#define REVISION 0
+#define VERSION_STRING SS(MAJOR_VERSION.MINOR_VERSION.REVISION)

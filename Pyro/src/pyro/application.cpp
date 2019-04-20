@@ -13,6 +13,10 @@ pyro::application::application()
 
 	m_window = std::unique_ptr<window>(window::create());
 	m_window->event_callback(BIND_EVENT_FN(application::on_event));
+
+	// Create managers
+	this->renderManager = graphics::RenderManager::Create();
+	this->renderManager->Init();
 }
 
 pyro::application::~application()

@@ -1,16 +1,17 @@
-#include "pyro_pch.h"
+﻿#include "pyro_pch.h"
 #include "texture.h"
 #include "glad/glad.h"
 #include "stb_image.h"
 
-pyro::texture::texture(const std::string &path)
+pyro::texture::texture(const std::string &path, const std::string &type /*= ""*/)
 {
-    create(path);
+    create(path, type);
 }
 
-void pyro::texture::create(const std::string &path)
+void pyro::texture::create(const std::string &path, const std::string &type /*= ""*/)
 {
     m_path = path;
+    m_type = type;
 
     stbi_set_flip_vertically_on_load(true);
     m_buffer = stbi_load(path.c_str(),
