@@ -6,7 +6,8 @@ void pyro::timer::Start()
 {
     m_started = true;
     // current time in seconds
-    m_last_frame = glfwGetTime();
+	m_start_time = glfwGetTime();
+    m_last_frame = m_start_time;
 }
 
 double pyro::timer::Elapsed()
@@ -15,10 +16,17 @@ double pyro::timer::Elapsed()
         return 0.0;
 
     // current time in seconds
-    double currentFrame = glfwGetTime();
+    const double currentFrame = glfwGetTime();
 
     m_delta_time = currentFrame - m_last_frame;
     m_last_frame = currentFrame;
 
     return m_delta_time;
+}
+
+double pyro::timer::Total() const
+{
+	// current time in seconds
+	const double current = glfwGetTime();
+	return current - m_start_time;
 }
