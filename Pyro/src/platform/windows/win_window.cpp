@@ -60,6 +60,7 @@ void pyro::win_window::init(window_props const& props)
     m_data.title = props.m_title;
     m_data.width = props.m_width;
     m_data.height = props.m_height;
+    m_data.vsync = props.m_vsync;
 
     PYRO_CORE_INFO("Creating window {0} [{1},{2}]", props.m_title, props.m_width, props.m_height);
 
