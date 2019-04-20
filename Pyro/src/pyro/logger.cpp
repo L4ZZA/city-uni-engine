@@ -5,7 +5,9 @@
 std::shared_ptr<spdlog::logger> pyro::logger::s_core_logger;
 std::shared_ptr<spdlog::logger> pyro::logger::s_client_logger;
 
-void pyro::logger::init()
+void pyro::logger::init(
+	spdlog::level::level_enum coreLevel /*= spdlog::level::trace*/, 
+	spdlog::level::level_enum clientLevel /*= spdlog::level::trace*/)
 {
     spdlog::set_pattern("%^[%T] %n: %v%$");
     s_core_logger = spdlog::stdout_color_mt("PYRO");
