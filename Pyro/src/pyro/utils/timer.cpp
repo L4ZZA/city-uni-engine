@@ -2,15 +2,20 @@
 #include "timer.h"
 #include <GLFW/glfw3.h>
 
-void pyro::timer::Start()
+void pyro::timer::start()
 {
     m_started = true;
-    // current time in seconds
-	m_start_time = glfwGetTime();
-    m_last_frame = m_start_time;
+	reset();
 }
 
-double pyro::timer::Elapsed()
+void pyro::timer::reset()
+{
+	// current time in seconds
+	m_start_time = glfwGetTime();
+	m_last_frame = m_start_time;
+}
+
+double pyro::timer::elapsed()
 {
     if (!m_started)
         return 0.0;
@@ -24,7 +29,14 @@ double pyro::timer::Elapsed()
     return m_delta_time;
 }
 
-double pyro::timer::Total() const
+float pyro::timer::elapsed_millis()
+{
+	// current time in seconds
+	const double current = glfwGetTime();
+	return current - m_start_time;
+}
+
+double pyro::timer::total() const
 {
 	// current time in seconds
 	const double current = glfwGetTime();

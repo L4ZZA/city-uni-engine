@@ -6,13 +6,18 @@ namespace pyro
 	{
 	public:
         /// \brief Starts the timer
-        void Start();
-        /// \brief returns the seconds passed since 
+        void start();
+        /// \brief Resets the timer.
+        void reset();
+        /// \brief Returns the seconds passed since 
         /// the last Elapsed() call or since the Start().
-        double Elapsed();
-        /// \brief returns the seconds passed since 
+        double elapsed();
+		/// \brief Returns the milliseconds passed since 
+		/// the last Elapsed() call or since the Start().
+		virtual float elapsed_millis();
+        /// \brief Returns the seconds passed since 
         /// the first Start() call.
-        double Total() const;
+        double total() const;
 
     private:
         double m_start_time{ 0.0 };
