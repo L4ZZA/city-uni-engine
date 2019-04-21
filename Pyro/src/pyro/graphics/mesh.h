@@ -27,9 +27,9 @@ namespace pyro
     std::vector<uint32>   m_indices;
     std::vector<texture>  m_textures;
 
-    uint32 vao;
-    uint32 vbo;
-    uint32 ebo;
+    uint32 m_vao{0};
+    uint32 m_vbo{0};
+    uint32 m_ebo{0};
   };
 
 }

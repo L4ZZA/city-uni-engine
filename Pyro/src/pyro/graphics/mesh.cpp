@@ -1,32 +1,31 @@
 #include "pyro_pch.h"
 #include "mesh.h"
 
-//#include "renderManager.h"
-#include "commands/mesh_commands.hpp"
-
 #include "glad/glad.h"
 
 namespace pyro 
 {
 
-	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32>& indices, const std::vector<texture>& textures)
-		: vao(0)
+	Mesh::Mesh(
+		const std::vector<Vertex>& vertices, 
+		const std::vector<uint32>& indices, 
+		const std::vector<texture>& textures)
 	{
 		m_vertices = vertices;
 		m_indices = indices;
 		m_textures = textures;
 
-		glGenVertexArrays(1, &vao);
-		glGenBuffers(1, &vbo);
-		glGenBuffers(1, &ebo);
+		glGenVertexArrays(1, &m_vao);
+		glGenBuffers(1, &m_vbo);
+		glGenBuffers(1, &m_ebo);
 
 
-		glBindVertexArray(vao);
+		glBindVertexArray(m_vao);
 
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Mesh::Vertex), &vertices[0], GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), &indices[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
@@ -59,8 +58,13 @@ namespace pyro
 			shader.set_uniform("material." + name + num, (int32)i); // Pass slot i to the shader material struct
 		}
 
-		// Add actual render command
-		RenderMesh::dispatch(vao, m_indices.size());
+		// draw mesh
+		glBindVertexArray(m_vao);
+		glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, nullptr);
+		glBindVertexArray(0);
+
+		// always good practice to set everything back to defaults once configured.
+		glActiveTexture(GL_TEXTURE0);
 	}
 
 }
