@@ -1,6 +1,4 @@
 ﻿#pragma once
-
-#include "pyro/core.h"
 #include "layer.h"
 
 namespace pyro
@@ -14,14 +12,14 @@ namespace pyro
         ~layers_stack();
 
         /// \brief Adds the layer to the first half of the layers_stack.
-        void push_layer(layer *p_layer);
+        void push_layer(layer *layer);
         /// \brief Adds the overlay to the second half of the layers_stack.
         /// Every new overlay will be added to the very end of the 
-        void push_overlay(layer *p_overlay);
+        void push_overlay(layer *overlay);
         /// \brief Removes the layer from the layers_stack. Layer won't be deleted.
-        void pop_layer(layer *p_layer);
+        void pop_layer(layer *layer);
         /// \brief Removes the overlay from the layers_stack. Overlay won't be deleted.
-        void pop_overlay(layer *p_overlay);
+        void pop_overlay(layer *overlay);
 
         // To iterate through a range-based for-loop [i.e. for( auto elem : elements)]
         /// \brief Implicit implementation of .begin()

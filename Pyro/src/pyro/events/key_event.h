@@ -13,8 +13,8 @@ namespace pyro
         EVENT_CLASS_CATEGORY(event_category_keyboard | event_category_input)
 
     protected:
-        key_event(int p_keycode)
-            : m_key_code(p_keycode)
+        key_event(int keycode)
+            : m_key_code(keycode)
         {
         }
 
@@ -26,8 +26,8 @@ namespace pyro
     class PYRO_API key_pressed_event : public key_event
     {
     public:
-        key_pressed_event(int p_keycode, int repeatCount)
-            : key_event(p_keycode), m_repeats_count(repeatCount)
+        key_pressed_event(int keycode, int repeatCount)
+            : key_event(keycode), m_repeats_count(repeatCount)
         {
         }
         
@@ -51,8 +51,8 @@ namespace pyro
     class PYRO_API key_released_event : public key_event
     {
     public:
-        key_released_event(int p_keycode)
-            : key_event(p_keycode)
+        key_released_event(int keycode)
+            : key_event(keycode)
         {
         }
 
@@ -73,8 +73,8 @@ namespace pyro
     class PYRO_API key_typed_event : public key_event
     {
     public:
-        key_typed_event(int p_keycode)
-            : key_event(p_keycode)
+        key_typed_event(int keycode)
+            : key_event(keycode)
         {
         }
 

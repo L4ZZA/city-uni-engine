@@ -1,51 +1,66 @@
 ﻿#pragma once
 
-#include "core.h"
-
 #include "window.h"
 #include "layers_stack.h"
 #include "events/event.h"
 #include "events/application_event.h"
 #include "imgui/imgui_layer.h"
+#include "graphics/renderer.h"
+#include "graphics/shaders/static_shader.h"
+#include "graphics/render_manager.h"
 
 
 namespace pyro
 {
-    class PYRO_API application
-    {
-    public:
-        application();
-        virtual ~application();
+	class timer;
 
-        /// \brief
-        void run();
+	class PYRO_API application
+	{
+	public:
+		friend class RenderImGUI;
+		application();
+		virtual ~application();
 
-        /// \brief
-        void on_event(event &p_event);
+		/// \brief
+		void run();
 
-        /// \brief Adds a layer to the stack.
-        void push_layer(layer *p_layer);
-        /// \brief Adds a overlay to the stack.
-        void push_overlay(layer *p_overlay);
+		/// \brief
+		void on_event(event &event);
 
-        /// \brief Returns a reference to the application window.
-        window& get_window() const { return *m_window; }
-        /// \brief Returns a reference to the application.
-        static application& instance() { return *s_instance; }
+		/// \brief Adds a layer to the stack.
+		void push_layer(layer *layer);
+		/// \brief Adds a overlay to the stack.
+		void push_overlay(layer *overlay);
 
-    private:
-        bool on_window_close(window_closed_event &p_event);
+		/// \brief Returns a reference to the application window.
+		window& get_window() const { return *m_window; }
+		/// \brief 
+		timer* get_timer() const { return m_timer; }
+		/// \brief Returns a reference to the application.
+		static application& instance() { return *s_instance; }
 
-    private:
-        std::unique_ptr<window>         m_window;
-        bool                            m_running{ true };
-        layers_stack                    m_layers_stack;
+	private:
+		bool on_window_close(window_closed_event &event);
 
-    private:
-        static application*             s_instance;
+	private:
+		std::unique_ptr<window>         m_window;
+		timer* 							m_timer{ nullptr };
+		bool                            m_running{ true };
+		layers_stack                    m_layers_stack;
+		imgui_layer*					m_imguiLayer;
 
-    };
+	protected:
+		renderer                        m_renderer;
+		static_shader					m_static_shader;
+		std::shared_ptr<render_manager>	m_renderManager;
+
+	private:
+		static application*             s_instance;
+		inline static const double		s_fps = 60.0;
+		inline static const double		s_secondsPerFrame = 1.0 / s_fps;
+
+	};
 
 
-    application* create_application();
+	application* create_application();
 }

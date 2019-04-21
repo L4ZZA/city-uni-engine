@@ -9,7 +9,7 @@ namespace pyro
         //---------------------------------------------------------------------
 
     public:
-        win_window(window_props const &p_props);
+        win_window(window_props const &props);
         virtual ~win_window();
 
         //---------------------------------------------------------------------
@@ -18,8 +18,8 @@ namespace pyro
 
         //---------------------------------------------------------------------
 
-        void event_callback(event_callback_fn const& p_callback) override { m_data.event_callback = p_callback; }
-        void vsync(bool p_enabled) override;
+        void event_callback(event_callback_fn const& callback) override { m_data.event_callback = callback; }
+        void vsync(bool enabled) override;
         bool vsync() override;
 
         virtual void* native_window() const override { return m_window; }
@@ -32,7 +32,7 @@ namespace pyro
         //---------------------------------------------------------------------
 
     private:
-        virtual void init(window_props const &p_props);
+        virtual void init(window_props const &props);
         virtual void shut_down();
 
     private:

@@ -1,7 +1,7 @@
 -- workspace is the solution
-workspace "Pyro"
+workspace "pyro"
     architecture "x64"
-    startproject "Sandbox"
+    startproject "sandbox"
 
     configurations
     {
@@ -15,20 +15,27 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["GLFW"] = "Pyro/external/GLFW/include/"
-IncludeDir["Glad"] = "Pyro/external/Glad/include/"
-IncludeDir["ImGui"] = "Pyro/external/imgui/"
-IncludeDir["glm"] = "Pyro/external/glm/"
+IncludeDir["spdlog"] = "pyro/external/spdlog/include"
+IncludeDir["GLFW"] = "pyro/external/GLFW/include/"
+IncludeDir["Glad"] = "pyro/external/Glad/include/"
+IncludeDir["ImGui"] = "pyro/external/imgui/"
+IncludeDir["glm"] = "pyro/external/glm/"
+IncludeDir["stb_image"] = "pyro/external/stb_image/"
+IncludeDir["assimp"] = "pyro/external/assimp/include/"
+IncludeDir["assimpcfg"] = "pyro/external/assimp/config/"
 
--- iclude GLFW premake file
-include "Pyro/external/GLFW/"
-include "Pyro/external/Glad/"
-include "Pyro/external/ImGui/"
+group "dependencies"
+    -- iclude other premake files
+    include "pyro/external/GLFW/"
+    include "pyro/external/Glad/"
+    include "pyro/external/ImGui/"
+    include "pyro/external/assimp/"
+group""
 
--- engine core project
-project "Pyro"
+-- === Core Project: pyro =======================================================
+project "pyro"
     -- location makes sure that everything below will be relative to the project directory
-    location "Pyro"
+    location "pyro"
     kind "StaticLib" -- Static library (.lib)
     language "C++"
     cppdialect "C++17"
@@ -38,15 +45,19 @@ project "Pyro"
     objdir ("inter/" .. outputdir .. "/%{prj.name}")
     
     pchheader "pyro_pch.h"
-    pchsource "Pyro/src/pyro_pch.cpp"
+    pchsource "pyro/src/pyro_pch.cpp"
 
     files
     {
         -- ** means recursively search down that folder
         "%{prj.name}/src/**.h", 
         "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.hpp",
+        "%{prj.name}/src/**.shader",
+        "%{prj.name}/res/**.shader",
         "%{prj.name}/external/glm/glm/**.hpp", 
         "%{prj.name}/external/glm/glm/**.inl",
+        "%{prj.name}/external/stb_image/stb_image.h",
     }
 
     defines
@@ -57,31 +68,37 @@ project "Pyro"
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/external/spdlog/include",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
+        "%{IncludeDir.glm}",
         "%{IncludeDir.ImGui}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.stb_image}",
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.assimpcfg}",
     }
 
     links
     {
         "GLFW",
         "Glad",
-        "opengl32.lib",
-        "ImGui"
+        "ImGui",
+        "assimp",
     }
 
     -- filters are used to apply property to some specific configurations only
     filter "system:windows"
         systemversion "latest" -- windows SDK version
+        linkoptions { "/ignore:4221" }
 
         defines
         {
             "PYRO_PLATFORM_WIN",
-            "PYRO_BUILD_DLL",
+            -- "PYRO_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
         }
+
+        links { "opengl32.lib" }
 
     filter "configurations:Debug"
         defines "PYRO_DEBUG"
@@ -98,9 +115,9 @@ project "Pyro"
         runtime "Release"
         optimize "on"
 
--- sandbox application
-project "Sandbox"
-    location "Sandbox"
+-- === Core Project: sanbox =======================================================
+project "sandbox"
+    location "sandbox"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -112,29 +129,33 @@ project "Sandbox"
     files
     {
         "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp"
+        "%{prj.name}/src/**.cpp",
+        "%{prj.name}/src/**.shader",
+        "%{prj.name}/res/**.shader",
+        "%{prj.name}/src/**.glsl",
+        "%{prj.name}/res/**.glsl",
     }
 
     includedirs
     {
-        "Pyro/external/spdlog/include",
-        "Pyro/src",
-        "%{IncludeDir.ImGui}",
+        "pyro/src",
+        "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.ImGui}",
     }
 
     links
     {
-        "Pyro",
+        "pyro",
     }
 
     filter "system:windows"
         systemversion "latest"
+        linkoptions { "/ignore:4221" }
 
         defines
         {
             "PYRO_PLATFORM_WIN",
-            "IMGUI_API=__declspec(dllimport)"
         }
 
     filter "configurations:Debug"
