@@ -1,33 +1,7 @@
 ﻿#include "pyro_pch.h"
 #include "obj_loader.h"
-
-std::string pyro::obj_loader::read_file(const char* file_path)
-{
-	FILE *file = fopen(file_path, "rt");
-	fseek(file, 0, SEEK_END);
-	unsigned long length = ftell(file);
-	char *data = new char[length + 1];
-	memset(data, 0, length + 1);
-	fseek(file, 0, SEEK_SET);
-	fread(data, 1, length, file);
-	fclose(file);
-
-	std::string result(data);
-	delete[] data;
-	return result;
-}
-
-std::vector<std::string> pyro::obj_loader::split(const std::string& s, char delimiter)
-{
-	std::vector<std::string> tokens;
-	std::string token;
-	std::istringstream tokenStream(s);
-	while(std::getline(tokenStream, token, delimiter))
-	{
-		tokens.push_back(token);
-	}
-	return tokens;
-}
+#include "pyro/utils/file_utils.h"
+#include "loader.h"
 
 void pyro::obj_loader::process_vertex(
 	const std::vector<std::string> &components,
@@ -56,8 +30,8 @@ void pyro::obj_loader::process_vertex(
 
 pyro::raw_model pyro::obj_loader::load_obj(const std::string& file_name)
 {
-	std::string full_path = "res/models/" + file_name + ".obj";
-	std::string content = read_file(full_path.c_str());
+	const std::string full_path = "res/models/" + file_name + ".obj";
+	const std::string content = read_file(full_path);
 	std::istringstream stream(content);
 
 	// prep data containers
@@ -70,18 +44,18 @@ pyro::raw_model pyro::obj_loader::load_obj(const std::string& file_name)
 	std::vector<float> normals_array;
 
 	std::string line;
-	std::stringstream ss;
+	const std::stringstream ss;
 	while(getline(stream, line))
 	{
 		// vertex position
 		if(line.compare(0, 2, "v ") == 0)
 		{
 			// split from the first non-blank char after the identifier
-			std::vector<std::string> components = split(line.substr(2), ' ');
+			const std::vector<std::string> components = split(line.substr(2), ' ');
 			// parse components to floats
-			auto f_comps = parse<float>(components);
+			const auto f_comps = parse<float>(components);
 			// compose vertex
-			glm::vec3 vertex{ f_comps[0],f_comps[1],f_comps[2] };
+			const glm::vec3 vertex{ f_comps[0],f_comps[1],f_comps[2] };
 			// add to container
 			vertices.push_back(vertex);
 		}
@@ -89,11 +63,11 @@ pyro::raw_model pyro::obj_loader::load_obj(const std::string& file_name)
 		if(line.compare(0, 3, "vt ") == 0)
 		{
 			// split from the first non-blank char after the identifier
-			std::vector<std::string> components = split(line.substr(4), ' ');
+			const std::vector<std::string> components = split(line.substr(4), ' ');
 			// parse components to floats
-			auto f_comps = parse<float>(components);
+			const auto f_comps = parse<float>(components);
 			// compose tex coord
-			glm::vec2 coord{ f_comps[0],f_comps[1] };
+			const glm::vec2 coord{ f_comps[0],f_comps[1] };
 			// add to container
 			tex_coords.push_back(coord);
 		}
@@ -101,11 +75,11 @@ pyro::raw_model pyro::obj_loader::load_obj(const std::string& file_name)
 		if(line.compare(0, 3, "vn ") == 0)
 		{
 			// split from the first non-blank char after the identifier
-			std::vector<std::string> components = split(line.substr(3), ' ');
+			const std::vector<std::string> components = split(line.substr(3), ' ');
 			// parse components to floats
 			auto f_comps = parse<float>(components);
 			// compose normal
-			glm::vec3 normal{ f_comps[0],f_comps[1],f_comps[2] };
+			const glm::vec3 normal{ f_comps[0],f_comps[1],f_comps[2] };
 			// add to container
 			normals.push_back(normal);
 		}
@@ -120,10 +94,10 @@ pyro::raw_model pyro::obj_loader::load_obj(const std::string& file_name)
 				first = false;
 			}
 			// split from the first non-blank char after the identifier
-			std::vector<std::string> these_vertices = split(line.substr(2), ' ');
-			std::vector<std::string> vertex1 = split(these_vertices[0], '/');
-			std::vector<std::string> vertex2 = split(these_vertices[1], '/');
-			std::vector<std::string> vertex3 = split(these_vertices[2], '/');
+			const std::vector<std::string> these_vertices = split(line.substr(2), ' ');
+			const std::vector<std::string> vertex1 = split(these_vertices[0], '/');
+			const std::vector<std::string> vertex2 = split(these_vertices[1], '/');
+			const std::vector<std::string> vertex3 = split(these_vertices[2], '/');
 
 			process_vertex(vertex1, indices, tex_coords, normals, textures_array, normals_array);
 			process_vertex(vertex2, indices, tex_coords, normals, textures_array, normals_array);

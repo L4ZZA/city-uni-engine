@@ -1,17 +1,11 @@
 ﻿#pragma once
 #include "models/raw_model.h"
-#include "loader.h"
-#include <fstream>
 
 namespace pyro
 {
 	class obj_loader
 	{
 	public:
-		/// \brief Much faster reading from file
-		static std::string read_file(const char *file_path);
-
-		static std::vector<std::string> split(const std::string &s, char delimiter);
 
 		template <typename T> static std::vector<T> parse(const std::vector<std::string> &components);
 		template <typename T> static T parse(const std::string &component);

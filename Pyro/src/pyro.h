@@ -29,6 +29,7 @@
 #include "pyro/entities/camera.h"
 #include "pyro/entities/entity.h"
 #include "pyro/entities/light.h"
+#include "pyro/graphics/loader.h"
 #include "pyro/graphics/obj_loader.h"
 #include "pyro/utils/maths.h"
 
