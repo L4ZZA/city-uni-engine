@@ -55,7 +55,6 @@ namespace pyro
         void set_uniform(const std::string& name, const glm::mat4 &matrix);
 
     private:
-        static std::string parse_shader(const std::string &file_path);
         static unsigned int load_shader(const std::string &file_path, unsigned int type);
         static unsigned int compile_shader(const std::string &source, unsigned int type);
         static std::string get_compilation_error(unsigned int id);

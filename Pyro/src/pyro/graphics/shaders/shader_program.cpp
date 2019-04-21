@@ -2,6 +2,7 @@
 #include "shader_program.h"
 #include "glad/glad.h"
 #include <fstream>
+#include "pyro/utils/file_utils.h"
 
 pyro::shader_program::shader_program(const std::string  &vertex_path, const std::string  &fragment_path)
 {
@@ -132,24 +133,10 @@ void pyro::shader_program::set_uniform(const std::string &name, const glm::mat4 
 
 unsigned int pyro::shader_program::load_shader(const std::string &file_path, unsigned int type)
 {
-    std::string shader = parse_shader(file_path);
+    std::string shader = read_file(file_path);
     if(shader.empty())
         PYRO_ERROR("Shader not found: {}", file_path);
     return compile_shader(shader, type);
-}
-
-std::string pyro::shader_program::parse_shader(const std::string &file_path)
-{
-    std::ifstream stream(file_path);
-
-    std::string line;
-    std::stringstream ss;
-    while(getline(stream, line))
-    {
-        ss << line << "\n";
-    }
-
-    return ss.str();
 }
 
 unsigned int pyro::shader_program::compile_shader(const std::string &source, unsigned int type)
