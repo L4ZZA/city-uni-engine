@@ -11,3 +11,5 @@ Sandbox/imgui\.ini
 ## VisualStudio Specific
 *.vcxproj
 *.sln
+
+*.diagsession
