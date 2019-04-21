@@ -20,14 +20,14 @@ namespace pyro
 	}
 }
 
-pyro::window* pyro::window::create(window_props const& props)
+pyro::window* pyro::window::create(const std::string& name, window_props const& props)
 {
-	return new win_window(props);
+	return new win_window(name, props);
 }
 
-pyro::win_window::win_window(window_props const& props)
+pyro::win_window::win_window(const std::string& name, window_props const& props)
 {
-	init(props);
+	init(name, props);
 }
 
 pyro::win_window::~win_window()
@@ -56,23 +56,23 @@ bool pyro::win_window::vsync()
 	return m_data.vsync;
 }
 
-void pyro::win_window::init(window_props const& props)
+void pyro::win_window::init(const std::string& name, window_props const& props)
 {
 	if (!core::StartupSuccess)
 		PYRO_CORE_ASSERT(false, "GLFW was not initialized!");
 
-	m_data.title = props.m_title;
-	m_data.width = props.m_width;
-	m_data.height = props.m_height;
-	m_data.vsync = props.m_vsync;
+	m_data.title = name;
+	m_data.width = props.width;
+	m_data.height = props.height;
+	m_data.vsync = props.vsync;
 
-	PYRO_CORE_INFO("Creating window {0} [{1},{2}]", props.m_title, props.m_width, props.m_height);
+	PYRO_CORE_INFO("Creating window {0} [{1},{2}]", name, props.width, props.height);
 
 
 	m_window = glfwCreateWindow(
-		static_cast<int>(props.m_width),
-		static_cast<int>(props.m_height),
-		props.m_title.c_str(),
+		static_cast<int>(props.width),
+		static_cast<int>(props.height),
+		name.c_str(),
 		nullptr, nullptr);
 
 	glfwMakeContextCurrent(m_window);

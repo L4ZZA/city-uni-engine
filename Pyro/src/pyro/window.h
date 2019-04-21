@@ -6,26 +6,17 @@ namespace pyro
 {
 	struct window_props
 	{
-		std::string     m_title;
-		unsigned int    m_width;
-		unsigned int    m_height;
-		bool			m_vsync;
-
-		window_props(
-			std::string const &title = "pyro",
-			unsigned int width = 1280,
-			unsigned int height = 720,
-			bool vsync = true)
-			: m_title(title), m_width(width), m_height(height), m_vsync(vsync)
-		{
-		}
+		unsigned int    width;
+		unsigned int    height;
+		bool			full_screen;
+		bool			vsync;
 	};
 
 	/// \brief Interface representing a desktop system based window.
 	class PYRO_API window
 	{
 	public:
-		static window* create(window_props const &props = window_props());
+		static window* create(const std::string& name, window_props const &props = window_props());
 
 		//---------------------------------------------------------------------
 

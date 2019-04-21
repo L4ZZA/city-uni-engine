@@ -7,7 +7,6 @@
 #include "imgui/imgui_layer.h"
 #include "graphics/renderer.h"
 #include "graphics/shaders/static_shader.h"
-#include "graphics/render_manager.h"
 
 
 namespace pyro
@@ -17,8 +16,7 @@ namespace pyro
 	class PYRO_API application
 	{
 	public:
-		friend class RenderImGUI;
-		application();
+		application(const std::string &name, const window_props &properties);
 		virtual ~application();
 
 		/// \brief
@@ -43,16 +41,17 @@ namespace pyro
 		bool on_window_close(window_closed_event &event);
 
 	private:
+		std::string						m_title{};
+		window_props					m_properties{};
 		std::unique_ptr<window>         m_window;
 		timer* 							m_timer{ nullptr };
 		bool                            m_running{ true };
 		layers_stack                    m_layers_stack;
-		imgui_layer*					m_imguiLayer;
+		imgui_layer*					m_imguiLayer{ nullptr };
 
 	protected:
 		renderer                        m_renderer;
 		static_shader					m_static_shader;
-		std::shared_ptr<render_manager>	m_renderManager;
 
 	private:
 		static application*             s_instance;

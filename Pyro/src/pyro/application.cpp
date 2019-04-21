@@ -6,17 +6,15 @@
 
 pyro::application* pyro::application::s_instance{ nullptr };
 
-pyro::application::application()
+pyro::application::application(const std::string &name, const window_props &properties)
+	: m_title(name), m_properties(properties)
 {
 	PYRO_ASSERT(!s_instance, "Application already exists!");
 	s_instance = this;
 
-	m_window = std::unique_ptr<window>(window::create());
+	m_window = std::unique_ptr<window>(window::create(name, properties));
 	m_window->event_callback(BIND_EVENT_FN(application::on_event));
 
-	// Create managers
-	m_renderManager = render_manager::create();
-	m_renderManager->init();
 }
 
 pyro::application::~application()
@@ -27,11 +25,11 @@ pyro::application::~application()
 void pyro::application::run()
 {
 	m_timer = new timer;
-	m_timer->Start();
+	m_timer->start();
 
 	while(m_running)
 	{
-		const double dt = m_timer->Elapsed();
+		const double dt = m_timer->elapsed();
 		double millisecondsPerFrame = s_secondsPerFrame * 0.0001;
 
 		if(dt > millisecondsPerFrame)

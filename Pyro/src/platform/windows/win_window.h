@@ -9,7 +9,7 @@ namespace pyro
         //---------------------------------------------------------------------
 
     public:
-        win_window(window_props const &props);
+        win_window(const std::string& name, window_props const &props);
         virtual ~win_window();
 
         //---------------------------------------------------------------------
@@ -32,7 +32,7 @@ namespace pyro
         //---------------------------------------------------------------------
 
     private:
-        virtual void init(window_props const &props);
+        virtual void init(const std::string& name, window_props const &props);
         virtual void shut_down();
 
     private:
