@@ -1,8 +1,8 @@
-﻿#include "main_layer.h"
+#include "main_layer.h"
 
 
 main_layer::main_layer()
-	: imgui_layer("Main Layer"), io(nullptr),
+	: imgui_layer("Main Layer"),
 	lightPos(8.0f, 12.0f, 8.0f), lightDiffuse(1.0f, 1.0f, 1.0f), lightAmbient(0.5f, 0.5f, 0.5f), lightSpecular(1.0f, 1.0f, 1.0f), shininess(8.0f),
 	modelShader("res/shaders/main_tex.glsl"), lampShader("res/shaders/lamp.glsl"),
 	nanosuit("res/models/nanosuit/nanosuit.obj"), lamp("res/models/lamp/lamp.obj")
@@ -57,21 +57,23 @@ void main_layer::on_update(double dt)
 
 void main_layer::on_imgui_render()
 {
-	if (io) {
-		ImGui::Begin("Main Editor");
+	static bool show = true;
+	ImGui::ShowDemoWindow(&show);
 
-		ImGui::Text("Light Properties");
-		ImGui::ColorEdit3("Specular Color", glm::value_ptr(lightSpecular));
-		ImGui::ColorEdit3("Diffuse Color", glm::value_ptr(lightDiffuse));
-		ImGui::ColorEdit3("Ambient Color", glm::value_ptr(lightAmbient));
+	ImGui::Begin("Main Editor");
 
-		ImGui::SliderFloat3("Light Height", glm::value_ptr(lightPos), -20.0f, 20.0f);
+	ImGui::Text("Light Properties");
+	ImGui::ColorEdit3("Specular Color", glm::value_ptr(lightSpecular));
+	ImGui::ColorEdit3("Diffuse Color", glm::value_ptr(lightDiffuse));
+	ImGui::ColorEdit3("Ambient Color", glm::value_ptr(lightAmbient));
 
-		ImGui::Text("Material Properties");
-		ImGui::SliderFloat("Shininess", &shininess, 0.0f, 128.0f);
+	ImGui::SliderFloat3("Light Height", glm::value_ptr(lightPos), -20.0f, 20.0f);
 
-		ImGui::End();
-	}
+	ImGui::Text("Material Properties");
+	ImGui::SliderFloat("Shininess", &shininess, 0.0f, 128.0f);
+
+	ImGui::End();
+
 }
 
 //// rect data (for future reuse)

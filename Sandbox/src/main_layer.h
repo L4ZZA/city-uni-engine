@@ -9,11 +9,10 @@ public:
 	~main_layer();
 
 	void on_update(double dt) override;
+	void on_render(pyro::renderer &renderer) override;
 	void on_imgui_render() override;
 
 private:
-	ImGuiIO* io;
-
 	pyro::shader modelShader;
 	pyro::shader lampShader;
 	pyro::model nanosuit;
