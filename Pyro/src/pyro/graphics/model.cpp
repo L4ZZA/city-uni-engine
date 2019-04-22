@@ -12,7 +12,8 @@ pyro::model::model(const std::string& path)
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
-	if ((!scene) || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || (!scene->mRootNode)) {
+	if((!scene) || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || (!scene->mRootNode))
+	{
 		PYRO_CORE_ERROR("[ASSIMP] Unable to load model '{0}'.", path);
 		return;
 	}
@@ -22,23 +23,24 @@ pyro::model::model(const std::string& path)
 }
 
 pyro::model::~model()
-{
-}
+{}
 
 void pyro::model::render(shader& shader)
 {
-	for (uint32 i = 0; i < m_meshes.size(); i++)
-		m_meshes[i].Render(shader);
+	for(auto& m_mesh : m_meshes)
+		m_mesh.Render(shader);
 }
 
 void pyro::model::process_node(aiNode * node, const aiScene * scene)
 {
-	for (uint32 i = 0; i < node->mNumMeshes; i++) {
+	for(uint32 i = 0; i < node->mNumMeshes; i++)
+	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		m_meshes.push_back(process_mesh(mesh, scene));
 	}
 
-	for (uint32 i = 0; i < node->mNumChildren; i++) {
+	for(uint32 i = 0; i < node->mNumChildren; i++)
+	{
 		process_node(node->mChildren[i], scene);
 	}
 
@@ -51,7 +53,8 @@ pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 	std::vector<texture> textures;
 
 	// == Process vertices
-	for (uint32 i = 0; i < mesh->mNumVertices; i++) {
+	for(uint32 i = 0; i < mesh->mNumVertices; i++)
+	{
 		Mesh::Vertex vert;
 
 		// Position
@@ -63,11 +66,13 @@ pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 		vert.Normal = norm;
 
 		// TexCoords
-		if (mesh->mTextureCoords[0]) {// Does it have any texture coordinates?
+		if(mesh->mTextureCoords[0])
+		{// Does it have any texture coordinates?
 			glm::vec2 tex(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 			vert.TexCoords = tex;
 		}
-		else {
+		else
+		{
 			vert.TexCoords = glm::vec2(0.0f, 0.0f);
 		}
 
@@ -76,14 +81,15 @@ pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 	}
 
 	// == Process indices
-	for (uint32 i = 0; i < mesh->mNumFaces; i++) {
+	for(uint32 i = 0; i < mesh->mNumFaces; i++)
+	{
 		aiFace face = mesh->mFaces[i];
-		for (uint32 j = 0; j < face.mNumIndices; j++)
+		for(uint32 j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 	}
 
 	// == Process materials
-	if (mesh->mMaterialIndex >= 0)
+	if(mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -100,7 +106,8 @@ pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 std::vector<pyro::texture> pyro::model::load_textures(aiMaterial * mat, aiTextureType type, std::string typeName)
 {
 	std::vector<texture> textures;
-	for (uint32 i = 0; i < mat->GetTextureCount(type); i++) {
+	for(uint32 i = 0; i < mat->GetTextureCount(type); i++)
+	{
 		aiString filename;
 		mat->GetTexture(type, i, &filename);
 

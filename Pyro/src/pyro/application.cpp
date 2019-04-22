@@ -40,7 +40,7 @@ void pyro::application::run()
 			{
 				layer->on_update(dt);
 				layer->on_render(m_renderer);
-				
+
 				auto imgui = static_cast<imgui_layer*>(layer);
 				imgui->begin();
 				imgui->on_imgui_render();

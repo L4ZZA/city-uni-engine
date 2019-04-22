@@ -87,8 +87,7 @@ void pyro::loader::store_indices(const std::vector<unsigned int> &indices)
 }
 
 void pyro::loader::bind_vao()
-{
-}
+{}
 
 void pyro::loader::unbind_vao()
 {

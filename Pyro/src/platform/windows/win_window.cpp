@@ -43,7 +43,7 @@ void pyro::win_window::on_update()
 
 void pyro::win_window::vsync(bool enabled)
 {
-	if (enabled)
+	if(enabled)
 		glfwSwapInterval(1);
 	else
 		glfwSwapInterval(0);
@@ -58,7 +58,7 @@ bool pyro::win_window::vsync()
 
 void pyro::win_window::init(const std::string& name, window_props const& props)
 {
-	if (!core::StartupSuccess)
+	if(!core::StartupSuccess)
 		PYRO_CORE_ASSERT(false, "GLFW was not initialized!");
 
 	m_data.title = name;
@@ -87,8 +87,7 @@ void pyro::win_window::init(const std::string& name, window_props const& props)
 
 
 	// GLFW callbacks
-	glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
-	{
+	glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 		data.width = width;
 		data.height = height;
@@ -97,18 +96,16 @@ void pyro::win_window::init(const std::string& name, window_props const& props)
 		data.event_callback(event);
 	});
 
-	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window)
-	{
+	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 		window_closed_event event;
 		data.event_callback(event);
 	});
 
-	glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
+	glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
-		switch (action)
+		switch(action)
 		{
 		case GLFW_PRESS:
 		{
@@ -131,19 +128,17 @@ void pyro::win_window::init(const std::string& name, window_props const& props)
 		}
 	});
 
-	glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int key)
-	{
+	glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int key){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
 		key_typed_event event(key);
 		data.event_callback(event);
 	});
 
-	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods)
-	{
+	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
-		switch (action)
+		switch(action)
 		{
 		case GLFW_PRESS:
 		{
@@ -160,15 +155,13 @@ void pyro::win_window::init(const std::string& name, window_props const& props)
 		}
 	});
 
-	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset)
-	{
+	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 		mouse_scrolled_event event(static_cast<float>(xOffset), static_cast<float>(yOffset));
 		data.event_callback(event);
 	});
 
-	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos)
-	{
+	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos){
 		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 		mouse_moved_event event(static_cast<float>(xPos), static_cast<float>(yPos));
 		data.event_callback(event);

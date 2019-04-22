@@ -9,10 +9,10 @@ void pyro::core::platform_startup()
 {
 	PYRO_CORE_TRACE("Platform-specific startup: Windows");
 
-	if (!gGLFWInitialized)
+	if(!gGLFWInitialized)
 	{
 		const int32 success = glfwInit();
-		if (!success) 
+		if(!success)
 		{
 			PYRO_CORE_FATAL("Could not initialize GLFW!");
 			StartupSuccess = false;
@@ -34,7 +34,7 @@ void pyro::core::platform_shutdown()
 	PYRO_CORE_TRACE("Stopping input manager");
 	win_input::shutdown();
 
-	if (gGLFWInitialized) 
+	if(gGLFWInitialized)
 	{
 		glfwTerminate();
 		PYRO_CORE_TRACE("GLFW terminated");

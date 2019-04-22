@@ -4,20 +4,20 @@
 
 pyro::buffer::buffer()
 {
-    glGenBuffers(1, &m_id);
+	glGenBuffers(1, &m_id);
 }
 
 pyro::buffer::~buffer()
 {
-    glDeleteBuffers(1, &m_id);
+	glDeleteBuffers(1, &m_id);
 }
 
 void pyro::buffer::bind() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_id);
+	glBindBuffer(GL_ARRAY_BUFFER, m_id);
 }
 
 void pyro::buffer::unbind() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

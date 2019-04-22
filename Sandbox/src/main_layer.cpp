@@ -1,4 +1,4 @@
-#include "main_layer.h"
+﻿#include "main_layer.h"
 
 
 main_layer::main_layer()
@@ -12,14 +12,17 @@ main_layer::main_layer()
 }
 
 main_layer::~main_layer()
-{ }
+{}
 
 void main_layer::on_update(double dt)
+{}
+
+void main_layer::on_render(pyro::renderer& renderer)
 {
-	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float)pyro::application::instance().get_window().width() / (float)pyro::application::instance().get_window().height(), 0.1f, 1000.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (float) pyro::application::instance().get_window().width() / (float) pyro::application::instance().get_window().height(), 0.1f, 1000.0f);
 
 	glm::mat4 modelModel = glm::mat4(1.0f);
-	modelModel = glm::rotate(modelModel, glm::radians(45.0f * (float)pyro::application::instance().get_timer()->total()), glm::vec3(0.0f, 1.0f, 0.0f));
+	modelModel = glm::rotate(modelModel, glm::radians(45.0f * (float) pyro::application::instance().get_timer()->total()), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 viewModel = glm::mat4(1.0f);
 	viewModel = glm::translate(viewModel, cameraPos);
 

@@ -18,7 +18,8 @@ namespace pyro
 		m_shaderSources = new std::unordered_map<unsigned int, std::string>();
 
 		std::ifstream is(filename, std::ifstream::binary);
-		if (is) {
+		if(is)
+		{
 			// Save filename
 			filename = filename;
 
@@ -32,11 +33,12 @@ namespace pyro
 
 			std::sregex_iterator next(file.begin(), file.end(), re, std::regex_constants::match_any);
 			std::sregex_iterator ender;
-			while (next != ender) {
+			while(next != ender)
+			{
 				std::smatch match = *next;
 
 				uint32 shaderType = type_from_string(match.str(1));
-				if (shaderType)
+				if(shaderType)
 					m_shaderSources->insert({ shaderType, match.str(2) });
 
 				next++;
@@ -46,7 +48,7 @@ namespace pyro
 
 	shader::~shader()
 	{
-		if (m_program_loaded)
+		if(m_program_loaded)
 			glDeleteProgram(m_program_id);
 
 		delete m_shaderSources;
@@ -64,7 +66,8 @@ namespace pyro
 
 		m_program_id = glCreateProgram();
 
-		for (auto& kv : *(m_shaderSources)) {
+		for(auto& kv : *(m_shaderSources))
+		{
 			GLint shaderId = glCreateShader(kv.first);
 			const GLchar* source = kv.second.c_str();
 
@@ -73,13 +76,14 @@ namespace pyro
 
 			// Error check
 			glGetShaderiv(shaderId, GL_COMPILE_STATUS, &success);
-			if (!success)
+			if(!success)
 			{
 				glGetShaderInfoLog(shaderId, 1024, nullptr, infoLog);
 				PYRO_CORE_WARN("Unable to compile shader {0}: {1}", m_filename, infoLog);
 				glDeleteShader(shaderId);
 			}
-			else {
+			else
+			{
 				glAttachShader(m_program_id, shaderId);
 				shaderIds.push_back(shaderId);
 			}
@@ -89,7 +93,8 @@ namespace pyro
 
 		// Check if successful
 		glGetProgramiv(m_program_id, GL_LINK_STATUS, &success);
-		if (!success) {
+		if(!success)
+		{
 			glGetProgramInfoLog(m_program_id, 1024, nullptr, infoLog);
 			PYRO_CORE_WARN("Unable to link shader program {0}: {1}", m_filename, infoLog);
 			glDeleteProgram(m_program_id);
@@ -99,7 +104,8 @@ namespace pyro
 		}
 
 		// Finally, clean up shader programs
-		for (auto shaderId : shaderIds) {
+		for(auto shaderId : shaderIds)
+		{
 			glDetachShader(m_program_id, shaderId);
 			glDeleteShader(shaderId);
 		}
@@ -164,9 +170,9 @@ namespace pyro
 
 	uint32 shader::type_from_string(const std::string& shaderType)
 	{
-		if (shaderType == "vertex")
+		if(shaderType == "vertex")
 			return GL_VERTEX_SHADER;
-		if (shaderType == "fragment" || shaderType == "pixel")
+		if(shaderType == "fragment" || shaderType == "pixel")
 			return GL_FRAGMENT_SHADER;
 
 		return 0;

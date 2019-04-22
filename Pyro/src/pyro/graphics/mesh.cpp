@@ -41,11 +41,11 @@ namespace pyro
 	Mesh::~Mesh()
 	{ }
 
-	void Mesh::Render(pyro::shader& shader)
+	void Mesh::Render(shader& shader)
 	{
 		uint32 diffuseN = 1, specularN = 1;
-		for (uint32 i = 0; i < m_textures.size(); i++) {
-
+		for (uint32 i = 0; i < m_textures.size(); i++) 
+		{
 			std::string num, name = m_textures[i].type();
 
 			if (name == "diffuse")

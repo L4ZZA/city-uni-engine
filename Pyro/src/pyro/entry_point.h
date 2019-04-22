@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
 	pyro::core::startup();
 
-	if (!pyro::core::StartupSuccess)
+	if(!pyro::core::StartupSuccess)
 		return -1;
 
 	auto app = pyro::create_application();
@@ -35,5 +35,5 @@ int main(int argc, char** argv)
 }
 
 #else
-	#error Pyro only supports Windows!
+#error Pyro only supports Windows!
 #endif
