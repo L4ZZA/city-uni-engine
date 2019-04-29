@@ -1,18 +1,15 @@
-[submodule "Pyro/external/spdlog"]
-	path = Pyro/external/spdlog
+[submodule "engine/external/spdlog"]
+	path = engine/external/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Pyro/external/GLFW"]
-	path = Pyro/external/GLFW
+[submodule "engine/external/GLFW"]
+	path = engine/external/GLFW
 	url = https://github.com/L4ZZA/glfw
-[submodule "Pyro/external/imgui"]
-	path = Pyro/external/imgui
-	url = https://github.com/L4ZZA/imgui
-[submodule "Pyro/external/glm"]
-	path = Pyro/external/glm
+[submodule "engine/external/glm"]
+	path = engine/external/glm
 	url = https://github.com/g-truc/glm
-[submodule "Pyro/external/stb_image"]
-	path = Pyro/external/stb_image
+[submodule "engine/external/stb_image"]
+	path = engine/external/stb_image
 	url = https://github.com/L4ZZA/stb
-[submodule "Pyro/external/assimp"]
-	path = Pyro/external/assimp
+[submodule "engine/external/assimp"]
+	path = engine/external/assimp
 	url = https://github.com/L4ZZA/assimp/
