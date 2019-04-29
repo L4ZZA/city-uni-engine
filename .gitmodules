@@ -1,15 +1,15 @@
-[submodule "engine/external/spdlog"]
-	path = engine/external/spdlog
-	url = https://github.com/gabime/spdlog
 [submodule "engine/external/GLFW"]
 	path = engine/external/GLFW
 	url = https://github.com/L4ZZA/glfw
-[submodule "engine/external/glm"]
-	path = engine/external/glm
-	url = https://github.com/g-truc/glm
 [submodule "engine/external/stb_image"]
 	path = engine/external/stb_image
 	url = https://github.com/L4ZZA/stb
 [submodule "engine/external/assimp"]
 	path = engine/external/assimp
 	url = https://github.com/L4ZZA/assimp/
+[submodule "engine/external/glm"]
+	path = engine/external/glm
+	url = https://github.com/g-truc/glm
+[submodule "engine/external/spdlog"]
+	path = engine/external/spdlog
+	url = https://github.com/gabime/spdlog

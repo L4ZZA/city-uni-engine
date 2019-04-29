@@ -1,7 +1,7 @@
 -- workspace is the solution
-workspace "pyro"
+workspace "engine"
     architecture "x64"
-    startproject "sandbox"
+    startproject "engine"
 
     configurations
     {
@@ -15,27 +15,25 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["spdlog"] = "pyro/external/spdlog/include"
-IncludeDir["GLFW"] = "pyro/external/GLFW/include/"
-IncludeDir["Glad"] = "pyro/external/Glad/include/"
-IncludeDir["ImGui"] = "pyro/external/imgui/"
-IncludeDir["glm"] = "pyro/external/glm/"
-IncludeDir["stb_image"] = "pyro/external/stb_image/"
-IncludeDir["assimp"] = "pyro/external/assimp/include/"
-IncludeDir["assimpcfg"] = "pyro/external/assimp/config/"
+IncludeDir["spdlog"] = "engine/external/spdlog/include"
+IncludeDir["GLFW"] = "engine/external/GLFW/include/"
+IncludeDir["Glad"] = "engine/external/Glad/include/"
+IncludeDir["glm"] = "engine/external/glm/"
+IncludeDir["stb_image"] = "engine/external/stb_image/"
+IncludeDir["assimp"] = "engine/external/assimp/include/"
+IncludeDir["assimpcfg"] = "engine/external/assimp/config/"
 
 group "dependencies"
     -- iclude other premake files
-    include "pyro/external/GLFW/"
-    include "pyro/external/Glad/"
-    include "pyro/external/ImGui/"
-    include "pyro/external/assimp/"
+    include "engine/external/GLFW/"
+    include "engine/external/Glad/"
+    include "engine/external/assimp/"
 group""
 
--- === Core Project: pyro =======================================================
-project "pyro"
+-- === Core Project: engine =======================================================
+project "engine"
     -- location makes sure that everything below will be relative to the project directory
-    location "pyro"
+    location "engine"
     kind "StaticLib" -- Static library (.lib)
     language "C++"
     cppdialect "C++17"
@@ -44,8 +42,8 @@ project "pyro"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("inter/" .. outputdir .. "/%{prj.name}")
     
-    pchheader "pyro_pch.h"
-    pchsource "pyro/src/pyro_pch.cpp"
+    pchheader "pch.h"
+    pchsource "engine/src/pch.cpp"
 
     files
     {
@@ -72,7 +70,6 @@ project "pyro"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.ImGui}",
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
@@ -82,7 +79,6 @@ project "pyro"
     {
         "GLFW",
         "Glad",
-        "ImGui",
         "assimp",
     }
 
@@ -93,31 +89,31 @@ project "pyro"
 
         defines
         {
-            "PYRO_PLATFORM_WIN",
-            -- "PYRO_BUILD_DLL",
+            "ENGINE_PLATFORM_WIN",
+            -- "ENGINE_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
         }
 
         links { "opengl32.lib" }
 
     filter "configurations:Debug"
-        defines "PYRO_DEBUG"
+        defines "ENGINE_DEBUG"
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "PYRO_RELEASE"
+        defines "ENGINE_RELEASE"
         runtime "Release"
         optimize "on"
 
     filter "configurations:Dist"
-        defines "PYRO_DIST"
+        defines "ENGINE_DIST"
         runtime "Release"
         optimize "on"
 
 -- === Core Project: sanbox =======================================================
-project "sandbox"
-    location "sandbox"
+project "game"
+    location "game"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -138,15 +134,14 @@ project "sandbox"
 
     includedirs
     {
-        "pyro/src",
+        "engine/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.ImGui}",
     }
 
     links
     {
-        "pyro",
+        "engine",
     }
 
     filter "system:windows"
@@ -155,20 +150,20 @@ project "sandbox"
 
         defines
         {
-            "PYRO_PLATFORM_WIN",
+            "ENGINE_PLATFORM_WIN",
         }
 
     filter "configurations:Debug"
-        defines "PYRO_DEBUG"
+        defines "ENGINE_DEBUG"
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "PYRO_RELEASE"
+        defines "ENGINE_RELEASE"
         runtime "Release"
         optimize "on"
 
     filter "configurations:Dist"
-        defines "PYRO_DIST"
+        defines "ENGINE_DIST"
         runtime "Release"
         optimize "on"
