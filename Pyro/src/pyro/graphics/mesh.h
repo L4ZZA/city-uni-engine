@@ -5,25 +5,24 @@
 
 namespace pyro 
 {
-
-  class Mesh
+  class mesh
   {
   public:
-    struct Vertex 
+    struct vertex 
   	{
-      glm::vec3 Position;
-      glm::vec3 Normal;
-      glm::vec2 TexCoords;
+      glm::vec3 position;
+      glm::vec3 normal;
+      glm::vec2 tex_coords;
     };
 
   public:
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32>& indices, const std::vector<texture>& textures);
-    ~Mesh();
+    mesh(const std::vector<vertex>& vertices, const std::vector<uint32>& indices, const std::vector<texture>& textures);
+    ~mesh();
 
-    void Render(pyro::shader& shader);
+    void render(pyro::shader& shader);
 
   private:
-    std::vector<Vertex>   m_vertices;
+    std::vector<vertex>   m_vertices;
     std::vector<uint32>   m_indices;
     std::vector<texture>  m_textures;
 

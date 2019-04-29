@@ -28,7 +28,7 @@ pyro::model::~model()
 void pyro::model::render(shader& shader)
 {
 	for(auto& m_mesh : m_meshes)
-		m_mesh.Render(shader);
+		m_mesh.render(shader);
 }
 
 void pyro::model::process_node(aiNode * node, const aiScene * scene)
@@ -46,34 +46,34 @@ void pyro::model::process_node(aiNode * node, const aiScene * scene)
 
 }
 
-pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
+pyro::mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 {
-	std::vector<Mesh::Vertex> vertices;
+	std::vector<mesh::vertex> vertices;
 	std::vector<uint32> indices;
 	std::vector<texture> textures;
 
 	// == Process vertices
 	for(uint32 i = 0; i < mesh->mNumVertices; i++)
 	{
-		Mesh::Vertex vert;
+		mesh::vertex vert;
 
 		// Position
 		glm::vec3 pos(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-		vert.Position = pos;
+		vert.position = pos;
 
 		// Normal
 		glm::vec3 norm(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-		vert.Normal = norm;
+		vert.normal = norm;
 
 		// TexCoords
 		if(mesh->mTextureCoords[0])
 		{// Does it have any texture coordinates?
 			glm::vec2 tex(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-			vert.TexCoords = tex;
+			vert.tex_coords = tex;
 		}
 		else
 		{
-			vert.TexCoords = glm::vec2(0.0f, 0.0f);
+			vert.tex_coords = glm::vec2(0.0f, 0.0f);
 		}
 
 		// Push into vertex array
@@ -100,7 +100,7 @@ pyro::Mesh pyro::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
-	return Mesh(vertices, indices, textures);
+	return pyro::mesh(vertices, indices, textures);
 }
 
 std::vector<pyro::texture> pyro::model::load_textures(aiMaterial * mat, aiTextureType type, std::string typeName)

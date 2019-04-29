@@ -6,8 +6,8 @@
 namespace pyro 
 {
 
-	Mesh::Mesh(
-		const std::vector<Vertex>& vertices, 
+	mesh::mesh(
+		const std::vector<vertex>& vertices, 
 		const std::vector<uint32>& indices, 
 		const std::vector<texture>& textures)
 	{
@@ -23,25 +23,25 @@ namespace pyro
 		glBindVertexArray(m_vao);
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Mesh::Vertex), &vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(mesh::vertex), &vertices[0], GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), &indices[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(mesh::vertex), (void*)0);
 		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Vertex, Normal));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(mesh::vertex), (void*)offsetof(vertex, normal));
 		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Mesh::Vertex), (void*)offsetof(Vertex, TexCoords));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(mesh::vertex), (void*)offsetof(vertex, tex_coords));
 
 		glBindVertexArray(0);
 	}
 
-	Mesh::~Mesh()
+	mesh::~mesh()
 	{ }
 
-	void Mesh::Render(shader& shader)
+	void mesh::render(shader& shader)
 	{
 		uint32 diffuseN = 1, specularN = 1;
 		for (uint32 i = 0; i < m_textures.size(); i++) 

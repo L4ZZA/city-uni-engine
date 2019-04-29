@@ -21,11 +21,11 @@ namespace pyro
 
   private: // methods
     void process_node(aiNode* node, const aiScene* scene);
-    Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
+    mesh process_mesh(aiMesh* mesh, const aiScene* scene);
     std::vector<texture> load_textures(aiMaterial* mat, aiTextureType type, std::string typeName);
 
   private: // fields
-    std::vector<Mesh> m_meshes;
+    std::vector<mesh> m_meshes;
     std::string m_directory;
   };
 
