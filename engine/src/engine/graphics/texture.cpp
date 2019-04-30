@@ -3,7 +3,6 @@
 #include "glad/glad.h"
 #include "stb_image.h"
 
-// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
 enum class engine::e_color_channels
 {
 	grayscale = 1,
@@ -11,6 +10,7 @@ enum class engine::e_color_channels
 	rgba = 4
 };
 
+// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
 enum class engine::e_texture_filters
 {
 	// Returns the value of the texture element that is nearest (in Manhattan distance) to the specified texture coordinates.

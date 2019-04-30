@@ -7,6 +7,7 @@ namespace engine
 	enum class e_texture_filters;
 	enum class e_wrap;
 
+	/// \brief Texture abstraction 
 	class texture
 	{
 	public:
