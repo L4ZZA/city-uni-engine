@@ -5,7 +5,6 @@
 #include "events/event.h"
 #include "events/application_event.h"
 #include "graphics/renderer.h"
-#include "graphics/shaders/static_shader.h"
 
 
 namespace engine
@@ -49,7 +48,6 @@ namespace engine
 
 	protected:
 		renderer                        m_renderer;
-		static_shader					m_static_shader;
 
 	private:
 		static application*             s_instance;

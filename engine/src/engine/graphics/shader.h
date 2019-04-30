@@ -3,7 +3,7 @@
 
 namespace engine 
 {
-
+	/// \brief
 	class shader
 	{
 	public:

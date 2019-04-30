@@ -103,7 +103,7 @@ engine::mesh engine::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 	return engine::mesh(vertices, indices, textures);
 }
 
-std::vector<engine::texture> engine::model::load_textures(aiMaterial * mat, aiTextureType type, std::string typeName)
+std::vector<engine::texture> engine::model::load_textures(aiMaterial * mat, aiTextureType type, std::string typeName) const
 {
 	std::vector<texture> textures;
 	for(uint32 i = 0; i < mat->GetTextureCount(type); i++)

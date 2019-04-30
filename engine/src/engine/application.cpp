@@ -1,6 +1,5 @@
 ﻿#include "pch.h"
 #include "application.h"
-#include "graphics/loader.h"
 #include "graphics/renderer.h"
 #include "utils/timer.h"
 
@@ -44,8 +43,6 @@ void engine::application::run()
 
 		m_window->on_update();
 	}
-
-	loader::cleanup();
 }
 
 void engine::application::on_event(event& event)

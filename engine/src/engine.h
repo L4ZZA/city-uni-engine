@@ -23,14 +23,8 @@
 #include "engine/graphics/shader.h"
 #include "engine/graphics/model.h"
 
-#include "engine/graphics/models/raw_model.h"
-#include "engine/graphics/textures/model_texture.h"
-#include "engine/graphics/models/textured_model.h"
 #include "engine/entities/camera.h"
-#include "engine/entities/entity.h"
 #include "engine/entities/light.h"
-#include "engine/graphics/loader.h"
-#include "engine/graphics/obj_loader.h"
 #include "engine/utils/maths.h"
 
 // ------------- Utils -----------------
