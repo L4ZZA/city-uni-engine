@@ -3,47 +3,9 @@
 
 namespace engine
 {
-	enum class e_color_channels
-	{
-		grayscale = 1,
-		rgb = 3,
-		rgba = 4
-	};
-
-	// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
-
-	enum class e_texture_filters
-	{
-		// Returns the value of the texture element that is nearest (in Manhattan distance) to the specified texture coordinates.
-		nearest,
-		// Returns the weighted average of the four texture elements that are closest to the specified texture coordinates.
-		linear,
-
-		// -- min filter only --
-		//
-		nearest_nearest,
-		//
-		linear_nearest,
-		//
-		nearest_linear,
-		//
-		linear_linear,
-
-	};
-
-	enum class e_wrap
-	{
-		//
-		clamp_to_edge,
-		//
-		clamp_to_border,
-		//
-		mirrored_repeat,
-		//
-		repeat,
-		//
-		mirror_clamp_to_edge,
-	};
+	enum class e_color_channels;
+	enum class e_texture_filters;
+	enum class e_wrap;
 
 	class texture
 	{
@@ -73,6 +35,6 @@ namespace engine
 		int                 m_width{ 0 };
 		int                 m_height{ 0 };
 		int                 m_bpp{ 0 };
-		e_color_channels    m_channels{ e_color_channels::rgba };
+		e_color_channels    m_channels{ 0 };
 	};
 }

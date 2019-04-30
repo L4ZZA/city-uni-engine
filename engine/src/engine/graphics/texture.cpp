@@ -4,8 +4,14 @@
 #include "stb_image.h"
 
 // TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
+enum class engine::e_color_channels
+{
+	grayscale = 1,
+	rgb = 3,
+	rgba = 4
+};
 
-enum class e_texture_filters
+enum class engine::e_texture_filters
 {
 	// Returns the value of the texture element that is nearest (in Manhattan distance) to the specified texture coordinates.
 	nearest = GL_NEAREST,
@@ -24,7 +30,7 @@ enum class e_texture_filters
 
 };
 
-enum class e_wrap
+enum class engine::e_wrap
 {
 	//
 	clamp_to_edge = GL_CLAMP_TO_EDGE,
@@ -39,6 +45,7 @@ enum class e_wrap
 };
 
 engine::texture::texture(const std::string &path, const std::string &type /*= ""*/)
+	: m_channels(e_color_channels::rgba)
 {
 	create(path, type);
 }
