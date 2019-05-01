@@ -18,7 +18,7 @@
     #error Pyro only supports Windows!
 #endif
 
-#if _DEBUG
+#if ENGINE_DEBUG
     #define ENABLE_ASSERTS
 #endif
 
