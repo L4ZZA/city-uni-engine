@@ -10,7 +10,7 @@ void engine::core::startup()
 {
 	logger::init(spdlog::level::trace, spdlog::level::warn); // Start logging first
 
-	ENGINE_CORE_TRACE("=== Pyro Engine v" VERSION_STRING " Core startup ===============");
+	LOG_CORE_TRACE("=== Pyro Engine v" VERSION_STRING " Core startup ===============");
 
 	platform_startup();
 
@@ -22,7 +22,7 @@ void engine::core::shutdown()
 {
 	platform_shutdown();
 
-	ENGINE_CORE_TRACE("=== Pyro Engine Core shutdown ======================");
+	LOG_CORE_TRACE("=== Pyro Engine Core shutdown ======================");
 
 	// Destroy renderer
 //    Graphics::RenderManager::Shutdown();

@@ -14,7 +14,7 @@ engine::model::model(const std::string& path)
 
 	if((!scene) || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || (!scene->mRootNode))
 	{
-		ENGINE_CORE_ERROR("[ASSIMP] Unable to load model '{0}'.", path);
+		LOG_CORE_ERROR("[ASSIMP] Unable to load model '{0}'.", path);
 		return;
 	}
 	m_directory = path.substr(0, path.find_last_of('/') + 1);

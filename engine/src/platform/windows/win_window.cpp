@@ -16,7 +16,7 @@ namespace engine
 
 	static void glfw_error_callback(int error_code, const char * description)
 	{
-		ENGINE_CORE_ERROR("GLFW Error ({0}): {1}", error_code, description);
+		LOG_CORE_ERROR("GLFW Error ({0}): {1}", error_code, description);
 	}
 }
 
@@ -59,14 +59,14 @@ bool engine::win_window::vsync()
 void engine::win_window::init(const std::string& name, window_props const& props)
 {
 	if(!core::startup_success)
-		ENGINE_CORE_ASSERT(false, "GLFW was not initialized!");
+		LOG_CORE_ASSERT(false, "GLFW was not initialized!");
 
 	m_data.title = name;
 	m_data.width = props.width;
 	m_data.height = props.height;
 	m_data.vsync = props.vsync;
 
-	ENGINE_CORE_INFO("Creating window {0} [{1},{2}]", name, props.width, props.height);
+	LOG_CORE_INFO("Creating window {0} [{1},{2}]", name, props.width, props.height);
 
 
 	m_window = glfwCreateWindow(
@@ -78,7 +78,7 @@ void engine::win_window::init(const std::string& name, window_props const& props
 	glfwMakeContextCurrent(m_window);
 
 	int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-	ENGINE_ASSERT(status, "Could not load Glad!");
+	LOG_ASSERT(status, "Could not load Glad!");
 
 	// we're telling glfw to pass the window_data struct to all the defined callbacks
 	// so that we ca work with our defined data.

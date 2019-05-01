@@ -8,7 +8,7 @@ engine::application* engine::application::s_instance{ nullptr };
 engine::application::application(const std::string &name, const window_props &properties)
 	: m_title(name), m_properties(properties)
 {
-	ENGINE_ASSERT(!s_instance, "Application already exists!");
+	LOG_ASSERT(!s_instance, "Application already exists!");
 	s_instance = this;
 
 	m_window = std::unique_ptr<window>(window::create(name, properties));
@@ -50,7 +50,7 @@ void engine::application::on_event(event& event)
 	event_dispatcher dispatcher(event);
 	dispatcher.dispatch<window_closed_event>(BIND_EVENT_FN(application::on_window_close));
 
-	//ENGINE_CORE_TRACE("{0}", event);
+	//LOG_CORE_TRACE("{0}", event);
 
 	// events are executed from top of the stack to bottom (aka end to start of the list)
 	for(auto it = m_layers_stack.end(); it != m_layers_stack.begin(); )

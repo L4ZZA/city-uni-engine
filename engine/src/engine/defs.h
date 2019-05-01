@@ -23,8 +23,8 @@
 #endif
 
 #ifdef ENABLE_ASSERTS
-    #define ASSERT(x, ...) { if(x) {ENGINE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-    #define CORE_ASSERT(x, ...) { if(x) {ENGINE_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define ASSERT(x, ...) { if(x) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define CORE_ASSERT(x, ...) { if(x) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
 #else
     #define ASSERT(x, ...)
     #define CORE_ASSERT(x, ...)
@@ -36,16 +36,16 @@
 // 1 << 2 = `0000 0100`
 #define BIT(x) 1 << x
 
-#if ENGINE_DEBUG
-    #define ENGINE_ENABLE_ASSERTS
+#if LOG_DEBUG
+    #define LOG_ENABLE_ASSERTS
 #endif
 
-#ifdef ENGINE_ENABLE_ASSERTS
-    #define ENGINE_ASSERT(x, ...) { if(!x) {ENGINE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-    #define ENGINE_CORE_ASSERT(x, ...) { if(!x) {ENGINE_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+#ifdef LOG_ENABLE_ASSERTS
+    #define LOG_ASSERT(x, ...) { if(!x) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define LOG_CORE_ASSERT(x, ...) { if(!x) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
 #else
-    #define ENGINE_ASSERT(x, ...)
-    #define ENGINE_CORE_ASSERT(x, ...)
+    #define LOG_ASSERT(x, ...)
+    #define LOG_CORE_ASSERT(x, ...)
 #endif
 
 #define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

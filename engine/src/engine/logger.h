@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "engine/defs.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
@@ -23,32 +23,32 @@ namespace engine
 #ifndef ENGINE_DIST
 
 // Core log macros
-#define ENGINE_CORE_TRACE(...)    ::engine::logger::core_logger()->trace(__VA_ARGS__)
-#define ENGINE_CORE_INFO(...)     ::engine::logger::core_logger()->info(__VA_ARGS__)
-#define ENGINE_CORE_WARN(...)     ::engine::logger::core_logger()->warn(__VA_ARGS__)
-#define ENGINE_CORE_ERROR(...)    ::engine::logger::core_logger()->error(__VA_ARGS__)
-#define ENGINE_CORE_FATAL(...)    ::engine::logger::core_logger()->critical(__VA_ARGS__)
+#define LOG_CORE_TRACE(...)    ::engine::logger::core_logger()->trace(__VA_ARGS__)
+#define LOG_CORE_INFO(...)     ::engine::logger::core_logger()->info(__VA_ARGS__)
+#define LOG_CORE_WARN(...)     ::engine::logger::core_logger()->warn(__VA_ARGS__)
+#define LOG_CORE_ERROR(...)    ::engine::logger::core_logger()->error(__VA_ARGS__)
+#define LOG_CORE_FATAL(...)    ::engine::logger::core_logger()->critical(__VA_ARGS__)
 
  // Client log macros
-#define ENGINE_TRACE(...)	      ::engine::logger::client_logger()->trace(__VA_ARGS__)
-#define ENGINE_INFO(...)	      ::engine::logger::client_logger()->info(__VA_ARGS__)
-#define ENGINE_WARN(...)	      ::engine::logger::client_logger()->warn(__VA_ARGS__)
-#define ENGINE_ERROR(...)	      ::engine::logger::client_logger()->error(__VA_ARGS__)
-#define ENGINE_FATAL(...)	      ::engine::logger::client_logger()->critical(__VA_ARGS__)
+#define LOG_TRACE(...)	      ::engine::logger::client_logger()->trace(__VA_ARGS__)
+#define LOG_INFO(...)	      ::engine::logger::client_logger()->info(__VA_ARGS__)
+#define LOG_WARN(...)	      ::engine::logger::client_logger()->warn(__VA_ARGS__)
+#define LOG_ERROR(...)	      ::engine::logger::client_logger()->error(__VA_ARGS__)
+#define LOG_FATAL(...)	      ::engine::logger::client_logger()->critical(__VA_ARGS__)
 
   // Render Queue logger
 #ifdef LOG_RQ
-#define ENGINE_RQ_FATAL(...)   ::engine::logger::core_logger()->critical(__VA_ARGS__)
-#define ENGINE_RQ_ERROR(...)   ::engine::logger::core_logger()->error(__VA_ARGS__)
-#define ENGINE_RQ_WARN(...)    ::engine::logger::core_logger()->warn(__VA_ARGS__)
-#define ENGINE_RQ_INFO(...)    ::engine::logger::core_logger()->info(__VA_ARGS__)
-#define ENGINE_RQ_TRACE(...)   ::engine::logger::core_logger()->trace(__VA_ARGS__)
+#define LOG_RQ_FATAL(...)   ::engine::logger::core_logger()->critical(__VA_ARGS__)
+#define LOG_RQ_ERROR(...)   ::engine::logger::core_logger()->error(__VA_ARGS__)
+#define LOG_RQ_WARN(...)    ::engine::logger::core_logger()->warn(__VA_ARGS__)
+#define LOG_RQ_INFO(...)    ::engine::logger::core_logger()->info(__VA_ARGS__)
+#define LOG_RQ_TRACE(...)   ::engine::logger::core_logger()->trace(__VA_ARGS__)
 #else
-#define ENGINE_RQ_FATAL(...)
-#define ENGINE_RQ_ERROR(...)
-#define ENGINE_RQ_WARN(...)
-#define ENGINE_RQ_INFO(...)
-#define ENGINE_RQ_TRACE(...)
+#define LOG_RQ_FATAL(...)
+#define LOG_RQ_ERROR(...)
+#define LOG_RQ_WARN(...)
+#define LOG_RQ_INFO(...)
+#define LOG_RQ_TRACE(...)
 #endif
 
 #endif
