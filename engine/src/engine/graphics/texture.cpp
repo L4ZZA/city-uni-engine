@@ -2,34 +2,29 @@
 #include "texture.h"
 #include "glad/glad.h"
 #include "stb_image.h"
-
+/// \brief Each enum value is the actual number of channels 
+/// used by opengl for that format.
 enum class engine::e_color_channels
 {
 	grayscale = 1,
+	grayscale_alpha = 2,
 	rgb = 3,
-	rgba = 4
+	rgba = 4,
 };
 
-// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
+/// \brief 
 enum class engine::e_texture_filters
 {
+	none = 0,
 	// Returns the value of the texture element that is nearest (in Manhattan distance) to the specified texture coordinates.
 	nearest = GL_NEAREST,
 	// Returns the weighted average of the four texture elements that are closest to the specified texture coordinates.
 	linear = GL_LINEAR,
-
-	// -- min filter only --
-	//
-	nearest_nearest = GL_NEAREST_MIPMAP_NEAREST,
-	//
-	linear_nearest = GL_LINEAR_MIPMAP_NEAREST,
-	//
-	nearest_linear = GL_NEAREST_MIPMAP_LINEAR,
-	//
-	linear_linear = GL_LINEAR_MIPMAP_LINEAR,
-
 };
 
+// TODO: complete descriptions (http://docs.gl/gl4/glTexParameter)
+
+/// \brief 
 enum class engine::e_wrap
 {
 	//
@@ -61,10 +56,10 @@ void engine::texture::create(const std::string &path, const std::string &type /*
 
 	glGenTextures(1, &m_id);
 	bind();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	set_min_filter(e_texture_filters::linear);
+	set_mag_filter(e_texture_filters::linear);
+	set_wrap_s(e_wrap::clamp_to_edge);
+	set_wrap_t(e_wrap::clamp_to_edge);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_buffer);
 	unbind();
 
