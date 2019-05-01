@@ -7,7 +7,7 @@ namespace engine
 	class renderer;
 
 	/// \brief Interface/base-class from which implement the layers in your applicaiton.
-	class ENGINE_API layer
+	class layer
 	{
 	public:
 		layer(const std::string &name = "Layer");

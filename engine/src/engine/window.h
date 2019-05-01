@@ -13,7 +13,7 @@ namespace engine
 	};
 
 	/// \brief Interface representing a desktop system based window.
-	class ENGINE_API window
+	class window
 	{
 	public:
 		static window* create(const std::string& name, window_props const &props = window_props());

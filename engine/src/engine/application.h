@@ -11,7 +11,7 @@ namespace engine
 {
 	class timer;
 
-	class ENGINE_API application
+	class application
 	{
 	public:
 		application(const std::string &name, const window_props &properties);

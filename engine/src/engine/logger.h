@@ -6,7 +6,7 @@
 namespace engine
 {
 	/// \brief Wrapper around spdlog logger.
-	class ENGINE_API logger
+	class logger
 	{
 	public:
 		static void init(

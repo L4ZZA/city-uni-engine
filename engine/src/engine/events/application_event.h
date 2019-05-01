@@ -5,7 +5,7 @@ namespace engine
 {
     //=========================================================================
 
-    class ENGINE_API window_resize_event : public event
+    class window_resize_event : public event
     {
     public:
         window_resize_event(unsigned int width, unsigned int height)
@@ -28,7 +28,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API window_closed_event : public event
+    class window_closed_event : public event
     {
     public:
         window_closed_event() {}
@@ -38,7 +38,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API app_tick_event : public event
+    class app_tick_event : public event
     {
     public:
         app_tick_event() {}
@@ -48,7 +48,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API app_update_event : public event
+    class app_update_event : public event
     {
     public:
         app_update_event() {}
@@ -58,7 +58,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API app_render_event : public event
+    class app_render_event : public event
     {
     public:
         app_render_event() {}

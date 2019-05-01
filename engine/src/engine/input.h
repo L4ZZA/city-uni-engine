@@ -4,7 +4,7 @@ namespace engine
 {
 	/// \brief Base class for input polling.
 	/// Input polling allows to retrieve input states at any time.
-	class ENGINE_API input
+	class input
 	{
 	public:
 		/// \brief Returns if the specified key is being pressed.

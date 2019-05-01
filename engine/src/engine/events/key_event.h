@@ -6,7 +6,7 @@ namespace engine
 {
     //=========================================================================
 
-    class ENGINE_API key_event : public event
+    class key_event : public event
     {
     public:
         int key_code() const { return m_key_code; }
@@ -23,7 +23,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API key_pressed_event : public key_event
+    class key_pressed_event : public key_event
     {
     public:
         key_pressed_event(int keycode, int repeatCount)
@@ -48,7 +48,7 @@ namespace engine
 
     //=========================================================================
 
-    class ENGINE_API key_released_event : public key_event
+    class key_released_event : public key_event
     {
     public:
         key_released_event(int keycode)
@@ -70,7 +70,7 @@ namespace engine
 
     /// \brief Represents the char value of the key pressed. 
     /// [Most commonly known as char_event in windows]
-    class ENGINE_API key_typed_event : public key_event
+    class key_typed_event : public key_event
     {
     public:
         key_typed_event(int keycode)

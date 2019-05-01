@@ -5,7 +5,7 @@ namespace engine
 {
     //=============================================================================
 
-    class ENGINE_API mouse_moved_event : public event
+    class mouse_moved_event : public event
     {
     public:
         mouse_moved_event(float x, float y)
@@ -32,7 +32,7 @@ namespace engine
 
     //=============================================================================
 
-    class ENGINE_API mouse_scrolled_event : public event
+    class mouse_scrolled_event : public event
     {
     public:
         mouse_scrolled_event(float x_offset, float y_offset)
@@ -59,7 +59,7 @@ namespace engine
 
     //=============================================================================
 
-    class ENGINE_API mouse_button_event : public event
+    class mouse_button_event : public event
     {
     public:
         int mouse_button() const { return m_button; }
@@ -75,7 +75,7 @@ namespace engine
 
     //=============================================================================
 
-    class ENGINE_API mouse_button_pressed_event : public mouse_button_event
+    class mouse_button_pressed_event : public mouse_button_event
     {
     public:
         mouse_button_pressed_event(int button)
@@ -95,7 +95,7 @@ namespace engine
 
     //=============================================================================
 
-    class ENGINE_API mouse_button_released_event : public mouse_button_event
+    class mouse_button_released_event : public mouse_button_event
     {
     public:
         mouse_button_released_event(int button)
