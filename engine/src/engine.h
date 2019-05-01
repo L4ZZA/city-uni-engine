@@ -24,7 +24,6 @@
 #include "engine/graphics/model.h"
 
 #include "engine/entities/camera.h"
-#include "engine/entities/light.h"
 #include "engine/utils/maths.h"
 
 // ------------- Utils -----------------
