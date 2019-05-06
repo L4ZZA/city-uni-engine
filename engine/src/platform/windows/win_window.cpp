@@ -62,11 +62,14 @@ void engine::win_window::init(const std::string& name, window_props const& props
 		CORE_ASSERT(false, "[win_window] GLFW was not initialized!");
 
 	m_data.title = name;
+	m_data.x = props.x;
+	m_data.y = props.y;
 	m_data.width = props.width;
 	m_data.height = props.height;
 	m_data.vsync = props.vsync;
 
-	LOG_CORE_INFO("[win_window] Creating window {0} [{1},{2}]", name, props.width, props.height);
+	LOG_CORE_INFO("[win_window] Creating window {0} [{1},{2},{3},{4}]", 
+		name, props.y, props.y, props.width, props.height);
 
 
 	m_window = glfwCreateWindow(
@@ -74,6 +77,10 @@ void engine::win_window::init(const std::string& name, window_props const& props
 		static_cast<int>(props.height),
 		name.c_str(),
 		nullptr, nullptr);
+
+	// set window origin
+	LOG_CORE_INFO("[win_window] Setting window origin.");
+	glfwSetWindowPos(m_window, props.x, props.y);
 
 	LOG_CORE_INFO("[win_window] Creating graphics context.");
 	m_context = new opengl_context(m_window);

@@ -44,6 +44,8 @@ namespace engine
         struct window_data
         {
             std::string title;
+            unsigned int x;
+            unsigned int y;
             unsigned int width;
             unsigned int height;
             bool vsync;

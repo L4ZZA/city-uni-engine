@@ -7,7 +7,7 @@ class game : public engine::application
 {
 public:
 	game()
-		:application("The engine", { 1280, 720, false, false })
+		:application("The engine", {0, 26, 1280, 720, false, false })
 	{
 		//m_static_shader.create();
 		//m_renderer.init(m_static_shader);

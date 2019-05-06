@@ -6,6 +6,8 @@ namespace engine
 {
 	struct window_props
 	{
+		unsigned int    x;
+		unsigned int    y;
 		unsigned int    width;
 		unsigned int    height;
 		bool			full_screen;
