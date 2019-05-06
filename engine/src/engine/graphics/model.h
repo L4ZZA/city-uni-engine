@@ -27,6 +27,7 @@ namespace engine
 	private: // fields
 		std::vector<mesh> m_meshes;
 		std::string m_directory;
+		std::string m_path;
 	};
 
 }

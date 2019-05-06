@@ -8,6 +8,7 @@
 #include "texture.h"
 
 engine::model::model(const std::string& path)
+	:m_path(path)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -57,7 +58,7 @@ engine::mesh engine::model::process_mesh(aiMesh * mesh, const aiScene * scene)
 	// == Process vertices
 	for(uint32 i = 0; i < mesh->mNumVertices; i++)
 	{
-		mesh::vertex vert;
+		mesh::vertex vert{};
 
 		// Position
 		glm::vec3 pos(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
@@ -113,7 +114,7 @@ std::vector<engine::texture> engine::model::load_textures(aiMaterial * mat, aiTe
 		aiString filename;
 		mat->GetTexture(type, i, &filename);
 
-		std::string fullpath = m_directory + std::string(filename.C_Str());
+		const std::string fullpath = m_directory + std::string(filename.C_Str());
 
 		texture texture(fullpath, typeName);
 		//texture.LoadTexture();

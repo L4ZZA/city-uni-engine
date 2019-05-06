@@ -10,18 +10,17 @@ namespace engine
 {
 
 	shader::shader(const char* filename)
-		: m_program_id(0)
 	{
 		std::string file;
 		std::regex re("(?:#shader\\s+(vertex|fragment|pixel))\\s+([^]+?)(?=#endshader)");
 
-		m_shaderSources = new std::unordered_map<unsigned int, std::string>();
+		m_shader_sources = new std::unordered_map<unsigned int, std::string>();
 
 		std::ifstream is(filename, std::ifstream::binary);
 		if(is)
 		{
 			// Save filename
-			filename = filename;
+			m_filename = filename;
 
 			is.seekg(0, std::ios::end);
 			file.resize(is.tellg());
@@ -39,9 +38,9 @@ namespace engine
 
 				uint32 shaderType = type_from_string(match.str(1));
 				if(shaderType)
-					m_shaderSources->insert({ shaderType, match.str(2) });
+					m_shader_sources->insert({ shaderType, match.str(2) });
 
-				next++;
+				++next;
 			}
 		}
 	}
@@ -52,7 +51,7 @@ namespace engine
 		if(m_program_loaded)
 			glDeleteProgram(m_program_id);
 
-		delete m_shaderSources;
+		delete m_shader_sources;
 	}
 
 	void shader::compile_and_load()
@@ -67,7 +66,7 @@ namespace engine
 
 		m_program_id = glCreateProgram();
 
-		for(auto& kv : *(m_shaderSources))
+		for(auto& kv : *(m_shader_sources))
 		{
 			GLint shaderId = glCreateShader(kv.first);
 			const GLchar* source = kv.second.c_str();
@@ -112,7 +111,7 @@ namespace engine
 		}
 	}
 
-	void shader::bind()
+	void shader::bind() const
 	{
 		glUseProgram(m_program_id);
 
@@ -123,7 +122,7 @@ namespace engine
 	{
 		// TODO: change this to set uniform without binding
 		glUseProgram(m_program_id);
-		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1f(uniformLocation, val);
 
 		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
@@ -133,7 +132,7 @@ namespace engine
 	{
 		// TODO: change this to set uniform without binding
 		glUseProgram(m_program_id);
-		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform3f(uniformLocation, vec[0], vec[1], vec[2]);
 
 		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
@@ -143,7 +142,7 @@ namespace engine
 	{
 		// TODO: change this to set uniform without binding
 		glUseProgram(m_program_id);
-		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform4f(uniformLocation, vec[0], vec[1], vec[2], vec[3]);
 
 		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec4)", m_program_id, name, vec);
@@ -153,7 +152,7 @@ namespace engine
 	{
 		// TODO: change this to set uniform without binding
 		glUseProgram(m_program_id);
-		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1i(uniformLocation, val);
 
 		LOG_RQ_TRACE("[shader] SetUniform1i (prog {0}): uniform: '{1}' = {2}(int32)", m_program_id, name, val);
@@ -163,7 +162,7 @@ namespace engine
 	{
 		// TODO: change this to set uniform without binding
 		glUseProgram(m_program_id);
-		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mat));
 
 		LOG_RQ_TRACE("[shader] SetUniformMatrix4f (prog {0}): uniform: '{1}' = {2}(mat4)", programId, name, mat);

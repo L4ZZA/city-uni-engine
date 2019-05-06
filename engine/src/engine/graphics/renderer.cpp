@@ -7,8 +7,8 @@
 void engine::renderer::init(static_shader& shader)
 {
 	//shader.start();
-	auto width = static_cast<float>(application::instance().get_window().width());
-	auto height = static_cast<float>(application::instance().get_window().height());
+	//auto width = static_cast<float>(application::instance().get_window().width());
+	//auto height = static_cast<float>(application::instance().get_window().height());
 	//shader.load_projection(maths::create_projection_matrix(s_fov, width, height, s_near, s_far));
 	//shader.stop();
 }
