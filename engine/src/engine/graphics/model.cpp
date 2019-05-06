@@ -10,6 +10,7 @@
 engine::model::model(const std::string& path)
 	:m_path(path)
 {
+	LOG_CORE_INFO("[model] Creating model '{0}'.", m_path);
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
@@ -25,7 +26,7 @@ engine::model::model(const std::string& path)
 
 engine::model::~model()
 {
-	LOG_CORE_ERROR("[model] Unable to load model '{0}'.", m_path);
+	LOG_CORE_INFO("[model] Unable to load model '{0}'.", m_path);
 }
 
 void engine::model::render(shader& shader)

@@ -3,12 +3,12 @@
 
 #include "glad/glad.h"
 
-namespace engine 
+namespace engine
 {
 
 	mesh::mesh(
-		const std::vector<vertex>& vertices, 
-		const std::vector<uint32>& indices, 
+		const std::vector<vertex>& vertices,
+		const std::vector<uint32>& indices,
 		const std::vector<texture>& textures)
 	{
 		m_vertices = vertices;
@@ -39,25 +39,23 @@ namespace engine
 	}
 
 	mesh::~mesh()
-	{
-		LOG_CORE_ERROR("[mesh] Destructing mesh.");
-	}
+	{}
 
 	void mesh::render(shader& shader)
 	{
 		uint32 diffuseN = 1, specularN = 1;
-		for (uint32 i = 0; i < m_textures.size(); i++) 
+		for(int32 i = 0; i < m_textures.size(); i++)
 		{
 			std::string num, name = m_textures[i].type();
 
-			if (name == "diffuse")
+			if(name == "diffuse")
 				num = std::to_string(diffuseN++);
-			else if (name == "specular")
+			else if(name == "specular")
 				num = std::to_string(specularN++);
 
 			m_textures[i].bind(i); // Bind the texture to slot i
 			// TODO: Should not need cast
-			shader.set_uniform("material." + name + num, (int32)i); // Pass slot i to the shader material struct
+			shader.set_uniform("material." + name + num, i); // Pass slot i to the shader material struct
 		}
 
 		// draw mesh
