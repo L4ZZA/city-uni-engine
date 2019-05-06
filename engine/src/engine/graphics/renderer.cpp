@@ -3,6 +3,8 @@
 #include "glad/glad.h"
 #include "engine/utils/maths.h"
 #include "engine/application.h"
+#include "mesh.h"
+#include "model.h"
 
 void engine::renderer::init(static_shader& shader)
 {
@@ -33,4 +35,38 @@ void engine::renderer::render(const entity &entity, static_shader &shader) const
 	//glBindTexture(GL_TEXTURE_2D, model.texture().id());
 	//glDrawElements(GL_TRIANGLES, raw_model.vertex_count(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
+}
+
+void engine::renderer::render_3d(const model& model, shader& shader) const
+{
+	auto meshes = model.meshes();
+	for(const auto& mesh : meshes)
+		render_3d(mesh, shader);
+}
+
+void engine::renderer::render_3d(const mesh& mesh, shader& shader) const
+{
+	auto textures = mesh.textures();
+	auto va = mesh.va();
+	const auto indices_count = mesh.indices_count();
+
+	uint32 diffuseN = 1, specularN = 1;
+	for(int32 i = 0; i < textures.size(); i++)
+	{
+		std::string num, name = textures[i].type();
+
+		if(name == "diffuse")
+			num = std::to_string(diffuseN++);
+		else if(name == "specular")
+			num = std::to_string(specularN++);
+
+		textures[i].bind(i); // Bind the texture to slot i
+		// TODO: Should not need cast
+		shader.set_uniform("material." + name + num, i); // Pass slot i to the shader material struct
+	}
+
+	// draw mesh
+	va.bind();
+	glDrawElements(GL_TRIANGLES, indices_count, GL_UNSIGNED_INT, nullptr);
+	va.unbind();
 }

@@ -11,13 +11,15 @@ enum aiTextureType;
 
 namespace engine
 {
+	class renderer;
+
 	class model
 	{
 	public:
 		model(const std::string& path);
 		~model();
 
-		void render(shader& shader);
+		const std::vector<mesh>& meshes() const { return m_meshes; }
 
 	private: // methods
 		void process_node(aiNode* node, const aiScene* scene);

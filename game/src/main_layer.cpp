@@ -49,11 +49,11 @@ void main_layer::on_render(engine::renderer& renderer)
 	modelShader.set_uniform("material.shininess", shininess);
 
 	// Render the model
-	nanosuit.render(modelShader);
+	renderer.render_3d(nanosuit, modelShader);
 
 	//lampShader.Bind();
 	lampShader.set_uniform("mvp", (projection * viewLamp * modelLamp));
 	lampShader.set_uniform("color", lightSpecular);
 	// Render the lamp
-	lamp.render(lampShader);
+	renderer.render_3d(lamp, lampShader);
 }

@@ -29,12 +29,6 @@ engine::model::~model()
 	LOG_CORE_INFO("[model] Unable to load model '{0}'.", m_path);
 }
 
-void engine::model::render(shader& shader)
-{
-	for(auto& m_mesh : m_meshes)
-		m_mesh.render(shader);
-}
-
 void engine::model::process_node(aiNode * node, const aiScene * scene)
 {
 	for(uint32 i = 0; i < node->mNumMeshes; i++)
