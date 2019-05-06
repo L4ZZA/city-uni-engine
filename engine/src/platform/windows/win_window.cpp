@@ -68,7 +68,7 @@ void engine::win_window::init(const std::string& name, window_props const& props
 	m_data.height = props.height;
 	m_data.vsync = props.vsync;
 
-	LOG_CORE_INFO("[win_window] Creating window {0} [{1},{2},{3},{4}]", 
+	LOG_CORE_INFO("[win_window] Creating window {0} [{1},{2},{3},{4}]",
 		name, props.y, props.y, props.width, props.height);
 
 
