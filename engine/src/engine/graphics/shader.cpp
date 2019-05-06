@@ -114,58 +114,53 @@ namespace engine
 	void shader::bind() const
 	{
 		glUseProgram(m_program_id);
+		LOG_RQ_TRACE("[shader] bound shader (prog {0})", m_program_id);
+	}
 
-		LOG_RQ_TRACE("[shader] BindShader (prog {0})", m_program_id);
+	void shader::unbind() const
+	{
+		glUseProgram(0);
+		LOG_RQ_TRACE("[shader] unbound shader (prog {0})", m_program_id);
 	}
 
 	void shader::set_uniform(const std::string& name, float val)
 	{
-		// TODO: change this to set uniform without binding
-		glUseProgram(m_program_id);
 		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1f(uniformLocation, val);
 
-		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::vec3& vec)
 	{
-		// TODO: change this to set uniform without binding
-		glUseProgram(m_program_id);
 		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform3f(uniformLocation, vec[0], vec[1], vec[2]);
 
-		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] set_uniform (glm::vec3) (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::vec4& vec)
 	{
-		// TODO: change this to set uniform without binding
-		glUseProgram(m_program_id);
 		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform4f(uniformLocation, vec[0], vec[1], vec[2], vec[3]);
 
-		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec4)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] set_uniform (glm::vec4) (prog {0}): uniform: '{1}' = {2}(vec4)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, int32 val)
 	{
-		// TODO: change this to set uniform without binding
-		glUseProgram(m_program_id);
 		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1i(uniformLocation, val);
 
-		LOG_RQ_TRACE("[shader] SetUniform1i (prog {0}): uniform: '{1}' = {2}(int32)", m_program_id, name, val);
+		LOG_RQ_TRACE("[shader] set_uniform (int32)  (prog {0}): uniform: '{1}' = {2}(int32)", m_program_id, name, val);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::mat4& mat)
 	{
-		// TODO: change this to set uniform without binding
-		glUseProgram(m_program_id);
 		const int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mat));
 
-		LOG_RQ_TRACE("[shader] SetUniformMatrix4f (prog {0}): uniform: '{1}' = {2}(mat4)", programId, name, mat);
+		LOG_RQ_TRACE("[shader] set_uniform (glm::mat4) (prog {0}): uniform: '{1}' = {2}(mat4)", programId, name, mat);
 	}
 
 	uint32 shader::type_from_string(const std::string& shaderType)

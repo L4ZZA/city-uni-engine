@@ -12,6 +12,7 @@ namespace engine
 
 		void compile_and_load();
 		void bind() const;
+		void unbind() const;
 
 		void set_uniform(const std::string& name, float val);
 		void set_uniform(const std::string& name, const glm::vec3& vec);
