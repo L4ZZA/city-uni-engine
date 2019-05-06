@@ -23,8 +23,8 @@
 #endif
 
 #ifdef ENABLE_ASSERTS
-    #define ASSERT(x, ...) { if(x) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-    #define CORE_ASSERT(x, ...) { if(x) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define ASSERT(x, ...) { if(!(x)) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+    #define CORE_ASSERT(x, ...) { if(!(x)) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
 #else
     #define ASSERT(x, ...)
     #define CORE_ASSERT(x, ...)
@@ -35,18 +35,6 @@
 // 1 << 1 = `0000 0010`
 // 1 << 2 = `0000 0100`
 #define BIT(x) 1 << x
-
-#if LOG_DEBUG
-    #define LOG_ENABLE_ASSERTS
-#endif
-
-#ifdef LOG_ENABLE_ASSERTS
-    #define LOG_ASSERT(x, ...) { if(!x) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-    #define LOG_CORE_ASSERT(x, ...) { if(!x) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-#else
-    #define LOG_ASSERT(x, ...)
-    #define LOG_CORE_ASSERT(x, ...)
-#endif
 
 #define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
