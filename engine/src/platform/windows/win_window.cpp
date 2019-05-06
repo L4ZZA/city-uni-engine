@@ -1,12 +1,12 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "win_window.h"
 
-#include "engine/events/event.h"
+#include "engine/core.h"
 #include "engine/events/application_event.h"
 #include "engine/events/key_event.h"
 #include "engine/events/mouse_event.h"
-#include "glad/glad.h"
-#include "engine/core.h"
+
+#include "platform/opengl/context.h"
 
 //=============================================================================
 
@@ -38,7 +38,7 @@ engine::win_window::~win_window()
 void engine::win_window::on_update()
 {
 	glfwPollEvents();
-	glfwSwapBuffers(m_window);
+	m_context->swap_buffers();
 }
 
 void engine::win_window::vsync(bool enabled)
@@ -75,10 +75,9 @@ void engine::win_window::init(const std::string& name, window_props const& props
 		name.c_str(),
 		nullptr, nullptr);
 
-	glfwMakeContextCurrent(m_window);
-
-	int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-	LOG_ASSERT(status, "Could not load Glad!");
+	LOG_CORE_INFO("[win_window] Creating graphics context.");
+	m_context = new opengl_context(m_window);
+	m_context->init();
 
 	// we're telling glfw to pass the window_data struct to all the defined callbacks
 	// so that we ca work with our defined data.

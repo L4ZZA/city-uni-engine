@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "engine/window.h"
+#include "engine/renderer/graphics_context.h"
 #include "GLFW/glfw3.h"
 
 namespace engine
@@ -37,6 +38,7 @@ namespace engine
 
     private:
         GLFWwindow* m_window;
+		graphics_context* m_context;
 
         /// \brief struct to pass to the glfw callback user_ptr
         struct window_data
