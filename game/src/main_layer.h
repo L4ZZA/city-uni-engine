@@ -11,16 +11,19 @@ public:
 	void on_render(engine::renderer &renderer) override;
 
 private:
-	engine::shader modelShader;
-	engine::shader lampShader;
-	engine::model nanosuit;
-	engine::model lamp;
+	engine::shader m_model_shader;
+	engine::shader m_lamp_shader;
+	engine::model m_nanosuit;
+	// https://free3d.com/3d-model/b1-battledroid-full-rig-star-wars-485835.html
+	//engine::model m_battledroid;
+	// https://free3d.com/3d-model/simple-flashlight-70024.html
+	engine::model m_lamp;
 
-	glm::vec3 lightPos;
-	glm::vec3 lightDiffuse;
-	glm::vec3 lightAmbient;
-	glm::vec3 lightSpecular;
-	float shininess;
+	glm::vec3 m_light_pos;
+	glm::vec3 m_light_diffuse;
+	glm::vec3 m_light_ambient;
+	glm::vec3 m_light_specular;
+	float m_shininess;
 
-	glm::vec3 cameraPos = glm::vec3(0.0f, -8.0f, -20.0f);
+	glm::vec3 m_camera_pos = glm::vec3(0.0f, -8.0f, -20.0f);
 };
