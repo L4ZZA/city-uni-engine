@@ -3,41 +3,41 @@
 #include "GLFW/glfw3.h"
 #include "win_input.h"
 
-static bool gGLFWInitialized = false;
+static bool g_glfw_nitialized = false;
 
 void engine::core::platform_startup()
 {
-	LOG_CORE_TRACE("Platform-specific startup: Windows");
+	LOG_CORE_TRACE("[win_core] Platform-specific startup: Windows");
 
-	if(!gGLFWInitialized)
+	if(!g_glfw_nitialized)
 	{
 		const int32 success = glfwInit();
 		if(!success)
 		{
-			LOG_CORE_FATAL("Could not initialize GLFW!");
+			LOG_CORE_FATAL("[win_core] Could not initialize GLFW!");
 			startup_success = false;
 		}
 		else
-			LOG_CORE_TRACE("GLFW initialized");
+			LOG_CORE_TRACE("[win_core] GLFW initialized");
 
-		gGLFWInitialized = true;
+		g_glfw_nitialized = true;
 	}
 
-	LOG_CORE_TRACE("Starting input manager");
+	LOG_CORE_TRACE("[win_core] Starting input manager");
 	win_input::init();
 }
 
 void engine::core::platform_shutdown()
 {
-	LOG_CORE_TRACE("Platform-specific shutdown: Windows");
+	LOG_CORE_TRACE("[win_core] Platform-specific shutdown: Windows");
 
-	LOG_CORE_TRACE("Stopping input manager");
+	LOG_CORE_TRACE("[win_core] Stopping input manager");
 	win_input::shutdown();
 
-	if(gGLFWInitialized)
+	if(g_glfw_nitialized)
 	{
 		glfwTerminate();
-		LOG_CORE_TRACE("GLFW terminated");
+		LOG_CORE_TRACE("[win_core] GLFW terminated");
 	}
 }
 

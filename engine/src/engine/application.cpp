@@ -8,7 +8,7 @@ engine::application* engine::application::s_instance{ nullptr };
 engine::application::application(const std::string &name, const window_props &properties)
 	: m_title(name), m_properties(properties)
 {
-	LOG_ASSERT(!s_instance, "Application already exists!");
+	ASSERT(!s_instance, "Application already exists!");
 	s_instance = this;
 
 	m_window = std::unique_ptr<window>(window::create(name, properties));
@@ -22,6 +22,7 @@ engine::application::~application()
 
 void engine::application::run()
 {
+	LOG_CORE_INFO("[application] Starting timer.");
 	m_timer = new timer;
 	m_timer->start();
 

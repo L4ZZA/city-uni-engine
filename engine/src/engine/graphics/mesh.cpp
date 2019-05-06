@@ -39,7 +39,9 @@ namespace engine
 	}
 
 	mesh::~mesh()
-	{ }
+	{
+		LOG_CORE_ERROR("[mesh] Destructing mesh.");
+	}
 
 	void mesh::render(shader& shader)
 	{

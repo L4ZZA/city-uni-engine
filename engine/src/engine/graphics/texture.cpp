@@ -50,6 +50,7 @@ void engine::texture::create(const std::string &path, const std::string &type /*
 {
 	m_path = path;
 	m_type = type;
+	LOG_CORE_INFO("[texture] Creating texture {} of type {}.", path, type);
 
 	stbi_set_flip_vertically_on_load(true);
 	m_buffer = stbi_load(path.c_str(),

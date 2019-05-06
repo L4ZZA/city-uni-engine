@@ -7,11 +7,13 @@ engine::input* engine::input::s_instance;
 
 void engine::win_input::init()
 {
+	LOG_CORE_INFO("[win_input] Initializing input instance.");
 	s_instance = new win_input();
 }
 
 void engine::win_input::shutdown()
 {
+	LOG_CORE_INFO("[win_input] Releasing input.");
 	SAFE_RELEASE(s_instance);
 }
 

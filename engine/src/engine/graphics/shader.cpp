@@ -48,6 +48,7 @@ namespace engine
 
 	shader::~shader()
 	{
+		LOG_CORE_INFO("[shader] Destructing {}.", m_filename);
 		if(m_program_loaded)
 			glDeleteProgram(m_program_id);
 
@@ -79,7 +80,7 @@ namespace engine
 			if(!success)
 			{
 				glGetShaderInfoLog(shaderId, 1024, nullptr, infoLog);
-				LOG_CORE_WARN("Unable to compile shader {0}: {1}", m_filename, infoLog);
+				LOG_CORE_ERROR("[shader] Unable to compile shader {0}: {1}", m_filename, infoLog);
 				glDeleteShader(shaderId);
 			}
 			else
@@ -96,7 +97,7 @@ namespace engine
 		if(!success)
 		{
 			glGetProgramInfoLog(m_program_id, 1024, nullptr, infoLog);
-			LOG_CORE_WARN("Unable to link shader program {0}: {1}", m_filename, infoLog);
+			LOG_CORE_WARN("[shader] Unable to link shader program {0}: {1}", m_filename, infoLog);
 			glDeleteProgram(m_program_id);
 
 			m_program_loaded = false;
@@ -115,7 +116,7 @@ namespace engine
 	{
 		glUseProgram(m_program_id);
 
-		LOG_RQ_TRACE("[RenderQueue] -- BindShader (prog {0})", m_program_id);
+		LOG_RQ_TRACE("[shader] BindShader (prog {0})", m_program_id);
 	}
 
 	void shader::set_uniform(const std::string& name, float val)
@@ -125,7 +126,7 @@ namespace engine
 		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1f(uniformLocation, val);
 
-		LOG_RQ_TRACE("[RenderQueue] -- SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::vec3& vec)
@@ -135,7 +136,7 @@ namespace engine
 		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform3f(uniformLocation, vec[0], vec[1], vec[2]);
 
-		LOG_RQ_TRACE("[RenderQueue] -- SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec3)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::vec4& vec)
@@ -145,7 +146,7 @@ namespace engine
 		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform4f(uniformLocation, vec[0], vec[1], vec[2], vec[3]);
 
-		LOG_RQ_TRACE("[RenderQueue] -- SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec4)", m_program_id, name, vec);
+		LOG_RQ_TRACE("[shader] SetUniform4f (prog {0}): uniform: '{1}' = {2}(vec4)", m_program_id, name, vec);
 	}
 
 	void shader::set_uniform(const std::string& name, int32 val)
@@ -155,7 +156,7 @@ namespace engine
 		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniform1i(uniformLocation, val);
 
-		LOG_RQ_TRACE("[RenderQueue] -- SetUniform1i (prog {0}): uniform: '{1}' = {2}(int32)", m_program_id, name, val);
+		LOG_RQ_TRACE("[shader] SetUniform1i (prog {0}): uniform: '{1}' = {2}(int32)", m_program_id, name, val);
 	}
 
 	void shader::set_uniform(const std::string& name, const glm::mat4& mat)
@@ -165,7 +166,7 @@ namespace engine
 		int32 uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
 		glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mat));
 
-		LOG_RQ_TRACE("[RenderQueue] -- SetUniformMatrix4f (prog {0}): uniform: '{1}' = {2}(mat4)", programId, name, mat);
+		LOG_RQ_TRACE("[shader] SetUniformMatrix4f (prog {0}): uniform: '{1}' = {2}(mat4)", programId, name, mat);
 	}
 
 	uint32 shader::type_from_string(const std::string& shaderType)

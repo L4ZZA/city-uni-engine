@@ -15,7 +15,7 @@ void engine::core::startup()
 	platform_startup();
 
 	// Create renderer
-//    Graphics::RenderManager::Init();
+	// Graphics::RenderManager::Init();
 }
 
 void engine::core::shutdown()
@@ -25,7 +25,7 @@ void engine::core::shutdown()
 	LOG_CORE_TRACE("=== Pyro Engine Core shutdown ======================");
 
 	// Destroy renderer
-//    Graphics::RenderManager::Shutdown();
+	// Graphics::RenderManager::Shutdown();
 }
 
 engine::core::core()

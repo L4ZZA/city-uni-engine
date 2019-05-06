@@ -12,6 +12,7 @@ engine::opengl_context::opengl_context(GLFWwindow* window_handle)
 
 void engine::opengl_context::init()
 {
+	LOG_CORE_INFO("[opengl_context] Creating graphics context.");
 	glfwMakeContextCurrent(m_window_handle);
 	const int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 	CORE_ASSERT(status, "[opengl_context] Could not load Glad!");
