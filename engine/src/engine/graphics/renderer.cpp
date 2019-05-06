@@ -5,14 +5,17 @@
 #include "engine/application.h"
 #include "mesh.h"
 #include "model.h"
+#include "shader.h"
 
-void engine::renderer::init(static_shader& shader)
+
+void engine::renderer::init(camera& camera, shader &shader)
 {
-	//shader.start();
+	// TODO: load projection matrix only once
+	//shader.bind();
 	//auto width = static_cast<float>(application::instance().get_window().width());
 	//auto height = static_cast<float>(application::instance().get_window().height());
-	//shader.load_projection(maths::create_projection_matrix(s_fov, width, height, s_near, s_far));
-	//shader.stop();
+	//shader.set_uniform("", maths::create_projection_matrix(s_fov, width, height, s_near, s_far));
+	//shader.unbind();
 }
 
 void engine::renderer::prepare() const
@@ -23,19 +26,8 @@ void engine::renderer::prepare() const
 	glClearColor(0.7f, 0.7f, 0.9f, 1);
 }
 
-void engine::renderer::render(const entity &entity, static_shader &shader) const
-{
-	//textured_model model = entity.model();
-	//auto raw_model = model.raw();
-	//auto mat = maths::create_transformation_matrix(entity.position(), entity.rotation(), entity.scale());
-	//shader.load_transformation(mat);
-
-	//glBindVertexArray(raw_model.vao_id());
-	glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, model.texture().id());
-	//glDrawElements(GL_TRIANGLES, raw_model.vertex_count(), GL_UNSIGNED_INT, nullptr);
-	glBindVertexArray(0);
-}
+// TODO: do the same of 3D for 2D passing a sprite ptr or reference
+//void engine::renderer::render(const sprite &entity, shader &shader) const {}
 
 void engine::renderer::render_3d(const model& model, shader& shader) const
 {

@@ -2,20 +2,17 @@
 
 namespace engine
 {
+	class camera;
 	class model;
 	class shader;
 	class mesh;
-	class entity;
-    class static_shader;
-
+	
     class renderer
     {
     public:
-		void init(static_shader &shader);
+		void init(camera &camera, shader &shader);
 		/// \brief 
         void prepare() const;
-		/// \brief 
-        void render(const entity &entity, static_shader &shader) const;
 		/// \brief 
         void render_3d(const model &model, shader &shader) const;
 		/// \brief 
