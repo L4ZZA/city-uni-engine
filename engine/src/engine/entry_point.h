@@ -13,7 +13,28 @@
 /// \brief Externally declared in the executable project. 
 extern engine::application* engine::create_application();
 
+/// \brief Adjusts the console to take 1/3rd of the monitor height.
+void move_console();
+
 int main(int argc, char** argv)
+{
+
+	engine::core::startup();
+
+	if(!engine::core::startup_success)
+		return -1;
+
+	// moving console after initializing 
+	move_console();
+
+	auto app = engine::create_application();
+	app->run();
+	delete app;
+
+	engine::core::shutdown();
+}
+
+void move_console()
 {
 #ifdef ENGINE_DEBUG
 	auto hwnd = GetConsoleWindow();
@@ -22,17 +43,6 @@ int main(int argc, char** argv)
 #else
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 #endif
-
-	engine::core::startup();
-
-	if(!engine::core::startup_success)
-		return -1;
-
-	auto app = engine::create_application();
-	app->run();
-	delete app;
-
-	engine::core::shutdown();
 }
 
 #else
