@@ -2,14 +2,14 @@
 #include "vertex_array.h"
 #include "glad/glad.h"
 
-engine::vertex_array::vertex_array()
-{
-	glGenVertexArrays(1, &m_id);
-}
-
 engine::vertex_array::~vertex_array()
 {
-	glDeleteVertexArrays(1, &m_id);
+	//glDeleteVertexArrays(1, &m_id);
+}
+
+void engine::vertex_array::create()
+{
+	glGenVertexArrays(1, &m_id);
 }
 
 void engine::vertex_array::bind() const
