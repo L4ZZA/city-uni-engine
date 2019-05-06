@@ -5,7 +5,7 @@ main_layer::main_layer()
 	: layer("Main Layer"),
 	lightPos(8.0f, 12.0f, 8.0f), lightDiffuse(1.0f, 1.0f, 1.0f), lightAmbient(0.5f, 0.5f, 0.5f), lightSpecular(1.0f, 1.0f, 1.0f), shininess(8.0f),
 	modelShader("res/shaders/main_tex.glsl"), lampShader("res/shaders/lamp.glsl"),
-	nanosuit("res/models/nanosuit/nanosuit.obj"), lamp("res/models/lamp/lamp.obj")
+	nanosuit("res/models/nanosuit/nanosuit.obj"), lamp("res/models/nanosuit/nanosuit.obj")
 {
 	modelShader.compile_and_load();
 	lampShader.compile_and_load();

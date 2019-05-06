@@ -2,6 +2,7 @@
 #include "texture.h"
 #include "glad/glad.h"
 #include "stb_image.h"
+
 /// \brief Each enum value is the actual number of channels 
 /// used by opengl for that format.
 enum class engine::e_color_channels
