@@ -5,7 +5,7 @@ main_layer::main_layer()
 	: layer("Main Layer"),
 	m_light_pos(8.0f, 12.0f, 8.0f), m_light_diffuse(1.0f, 1.0f, 1.0f), m_light_ambient(0.5f, 0.5f, 0.5f), m_light_specular(1.0f, 1.0f, 1.0f), m_shininess(8.0f),
 	m_model_shader("res/shaders/main_tex.glsl"), m_lamp_shader("res/shaders/lamp.glsl"),
-	m_nanosuit("res/models/nanosuit/nanosuit.obj"), m_lamp("res/models/nanosuit/nanosuit.obj")
+	m_nanosuit("res/models/nanosuit/nanosuit.obj"), m_lamp("res/models/bulb/bulb.fbx")
 {
 	m_model_shader.compile_and_load();
 	m_lamp_shader.compile_and_load();
