@@ -2,11 +2,11 @@
 
 namespace engine
 {
-	class buffer_element
+	class index_buffer
 	{
 	public:
-		buffer_element();
-		~buffer_element();
+		index_buffer();
+		~index_buffer();
 
 		void bind() const;
 		void unbind() const;
