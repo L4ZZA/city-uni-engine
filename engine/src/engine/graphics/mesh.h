@@ -1,9 +1,9 @@
 #pragma once
 
-#include "texture.h"
-#include "shader.h"
 #include "buffers/vertex_array.h"
 #include "buffers/buffer.h"
+#include "buffers/index_buffer.h"
+#include "texture.h"
 
 namespace engine
 {
@@ -38,6 +38,7 @@ namespace engine
 
 		vertex_array m_va{};
 		buffer		 m_buffer{};
+		index_buffer m_index_buffer{};
 	};
 
 }

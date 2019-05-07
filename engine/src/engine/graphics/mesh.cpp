@@ -15,17 +15,20 @@ engine::mesh::mesh(
 
 	m_va.create();
 	m_buffer.create();
-	glGenBuffers(1, &m_ebo);
+	m_index_buffer.create();
 
 	m_va.bind();
 
+	// sending vertex data to gpu
 	m_buffer.bind();
 	auto s = vertices.size() * sizeof(mesh::vertex);
 	m_buffer.add_data(&vertices[0], vertices.size() * sizeof(mesh::vertex));
 	m_buffer.send_to_gpu();
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32), &indices[0], GL_STATIC_DRAW);
+	// sending index data to gpu
+	m_index_buffer.bind();
+	m_index_buffer.add_data(&indices[0], indices.size());
+	m_index_buffer.send_to_gpu();
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(mesh::vertex), static_cast<void*>(nullptr));
