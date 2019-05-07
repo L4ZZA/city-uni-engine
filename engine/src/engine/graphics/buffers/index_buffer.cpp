@@ -22,7 +22,6 @@ void engine::index_buffer::create()
 
 void engine::index_buffer::add_data(const uint32* data, uint32 count)
 {
-	auto s = count * sizeof(uint32);
 	m_data.insert(m_data.end(), (unsigned char*) data, (unsigned char*) data + count * sizeof(uint32));
 	m_count += count;
 }

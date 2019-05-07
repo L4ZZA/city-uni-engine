@@ -17,6 +17,7 @@ namespace engine
 
 	private:
 		unsigned int m_id{ 0 };
-		std::vector<unsigned char> m_vertex_data{};	// Vertex data to be uploaded
+		/// \brief Vertex data to be uploaded
+		std::vector<unsigned char> m_vertex_data{};	
 	};
 }

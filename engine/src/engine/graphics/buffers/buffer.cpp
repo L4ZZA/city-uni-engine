@@ -30,7 +30,6 @@ void engine::buffer::add_data(const void* data, unsigned int size)
 
 void engine::buffer::send_to_gpu()
 {
-	auto s = m_vertex_data.size();
 	glBufferData(GL_ARRAY_BUFFER, m_vertex_data.size(), &m_vertex_data[0], GL_STATIC_DRAW);
 	m_vertex_data.clear();
 }

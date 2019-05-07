@@ -21,7 +21,6 @@ engine::mesh::mesh(
 
 	// sending vertex data to gpu
 	m_buffer.bind();
-	auto s = vertices.size() * sizeof(mesh::vertex);
 	m_buffer.add_data(&vertices[0], vertices.size() * sizeof(mesh::vertex));
 	m_buffer.send_to_gpu();
 
