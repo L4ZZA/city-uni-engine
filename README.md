@@ -3,7 +3,9 @@
 1. Create and account on [bitbucket](https://bitbucket.org)
 3. Install [GitKraken](https://www.gitkraken.com) (recommended)
 4. Clone the repository into your desired folder with this command `git clone https://L4ZZA@bitbucket.org/L4ZZA/engine.git`
-5. Read the section below and start developing.
+5. Run the batch script `generate_solution.bat`
+6. Open and build the whole solution (make sure it successfully does so).
+7. Read the section below and start developing.
 
 ## Workflow
 Before starting with the fun, some precautions:
