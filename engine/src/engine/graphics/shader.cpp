@@ -38,7 +38,7 @@ namespace engine
 
 				uint32 shaderType = type_from_string(match.str(1));
 				if(shaderType)
-					m_shader_sources->insert({ shaderType, match.str(2) });
+					m_shader_sources->insert({shaderType, match.str(2)});
 
 				++next;
 			}

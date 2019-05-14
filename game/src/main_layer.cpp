@@ -1,4 +1,4 @@
-﻿#include "main_layer.h"
+#include "main_layer.h"
 
 
 main_layer::main_layer()
@@ -27,7 +27,7 @@ void main_layer::on_render(engine::renderer& renderer)
 	viewModel = glm::translate(viewModel, m_camera_pos);
 
 	glm::mat4 modelLamp = glm::mat4(1.0f);
-	modelLamp = glm::scale(modelLamp, { 0.005f, 0.005f, 0.005 });
+	modelLamp = glm::scale(modelLamp, {0.005f, 0.005f, 0.005});
 	glm::mat4 viewLamp = glm::mat4(1.0f);
 	viewLamp = glm::translate(viewLamp, m_camera_pos);
 	viewLamp = glm::translate(viewLamp, m_light_pos);

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace  engine
+namespace engine
 {
 	/// \brief Mouse button codes from glf3.h
 	class mouse_button_codes

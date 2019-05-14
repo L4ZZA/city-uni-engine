@@ -12,8 +12,10 @@ namespace engine
 		static void init(
 			spdlog::level::level_enum coreLevel = spdlog::level::trace,
 			spdlog::level::level_enum clientLevel = spdlog::level::trace);
+
 		static std::shared_ptr<spdlog::logger>& core_logger() { return s_core_logger; }
 		static std::shared_ptr<spdlog::logger>& client_logger() { return s_client_logger; }
+
 	private:
 		static std::shared_ptr<spdlog::logger> s_core_logger;
 		static std::shared_ptr<spdlog::logger> s_client_logger;

@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "renderer.h"
 #include "glad/glad.h"
 #include "engine/utils/maths.h"
@@ -42,10 +42,12 @@ void engine::renderer::render_3d(const mesh& mesh, shader& shader) const
 	auto va = mesh.va();
 	const auto indices_count = mesh.indices_count();
 
-	uint32 diffuseN = 1, specularN = 1;
+	uint32 diffuseN = 1;
+	uint32 specularN = 1;
 	for(int32 i = 0; i < textures.size(); i++)
 	{
-		std::string num, name = textures[i].type();
+		std::string num;
+		std::string name = textures[i].type();
 
 		if(name == "diffuse")
 			num = std::to_string(diffuseN++);
@@ -53,8 +55,8 @@ void engine::renderer::render_3d(const mesh& mesh, shader& shader) const
 			num = std::to_string(specularN++);
 
 		textures[i].bind(i); // Bind the texture to slot i
-		// TODO: Should not need cast
-		shader.set_uniform("material." + name + num, i); // Pass slot i to the shader material struct
+		// Pass slot i to the shader material struct
+		shader.set_uniform("material." + name + num, i);
 	}
 
 	// draw mesh

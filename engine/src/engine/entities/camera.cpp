@@ -1,8 +1,8 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "camera.h"
 #include "platform/windows/win_input.h"
 #include "engine/key_codes.h"
-	
+
 void engine::camera::move(double dt)
 {
 	auto f_dt = static_cast<float>(dt);

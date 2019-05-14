@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "engine.h"
 
 class main_layer : public engine::layer

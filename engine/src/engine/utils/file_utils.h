@@ -12,7 +12,7 @@ namespace engine
 		std::fstream file_stream;
 		file_stream.open(file_path);
 
-		if (!file_stream.is_open())
+		if(!file_stream.is_open())
 		{
 			return "Could not open file.";
 		}
@@ -20,13 +20,13 @@ namespace engine
 
 		std::string line;
 		std::stringstream content_stream;
-		while (std::getline(file_stream, line))
+		while(std::getline(file_stream, line))
 		{
 			content_stream << line << "\n";
 		}
 
 		auto content = content_stream.str();
-		if (content.empty())
+		if(content.empty())
 			return "Something went wrong.";
 
 		return content;
@@ -38,7 +38,7 @@ namespace engine
 
 		std::string line;
 		std::vector<std::string> lines;
-		while (getline(stream, line))
+		while(getline(stream, line))
 		{
 			auto s = line + "\n";
 			lines.push_back(s);
@@ -68,7 +68,7 @@ namespace engine
 		std::vector<std::string> tokens;
 		std::string token;
 		std::istringstream tokenStream(s);
-		while (std::getline(tokenStream, token, delimiter))
+		while(std::getline(tokenStream, token, delimiter))
 		{
 			tokens.push_back(token);
 		}
@@ -82,7 +82,7 @@ namespace engine
 		std::string::const_iterator start = original.begin();
 		std::string::const_iterator end = original.end();
 		std::string::const_iterator next = std::find(start, end, separator);
-		while (next != end) 
+		while(next != end)
 		{
 			results.push_back(std::string(start, next));
 			start = next + 1;

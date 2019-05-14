@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace engine
 {
@@ -16,8 +16,8 @@ namespace engine
 		void send_to_gpu();
 
 	private:
-		unsigned int m_id{ 0 };
+		unsigned int m_id{0};
 		/// \brief Vertex data to be uploaded
-		std::vector<unsigned char> m_vertex_data{};	
+		std::vector<unsigned char> m_vertex_data{};
 	};
 }

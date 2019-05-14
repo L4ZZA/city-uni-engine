@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "layer.h"
 
 namespace engine
@@ -29,6 +29,6 @@ namespace engine
 
 	private:
 		std::vector<layer*> m_layers;
-		unsigned int m_layers_insert_index{ 0 };
+		unsigned int m_layers_insert_index{0};
 	};
 }

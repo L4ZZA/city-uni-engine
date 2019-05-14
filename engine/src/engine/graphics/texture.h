@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 //#include "glad/glad.h"
 
 namespace engine
@@ -31,11 +31,11 @@ namespace engine
 	private:
 		std::string         m_path;
 		std::string         m_type;
-		unsigned char*      m_buffer{ nullptr };
-		unsigned int        m_id{ 0 };
-		int                 m_width{ 0 };
-		int                 m_height{ 0 };
-		int                 m_bpp{ 0 };
-		e_color_channels    m_channels{ 0 };
+		unsigned char*      m_buffer{nullptr};
+		unsigned int        m_id{0};
+		int                 m_width{0};
+		int                 m_height{0};
+		int                 m_bpp{0};
+		e_color_channels    m_channels{0};
 	};
 }

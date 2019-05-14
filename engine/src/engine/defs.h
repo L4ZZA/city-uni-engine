@@ -5,29 +5,29 @@
 #ifdef ENGINE_PLATFORM_WIN
 
 #if ENGINE_DYNAMIC
-    #ifdef ENGINE_BUILD_DLL
-        #define ENGINE_API __declspec(dllexport)
-    #else
-        #define ENGINE_API __declspec(dllimport)
-    #endif
+#ifdef ENGINE_BUILD_DLL
+#define ENGINE_API __declspec(dllexport)
 #else
-    #define ENGINE_API
+#define ENGINE_API __declspec(dllimport)
+#endif
+#else
+#define ENGINE_API
 #endif
 
 #else
-    #error Pyro only supports Windows!
+#error Pyro only supports Windows!
 #endif
 
 #if ENGINE_DEBUG
-    #define ENABLE_ASSERTS
+#define ENABLE_ASSERTS
 #endif
 
 #ifdef ENABLE_ASSERTS
-    #define ASSERT(x, ...) { if(!(x)) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
-    #define CORE_ASSERT(x, ...) { if(!(x)) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+#define ASSERT(x, ...) { if(!(x)) {LOG_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
+#define CORE_ASSERT(x, ...) { if(!(x)) {LOG_CORE_ERROR("Assertion failed: {0}", __VA_ARGS__); __debugbreak();}}
 #else
-    #define ASSERT(x, ...)
-    #define CORE_ASSERT(x, ...)
+#define ASSERT(x, ...)
+#define CORE_ASSERT(x, ...)
 #endif
 
 // 1 shifted by x places

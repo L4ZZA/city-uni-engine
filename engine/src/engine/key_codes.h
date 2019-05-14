@@ -1,6 +1,6 @@
 #pragma once
 
-namespace  engine
+namespace engine
 {
     /// \brief Keycodes from glf3.h
     class key_codes

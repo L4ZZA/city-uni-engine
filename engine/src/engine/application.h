@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "window.h"
 #include "layers_stack.h"
@@ -42,8 +42,8 @@ namespace engine
 		std::string						m_title{};
 		window_props					m_properties{};
 		std::unique_ptr<window>         m_window;
-		timer* 							m_timer{ nullptr };
-		bool                            m_running{ true };
+		timer* 							m_timer{nullptr};
+		bool                            m_running{true};
 		layers_stack                    m_layers_stack;
 
 	protected:

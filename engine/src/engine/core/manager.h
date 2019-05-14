@@ -1,6 +1,6 @@
 #pragma once
 
-namespace engine 
+namespace engine
 {
 	/// \brief Interface from which each manager class should implement,
 	/// so that they can all follow the initialization and shutdown routine.

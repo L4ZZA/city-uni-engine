@@ -1,9 +1,9 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "application.h"
 #include "graphics/renderer.h"
 #include "utils/timer.h"
 
-engine::application* engine::application::s_instance{ nullptr };
+engine::application* engine::application::s_instance{nullptr};
 
 engine::application::application(const std::string &name, const window_props &properties)
 	: m_title(name), m_properties(properties)

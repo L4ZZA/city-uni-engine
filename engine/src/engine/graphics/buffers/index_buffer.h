@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 namespace engine
 {
@@ -23,7 +23,7 @@ namespace engine
 		void send_to_gpu();
 
 	private:
-		uint32 m_id{ 0 };
+		uint32 m_id{0};
 		/// \brief Number of indices this object has.
 		uint32 m_count{0};
 		/// \brief Index data to be sent to the gpu.

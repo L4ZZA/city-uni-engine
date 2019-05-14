@@ -31,9 +31,9 @@ namespace engine
 		std::unordered_map<uint32, std::string>* m_shader_sources{};
 		std::string m_filename{};
 
-		uint32 m_program_id{ 0 };
+		uint32 m_program_id{0};
 
-		bool m_program_loaded{ false };
+		bool m_program_loaded{false};
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const shader& s)

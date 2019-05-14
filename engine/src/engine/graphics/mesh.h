@@ -33,8 +33,8 @@ namespace engine
 		std::vector<texture>  m_textures;
 
 		//uint32 m_vao{ 0 };
-		uint32 m_vbo{ 0 };
-		uint32 m_ebo{ 0 };
+		uint32 m_vbo{0};
+		uint32 m_ebo{0};
 
 		vertex_array m_va{};
 		buffer		 m_buffer{};

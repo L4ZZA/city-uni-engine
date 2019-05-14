@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "index_buffer.h"
 #include "glad/glad.h"
 
