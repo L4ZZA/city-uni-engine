@@ -22,7 +22,7 @@ end)
 -- workspace is the solution
 workspace "engine"
     architecture "x64"
-    startproject "engine"
+    startproject "game"
 
     configurations
     {
