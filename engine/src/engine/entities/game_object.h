@@ -13,7 +13,7 @@ namespace engine
 	class game_object
 	{
 	public:
-		game_object(const glm::vec3 position, const glm::vec3 direction, const glm::vec3 velocity, mesh mesh, const float scale, const bool is_static, const std::string& path);
+		game_object(const glm::vec3 position, const glm::vec3 direction, const glm::vec3 velocity, mesh mesh, const float scale, const bool is_static);
 		~game_object();
 
 		void move(double dt, glm::vec3 direction);

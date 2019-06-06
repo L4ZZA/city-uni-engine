@@ -22,6 +22,7 @@
 
 #include "engine/graphics/shader.h"
 #include "engine/graphics/model.h"
+#include "engine/entities/game_object.h"
 
 #include "engine/entities/camera.h"
 #include "engine/utils/maths.h"
