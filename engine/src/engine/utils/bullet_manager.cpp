@@ -17,6 +17,227 @@
 #include "LinearMath/btDefaultMotionState.h"
 #include "LinearMath/btSerializer.h"
 
+#include "math.h"
+
+///btBulletDynamicsCommon.h is the main Bullet include file, contains most common include files.
+#include "btBulletDynamicsCommon.h"
+
+#include "engine/entities/game_object.h"
+
+
+physical_object::physical_object(btRigidBody* body) : body(body) {}
+
+//returns the forward vector of the physical object
+btVector3 physical_object::GetForward() {
+	btVector3 boidForwardVector;
+	btTransform trans = body->getWorldTransform();
+	boidForwardVector = (trans * ForwardVector - trans.getOrigin());
+	return boidForwardVector;
+}
+
+//Returns the up vector of the physical object
+btVector3 physical_object::GetUp() {
+	btVector3 boidUpVector;
+	btTransform trans = body->getWorldTransform();
+	boidUpVector = (trans * UpVector - trans.getOrigin());
+	return boidUpVector;
+}
+
+bullet_manager::bullet_manager(std::vector<game_object> game_objects)
+//see btIDebugDraw.h for modes
+	:
+	m_dynamicsWorld(0),
+	m_pickConstraint(0),
+	m_mouseOldX(0),
+	m_mouseOldY(0),
+	m_mouseButtons(0),
+	m_modifierKeys(0),
+	m_scaleBottom(0.5f),
+	m_scaleFactor(2.f),
+	m_stepping(true),
+	m_singleStep(false),
+	m_idle(false),
+
+	m_sundirection(btVector3(1, -2, 1) * 1000),
+	m_defaultContactProcessingThreshold(BT_LARGE_FLOAT)
+{
+#ifndef BT_NO_PROFILE
+	m_profileIterator = CProfileManager::Get_Iterator();
+#endif //BT_NO_PROFILE
+	initPhysics(game_objects, m_dynamicsWorld);
+}
+
+
+bullet_manager::~bullet_manager()
+{
+#ifndef BT_NO_PROFILE
+	CProfileManager::Release_Iterator(m_profileIterator);
+#endif //BT_NO_PROFILE
+	exitPhysics();
+}
+
+void bullet_manager::myinit(void)
+{
+
+
+}
+
+void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld) {
+	btCollisionShape* shape;
+
+	switch (game_object.type())
+	{
+	//if type is a box shape
+	case 0:
+		{
+			shape = new btBoxShape(btVector3(btScalar(game_object.bounding_shape().x), btScalar(game_object.bounding_shape().y), btScalar(game_object.bounding_shape().z)));
+			break;
+		}
+	//if type is a sphere shape
+	case 1:
+		{
+			shape = new btSphereShape(btScalar(game_object.bounding_shape().x));
+			break;
+		}
+	//if type is a convex shape 
+	case 2:
+		{
+			btConvexHullShape * c_shape = new btConvexHullShape();
+			for (int i = 0; i < game_object.get_mesh().vertices().size(); i++) {
+				engine::mesh::vertex vertex = game_object.get_mesh().vertices().at(i);
+				c_shape->addPoint(btVector3(btScalar(vertex.position.x), btScalar(vertex.position.y), btScalar(vertex.position.z)));
+			}
+			shape = c_shape;
+			break;
+		}
+	}
+	m_collisionShapes.push_back(shape);
+
+	btTransform trans;
+	trans.setIdentity();
+	btVector3 pos(btScalar(game_object.position().x), btScalar(game_object.position().y), btScalar(game_object.position().z));
+	trans.setOrigin(pos);
+	trans.setRotation(btQuaternion(btVector3(btScalar(game_object.rotation_axis().x), btScalar(game_object.rotation_axis().y), btScalar(game_object.rotation_axis().z)), btRadians(game_object.rotation_amount())));
+
+
+	btScalar mass(game_object.mass());
+	btVector3 local_inertia;
+	shape->calculateLocalInertia(mass, local_inertia);
+
+	btRigidBody * body = localCreateRigidBody(mass, trans, shape, dynamicsWorld);
+	physical_object * object = new physical_object(body);
+	physical_objects.push_back(object);
+}
+
+
+void bullet_manager::clientMoveAndDisplay()
+{
+	///step the simulation
+	if (m_dynamicsWorld)
+	{
+		m_dynamicsWorld->stepSimulation(1. / 60., 0);//ms / 1000000.f);
+	}
+}
+
+void MyTickCallback(btDynamicsWorld *world, btScalar timeStep) {
+	world->clearForces();
+
+	bullet_manager* man = static_cast<bullet_manager *>(world->getWorldUserInfo());
+
+	bool first = true;
+
+	//Loop over each physical object
+	for (int i = 0; i < man->physical_objects.size(); i++) {
+		btVector3 posD(0, 0, 0), dirD(0, 0, 0);
+		physical_object* boidI = man->physical_objects[i];
+		//Check for other birds
+		for (int j = i + 1; j < man->physical_objects.size(); j++) {
+			
+		}
+
+		//apply forces
+	}
+}
+
+void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld)
+{
+
+	// init world
+	m_collisionConfiguration = new btDefaultCollisionConfiguration();
+	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
+	btVector3 worldMin(-1000, -1000, -1000);
+	btVector3 worldMax(1000, 1000, 1000);
+	m_overlappingPairCache = new btAxisSweep3(worldMin, worldMax);
+
+	m_constraintSolver = new btSequentialImpulseConstraintSolver();
+
+	btDiscreteDynamicsWorld* wp = new btDiscreteDynamicsWorld(m_dispatcher, m_overlappingPairCache, m_constraintSolver, m_collisionConfiguration);
+	//	wp->getSolverInfo().m_numIterations = 20; // default is 10
+	m_dynamicsWorld = wp;
+	m_dynamicsWorld->setInternalTickCallback(MyTickCallback, static_cast<void *>(this), true);
+
+	for (int i = 0; i < game_objects.size(); i++) {
+		add_physical_object(game_objects.at(i), dynamicsWorld);
+	}
+}
+
+//void	bullet_manager::clientResetScene(){
+	//exitPhysics();
+	//initPhysics();}
+
+
+
+
+void	bullet_manager::exitPhysics()
+{
+
+	//cleanup in the reverse order of creation/initialization
+
+	//remove the rigidbodies from the dynamics world and delete them
+	int i;
+	for (i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+	{
+		btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(obj);
+		if (body && body->getMotionState())
+		{
+			delete body->getMotionState();
+		}
+		m_dynamicsWorld->removeCollisionObject(obj);
+		delete obj;
+	}
+
+	//delete collision shapes
+	for (int j = 0; j < m_collisionShapes.size(); j++)
+	{
+		btCollisionShape* shape = m_collisionShapes[j];
+		delete shape;
+	}
+	m_collisionShapes.clear();
+
+	//delete physical objects
+	for (int j = 0; j < physical_objects.size(); j++)
+	{
+		physical_object* object = physical_objects[j];
+		delete object;
+	}
+	physical_objects.clear();
+
+	delete m_dynamicsWorld;
+
+	//	delete m_solver;
+
+	//	delete m_broadphase;
+
+	//	delete m_dispatcher;
+
+	//	delete m_collisionConfiguration;
+
+
+}
+
+
+
 
 extern bool gDisableDeactivation;
 int numObjects = 0;
@@ -39,44 +260,7 @@ extern int gTotalBytesAlignedAllocs;
 #endif //
 
 
-bullet_manager::bullet_manager()
-//see btIDebugDraw.h for modes
-	:
-	m_dynamicsWorld(0),
-	m_pickConstraint(0),
-	m_mouseOldX(0),
-	m_mouseOldY(0),
-	m_mouseButtons(0),
-	m_modifierKeys(0),
-	m_scaleBottom(0.5f),
-	m_scaleFactor(2.f),
-	m_stepping(true),
-	m_singleStep(false),
-	m_idle(false),
 
-	m_sundirection(btVector3(1, -2, 1) * 1000),
-	m_defaultContactProcessingThreshold(BT_LARGE_FLOAT)
-{
-#ifndef BT_NO_PROFILE
-	m_profileIterator = CProfileManager::Get_Iterator();
-#endif //BT_NO_PROFILE
-}
-
-
-
-bullet_manager::~bullet_manager()
-{
-#ifndef BT_NO_PROFILE
-	CProfileManager::Release_Iterator(m_profileIterator);
-#endif //BT_NO_PROFILE
-
-}
-
-void bullet_manager::myinit(void)
-{
-
-	
-}
 
 
 
@@ -92,51 +276,11 @@ void bullet_manager::toggleIdle() {
 
 
 
-void bullet_manager::keyboardCallback(unsigned char key, int x, int y)
-{
-	(void)x;
-	(void)y;
-
-	m_lastKey = 0;
-
-#ifndef BT_NO_PROFILE
-	if (key >= 0x31 && key <= 0x39)
-	{
-		int child = key - 0x31;
-		m_profileIterator->Enter_Child(child);
-	}
-	if (key == 0x30)
-	{
-		m_profileIterator->Enter_Parent();
-	}
-#endif //BT_NO_PROFILE
-
-	switch (key)
-	{
-	case 'q':
-#ifdef BT_USE_FREEGLUT
-		//return from glutMainLoop(), detect memory leaks etc.
-		glutLeaveMainLoop();
-#else
-		exit(0);
-#endif
-		break;
-	case 'i': toggleIdle(); break;
-
-	default:
-		//        std::cout << "unused key : " << key << std::endl;
-		break;
-	}
-}
-
-void bullet_manager::displayCallback()
-{
-}
 
 #define NUM_SPHERES_ON_DIAGONAL 9
 
 
-btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape)
+btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld)
 {
 	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
 
@@ -158,14 +302,14 @@ btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform&
 	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, shape, localInertia);
 
 	btRigidBody* body = new btRigidBody(cInfo);
-	body->setContactProcessingThreshold(m_defaultContactProcessingThreshold);
+	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
 
 #else
 	btRigidBody* body = new btRigidBody(mass, 0, shape, localInertia);
 	body->setWorldTransform(startTransform);
 #endif//
 
-	m_dynamicsWorld->addRigidBody(body);
+	dynamicsWorld->addRigidBody(body);
 
 	return body;
 }

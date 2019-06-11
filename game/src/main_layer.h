@@ -33,5 +33,5 @@ private:
 
 	engine::mesh m_triangle_mesh = engine::mesh({ v1, v2, v3 }, { 0,1,2 }, { engine::texture("res/textures/dragon.png") });
 
-	engine::game_object m_triangle;
+	game_object m_triangle;
 };

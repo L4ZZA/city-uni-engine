@@ -26,6 +26,7 @@ namespace engine
 		const std::vector<texture>& textures() const { return m_textures; }
 		const vertex_array& va() const { return m_va; }
 		uint32 indices_count() const { return m_indices.size(); }
+		const std::vector<vertex>& vertices() const { return m_vertices; }
 
 	private:
 		std::vector<vertex>   m_vertices;
