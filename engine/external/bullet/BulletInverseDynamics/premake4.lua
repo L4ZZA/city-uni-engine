@@ -1,17 +1,13 @@
-project "BulletInverseDynamics"
-	kind "StaticLib"
+	project "BulletInverseDynamics"
 
-    if os.get() == "linux" then
+	kind "StaticLib"
+    if os.is("Linux") then
         buildoptions{"-fPIC"}
     end
-
-	includedirs 
-	{
+	includedirs {
 		"..",
 	}
-
-	files 
-	{
+	files {
 		"IDMath.cpp",
 		"MultiBodyTree.cpp",
 		"details/MultiBodyTreeInitCache.cpp",

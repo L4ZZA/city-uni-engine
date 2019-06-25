@@ -1,17 +1,19 @@
-project "BulletDynamics"
-    kind "StaticLib"
+	project "BulletDynamics"
+	kind "StaticLib"
+	language "C++"
+    cppdialect "C++17"
+    systemversion "latest"
+    staticruntime "On"
 
-    includedirs 
-    {
-        "..",
-    }
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("inter/" .. outputdir .. "/%{prj.name}")
 
-    if os.get() == "linux" then
-        buildoptions{"-fPIC"}
-    end
-    files 
-    {
-        "Dynamics/*.cpp",
+    warnings "Off"
+	includedirs {
+		"..",
+	}
+	files {
+		"Dynamics/*.cpp",
                 "Dynamics/*.h",
                 "ConstraintSolver/*.cpp",
                 "ConstraintSolver/*.h",
@@ -23,5 +25,16 @@ project "BulletDynamics"
                 "Vehicle/*.h",
                 "Character/*.cpp",
                 "Character/*.h"
-    }
 
+	}
+
+	filter "system:windows"
+        systemversion "latest"
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"

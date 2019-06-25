@@ -6,7 +6,7 @@
 		"../../../src"
 	}
 	
-    if os.get() == "linux" then
+    if os.is("Linux") then
         buildoptions{"-fPIC"}
     end
 	 

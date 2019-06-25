@@ -1,19 +1,31 @@
 project "LinearMath"
 	kind "StaticLib"
+	language "C++"
+    cppdialect "C++17"
+    systemversion "latest"
+    staticruntime "On"
 
-	if os.get() == "linux" then
-	    buildoptions{"-fPIC"}
-	end
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("inter/" .. outputdir .. "/%{prj.name}")
 
-	includedirs 
-	{
+	warnings "Off"
+	includedirs {
 		"..",
 	}
-	
-	files 
-	{
+	files {
 		"*.cpp",
 		"*.h",
 		"TaskScheduler/*.cpp",
 		"TaskScheduler/*.h"
 	}
+
+	filter "system:windows"
+        systemversion "latest"
+
+    filter "configurations:Debug"
+        runtime "Debug"
+        symbols "on"
+
+    filter "configurations:Release"
+        runtime "Release"
+        optimize "on"

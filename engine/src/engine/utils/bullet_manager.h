@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "../bullet/LinearMath/btVector3.h"
-#include "../bullet/LinearMath/btMatrix3x3.h"
-#include "../bullet/LinearMath/btTransform.h"
-#include "../bullet/LinearMath/btQuickprof.h"
-#include "../bullet/LinearMath/btAlignedObjectArray.h"
+#include "LinearMath/btVector3.h"
+#include "LinearMath/btMatrix3x3.h"
+#include "LinearMath/btTransform.h"
+#include "LinearMath/btQuickprof.h"
+#include "LinearMath/btAlignedObjectArray.h"
 
 class game_object;
 

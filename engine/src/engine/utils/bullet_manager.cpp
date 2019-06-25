@@ -314,7 +314,7 @@ btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform&
 	return body;
 }
 
-#include "../bullet/BulletCollision/BroadphaseCollision/btAxisSweep3.h"
+#include "BulletCollision/BroadphaseCollision/btAxisSweep3.h"
 
 
 void	bullet_manager::clientResetScene()

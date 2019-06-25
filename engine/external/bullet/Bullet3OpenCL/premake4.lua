@@ -8,10 +8,10 @@ function createProject(vendor)
 		initOpenCL(vendor)
 			
 		kind "StaticLib"
-				
-		if os.get() == "linux" then
-			buildoptions{"-fPIC"}
-		end
+		
+        if os.is("Linux") then
+            buildoptions{"-fPIC"}
+        end
 		
 		includedirs {
 			".",".."
