@@ -48,9 +48,7 @@ IncludeDir["glm"] = "engine/external/glm/"
 IncludeDir["stb_image"] = "engine/external/stb_image/"
 IncludeDir["assimp"] = "engine/external/assimp/include/"
 IncludeDir["assimpcfg"] = "engine/external/assimp/config/"
-IncludeDir["BulletCollision"] = "engine/external/bullet/BulletCollision/"
-IncludeDir["BulletCollision"] = "engine/external/bullet/BulletDynamics/"
-IncludeDir["BulletCollision"] = "engine/external/bullet/LinearMath/"
+IncludeDir["bullet"] = "engine/external/bullet/"
 
 group "dependencies"
     -- iclude other premake files
@@ -105,9 +103,7 @@ project "engine"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
-        "%{IncludeDir.BulletCollision}",
-		"%{IncludeDir.BulletDynamics}",
-		"%{IncludeDir.LinearMath}",
+		"%{IncludeDir.bullet}",
     }
 
     links
@@ -175,6 +171,7 @@ project "game"
         "engine/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
+		"%{IncludeDir.bullet}",
     }
 
     links

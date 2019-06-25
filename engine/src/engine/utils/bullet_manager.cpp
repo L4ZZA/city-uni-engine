@@ -249,10 +249,10 @@ btCollisionShape* gShapePtr[maxNumObjects];//1 rigidbody has 1 shape (no re-use 
 extern int gNumClampedCcdMotions;
 
 #ifdef SHOW_NUM_DEEP_PENETRATIONS 
-extern int gNumDeepPenetrationChecks;
+//extern int gNumDeepPenetrationChecks;
 
 extern int gNumSplitImpulseRecoveries;
-extern int gNumGjkChecks;
+//extern int gNumGjkChecks;
 extern int gNumAlignedAllocs;
 extern int gNumAlignedFree;
 extern int gTotalBytesAlignedAllocs;
@@ -319,11 +319,11 @@ btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform&
 
 void	bullet_manager::clientResetScene()
 {
-	removePickingConstraint();
+	//removePickingConstraint();
 
 #ifdef SHOW_NUM_DEEP_PENETRATIONS
-	gNumDeepPenetrationChecks = 0;
-	gNumGjkChecks = 0;
+	//gNumDeepPenetrationChecks = 0;
+	//gNumGjkChecks = 0;
 #endif //SHOW_NUM_DEEP_PENETRATIONS
 
 	gNumClampedCcdMotions = 0;

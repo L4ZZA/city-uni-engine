@@ -9,6 +9,7 @@
 #include "LinearMath/btQuickprof.h"
 #include "LinearMath/btAlignedObjectArray.h"
 
+
 class game_object;
 
 class btBroadphaseInterface;
@@ -73,9 +74,9 @@ class	btTypedConstraint;
 			///constraint for mouse picking
 			btTypedConstraint*		m_pickConstraint;
 
-			virtual void removePickingConstraint();
+			//virtual void removePickingConstraint();
 
-			virtual void pickObject(const btVector3& pickPos, const class btCollisionObject* hitObj);
+			//virtual void pickObject(const btVector3& pickPos, const class btCollisionObject* hitObj);
 
 			int	m_mouseOldX;
 			int	m_mouseOldY;
