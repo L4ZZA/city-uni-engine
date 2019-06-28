@@ -57,7 +57,7 @@ class	btTypedConstraint;
 
 			void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
 
-			static btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+			btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
 
 			void add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld);
 

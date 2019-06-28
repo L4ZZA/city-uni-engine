@@ -138,7 +138,7 @@ btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform&
 	body->setWorldTransform(startTransform);
 #endif//
 
-	dynamicsWorld->addRigidBody(body);
+	getDynamicsWorld()->addRigidBody(body);
 
 	return body;
 }
@@ -178,7 +178,7 @@ void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorl
 	trans.setIdentity();
 	btVector3 pos(btScalar(game_object.position().x), btScalar(game_object.position().y), btScalar(game_object.position().z));
 	trans.setOrigin(pos);
-	trans.setRotation(btQuaternion(btVector3(btScalar(game_object.rotation_axis().x), btScalar(game_object.rotation_axis().y), btScalar(game_object.rotation_axis().z)), btRadians(game_object.rotation_amount())));
+	//trans.setRotation(btQuaternion(btVector3(btScalar(game_object.rotation_axis().x), btScalar(game_object.rotation_axis().y), btScalar(game_object.rotation_axis().z)), btRadians(game_object.rotation_amount())));
 
 
 	btScalar mass(game_object.mass());
