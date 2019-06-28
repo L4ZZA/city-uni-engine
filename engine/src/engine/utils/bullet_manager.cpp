@@ -43,7 +43,7 @@ btVector3 physical_object::GetUp() {
 	return boidUpVector;
 }
 
-bullet_manager::bullet_manager(std::vector<game_object> game_objects)
+/*bullet_manager::bullet_manager(std::vector<game_object> game_objects)
 //see btIDebugDraw.h for modes
 	:
 	m_dynamicsWorld(0),
@@ -65,21 +65,82 @@ bullet_manager::bullet_manager(std::vector<game_object> game_objects)
 	m_profileIterator = CProfileManager::Get_Iterator();
 #endif //BT_NO_PROFILE
 	initPhysics(game_objects, m_dynamicsWorld);
+}*/
+
+bullet_manager::bullet_manager(std::vector<game_object> game_objects)
+{
+	initPhysics(game_objects, m_dynamicsWorld);
 }
 
+bullet_manager::bullet_manager()
+{
+	initPhysics({}, m_dynamicsWorld);
+}
 
 bullet_manager::~bullet_manager()
 {
-#ifndef BT_NO_PROFILE
+/*#ifndef BT_NO_PROFILE
 	CProfileManager::Release_Iterator(m_profileIterator);
-#endif //BT_NO_PROFILE
-	exitPhysics();
+#endif*/ //BT_NO_PROFILE
+	//exitPhysics();
 }
 
-void bullet_manager::myinit(void)
+void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld)
 {
 
+	// init world
+	m_collisionConfiguration = new btDefaultCollisionConfiguration();
+	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
+	btVector3 worldMin(-1000, -1000, -1000);
+	btVector3 worldMax(1000, 1000, 1000);
+	m_overlappingPairCache = new btAxisSweep3(worldMin, worldMax);
 
+	m_constraintSolver = new btSequentialImpulseConstraintSolver();
+
+	btDiscreteDynamicsWorld* wp = new btDiscreteDynamicsWorld(m_dispatcher, m_overlappingPairCache, m_constraintSolver, m_collisionConfiguration);
+	//	wp->getSolverInfo().m_numIterations = 20; // default is 10
+	m_dynamicsWorld = wp;
+	//m_dynamicsWorld->setInternalTickCallback(MyTickCallback, static_cast<void *>(this), true);
+
+	for (int i = 0; i < game_objects.size(); i++) {
+		add_physical_object(game_objects.at(i), dynamicsWorld);
+	}
+
+	wp->setGravity(btVector3(0, -9.8, 0));
+}
+
+btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld)
+{
+	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
+
+	//rigidbody is dynamic if and only if mass is non zero, otherwise static
+	bool isDynamic = (mass != 0.f);
+
+	btVector3 localInertia(0, 0, 0);
+	if (isDynamic)
+		shape->calculateLocalInertia(mass, localInertia);
+
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+
+#define USE_MOTIONSTATE 1
+#ifdef USE_MOTIONSTATE
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+
+
+
+	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, shape, localInertia);
+
+	btRigidBody* body = new btRigidBody(cInfo);
+	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
+
+#else
+	btRigidBody* body = new btRigidBody(mass, 0, shape, localInertia);
+	body->setWorldTransform(startTransform);
+#endif//
+
+	dynamicsWorld->addRigidBody(body);
+
+	return body;
 }
 
 void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld) {
@@ -129,8 +190,7 @@ void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorl
 	physical_objects.push_back(object);
 }
 
-
-void bullet_manager::clientMoveAndDisplay()
+/*void bullet_manager::clientMoveAndDisplay()
 {
 	///step the simulation
 	if (m_dynamicsWorld)
@@ -157,9 +217,9 @@ void MyTickCallback(btDynamicsWorld *world, btScalar timeStep) {
 
 		//apply forces
 	}
-}
+}*/
 
-void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld)
+/*void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld)
 {
 
 	// init world
@@ -179,16 +239,13 @@ void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynami
 	for (int i = 0; i < game_objects.size(); i++) {
 		add_physical_object(game_objects.at(i), dynamicsWorld);
 	}
-}
+}*/
 
 //void	bullet_manager::clientResetScene(){
 	//exitPhysics();
 	//initPhysics();}
 
-
-
-
-void	bullet_manager::exitPhysics()
+/*void	bullet_manager::exitPhysics()
 {
 
 	//cleanup in the reverse order of creation/initialization
@@ -234,12 +291,9 @@ void	bullet_manager::exitPhysics()
 	//	delete m_collisionConfiguration;
 
 
-}
+}*/
 
-
-
-
-extern bool gDisableDeactivation;
+/*extern bool gDisableDeactivation;
 int numObjects = 0;
 const int maxNumObjects = 16384;
 btTransform startTransforms[maxNumObjects];
@@ -257,67 +311,22 @@ extern int gNumAlignedAllocs;
 extern int gNumAlignedFree;
 extern int gTotalBytesAlignedAllocs;
 
-#endif //
+#endif //*/
 
-
-
-
-
-
-void bullet_manager::toggleIdle() {
+/*void bullet_manager::toggleIdle() {
 	if (m_idle) {
 		m_idle = false;
 	}
 	else {
 		m_idle = true;
 	}
-}
+}*/
 
+//#define NUM_SPHERES_ON_DIAGONAL 9
 
+//#include "BulletCollision/BroadphaseCollision/btAxisSweep3.h"
 
-
-
-#define NUM_SPHERES_ON_DIAGONAL 9
-
-
-btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld)
-{
-	btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
-
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	bool isDynamic = (mass != 0.f);
-
-	btVector3 localInertia(0, 0, 0);
-	if (isDynamic)
-		shape->calculateLocalInertia(mass, localInertia);
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-
-#define USE_MOTIONSTATE 1
-#ifdef USE_MOTIONSTATE
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-
-	
-
-	btRigidBody::btRigidBodyConstructionInfo cInfo(mass, myMotionState, shape, localInertia);
-
-	btRigidBody* body = new btRigidBody(cInfo);
-	body->setContactProcessingThreshold(BT_LARGE_FLOAT);
-
-#else
-	btRigidBody* body = new btRigidBody(mass, 0, shape, localInertia);
-	body->setWorldTransform(startTransform);
-#endif//
-
-	dynamicsWorld->addRigidBody(body);
-
-	return body;
-}
-
-#include "BulletCollision/BroadphaseCollision/btAxisSweep3.h"
-
-
-void	bullet_manager::clientResetScene()
+/*void	bullet_manager::clientResetScene()
 {
 	//removePickingConstraint();
 
@@ -382,4 +391,4 @@ void	bullet_manager::clientResetScene()
 
 	}
 
-}
+}*/

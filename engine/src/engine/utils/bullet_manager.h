@@ -46,6 +46,25 @@ class	btTypedConstraint;
 
 		class bullet_manager
 		{
+		public:
+			bullet_manager();
+
+			bullet_manager(std::vector<game_object> game_objects);
+			
+			virtual ~bullet_manager();
+
+			//void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
+
+			void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
+
+			static btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+
+			void add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld);
+
+			btDynamicsWorld*		getDynamicsWorld()
+			{
+				return m_dynamicsWorld;
+			}
 
 			btBroadphaseInterface*	m_overlappingPairCache;
 
@@ -55,82 +74,84 @@ class	btTypedConstraint;
 
 			btDefaultCollisionConfiguration* m_collisionConfiguration;
 
-			enum
+			btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
+
+			std::vector<physical_object*> physical_objects;
+
+			/*enum
 
 			{
 				USE_CCD = 1,
 				USE_NO_CCD
 			};
-			int 	m_ccdMode;
+			int 	m_ccdMode;*/
 
 		protected:
-#ifdef USE_BT_CLOCK
-			btClock m_clock;
-#endif //USE_BT_CLOCK
-
-			///this is the most important class
 			btDynamicsWorld*		m_dynamicsWorld;
 
+//#ifdef USE_BT_CLOCK
+//			btClock m_clock;
+//#endif USE_BT_CLOCK
+
+			///this is the most important class
+			
+
 			///constraint for mouse picking
-			btTypedConstraint*		m_pickConstraint;
+			//btTypedConstraint*		m_pickConstraint;
 
 			//virtual void removePickingConstraint();
 
 			//virtual void pickObject(const btVector3& pickPos, const class btCollisionObject* hitObj);
 
-			int	m_mouseOldX;
-			int	m_mouseOldY;
-			int	m_mouseButtons;
+			//int	m_mouseOldX;
+			//int	m_mouseOldY;
+			//int	m_mouseButtons;
 
-			float m_scaleBottom;
-			float m_scaleFactor;
+			//float m_scaleBottom;
+			//float m_scaleFactor;
 
-			bool	m_stepping;
-			bool m_singleStep;
-			bool m_idle;
-			int m_lastKey;
+			//bool	m_stepping;
+			//bool m_singleStep;
+			//bool m_idle;
+			//int m_lastKey;
 
-			btVector3		m_sundirection;
-			btScalar		m_defaultContactProcessingThreshold = 0;
+			//btVector3		m_sundirection;
+			//btScalar		m_defaultContactProcessingThreshold = 0;
 
 		public:
-			int	m_modifierKeys;
+			//int	m_modifierKeys;
 			//keep the collision shapes, for deletion/cleanup
-			btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
-
-			std::vector<physical_object*> physical_objects;
+			//
 
 
 
-			bullet_manager(std::vector<game_object> game_objects);
+			//bullet_manager(std::vector<game_object> game_objects);
+			//bullet_manager();
 
-			virtual ~bullet_manager();
+			//virtual ~bullet_manager();
 
-			void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
+			//void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
 
-			void	exitPhysics();
+			//void	exitPhysics();
 
-			std::vector<game_object> get_current_state();
+			//std::vector<game_object> get_current_state();
 
-			void add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld);
+			//
 
-			virtual void clientMoveAndDisplay();
+			//virtual void clientMoveAndDisplay();
 
-			virtual void	clientResetScene();
-
-
-
-			btDynamicsWorld*		getDynamicsWorld()
-			{
-				return m_dynamicsWorld;
-			}
+			//virtual void	clientResetScene();
 
 
-			virtual void myinit();
 
-			void toggleIdle();
+			
 
-			btScalar	getDeltaTimeMicroseconds()
+
+			//virtual void myinit();
+
+			//void toggleIdle();
+
+			/*btScalar	getDeltaTimeMicroseconds()
 			{
 #ifdef USE_BT_CLOCK
 				btScalar dt = (btScalar)m_clock.getTimeMicroseconds();
@@ -139,22 +160,22 @@ class	btTypedConstraint;
 #else
 				return btScalar(16666.);
 #endif
-			}
+			}*/
 
 
-			btVector3	getRayTo(int x, int y);
+			//btVector3	getRayTo(int x, int y);
 
-			static btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+			//
 
-			bool	isIdle() const
+			/*bool	isIdle() const
 			{
 				return	m_idle;
-			}
+			}*/
 
-			void	setIdle(bool idle)
+			/*void	setIdle(bool idle)
 			{
 				m_idle = idle;
-			}
+			}*/
 
 
 		};

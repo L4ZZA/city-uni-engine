@@ -11,6 +11,7 @@ main_layer::main_layer()
 	m_model_shader.compile_and_load();
 	m_lamp_shader.compile_and_load();
 	//bullet_manager * manager = new bullet_manager({ m_triangle });
+	bullet_manager * manager = new bullet_manager();
 }
 
 main_layer::~main_layer()
