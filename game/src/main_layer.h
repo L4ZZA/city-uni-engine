@@ -27,11 +27,17 @@ private:
 
 	glm::vec3 m_camera_pos = glm::vec3(0.0f, -8.0f, -20.0f);
 
-	engine::mesh::vertex v1 = engine::mesh::vertex({ glm::vec3(-0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f) });
-	engine::mesh::vertex v2 = engine::mesh::vertex({ glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.5f, 1.0f) });
-	engine::mesh::vertex v3 = engine::mesh::vertex({ glm::vec3(0.5f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f) });
+	engine::mesh::vertex v1 = engine::mesh::vertex({ glm::vec3(-5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), glm::vec2(0.0f, 0.0f) });
+	engine::mesh::vertex v2 = engine::mesh::vertex({ glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), glm::vec2(5.0f, 10.0f) });
+	engine::mesh::vertex v3 = engine::mesh::vertex({ glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 10.0f), glm::vec2(10.0f, 0.0f) });
 
 	engine::mesh m_triangle_mesh = engine::mesh({ v1, v2, v3 }, { 0,1,2 }, { engine::texture("res/textures/dragon.png") });
 
-	game_object m_triangle;
+	game_object * m_triangle;
+
+	bullet_manager * manager;
+
+	std::vector<game_object *> m_game_objects;
+
+
 };

@@ -67,7 +67,7 @@ btVector3 physical_object::GetUp() {
 	initPhysics(game_objects, m_dynamicsWorld);
 }*/
 
-bullet_manager::bullet_manager(std::vector<game_object> game_objects)
+bullet_manager::bullet_manager(std::vector<game_object * > game_objects)
 {
 	initPhysics(game_objects, m_dynamicsWorld);
 }
@@ -85,7 +85,7 @@ bullet_manager::~bullet_manager()
 	//exitPhysics();
 }
 
-void	bullet_manager::initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld)
+void	bullet_manager::initPhysics(std::vector<game_object * > game_objects, btDynamicsWorld* dynamicsWorld)
 {
 
 	// init world
@@ -143,29 +143,29 @@ btRigidBody*	bullet_manager::localCreateRigidBody(float mass, const btTransform&
 	return body;
 }
 
-void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld) {
+void bullet_manager::add_physical_object(game_object * game_object, btDynamicsWorld* dynamicsWorld) {
 	btCollisionShape* shape;
 
-	switch (game_object.type())
+	switch (game_object->type())
 	{
 	//if type is a box shape
 	case 0:
 		{
-			shape = new btBoxShape(btVector3(btScalar(game_object.bounding_shape().x), btScalar(game_object.bounding_shape().y), btScalar(game_object.bounding_shape().z)));
+			shape = new btBoxShape(btVector3(btScalar(game_object->bounding_shape().x), btScalar(game_object->bounding_shape().y), btScalar(game_object->bounding_shape().z)));
 			break;
 		}
 	//if type is a sphere shape
 	case 1:
 		{
-			shape = new btSphereShape(btScalar(game_object.bounding_shape().x));
+			shape = new btSphereShape(btScalar(game_object->bounding_shape().x));
 			break;
 		}
 	//if type is a convex shape 
 	case 2:
 		{
 			btConvexHullShape * c_shape = new btConvexHullShape();
-			for (int i = 0; i < game_object.get_mesh().vertices().size(); i++) {
-				engine::mesh::vertex vertex = game_object.get_mesh().vertices().at(i);
+			for (int i = 0; i < game_object->get_mesh().vertices().size(); i++) {
+				engine::mesh::vertex vertex = game_object->get_mesh().vertices().at(i);
 				c_shape->addPoint(btVector3(btScalar(vertex.position.x), btScalar(vertex.position.y), btScalar(vertex.position.z)));
 			}
 			shape = c_shape;
@@ -176,19 +176,63 @@ void bullet_manager::add_physical_object(game_object game_object, btDynamicsWorl
 
 	btTransform trans;
 	trans.setIdentity();
-	btVector3 pos(btScalar(game_object.position().x), btScalar(game_object.position().y), btScalar(game_object.position().z));
+	btVector3 pos(btScalar(game_object->position().x), btScalar(game_object->position().y), btScalar(game_object->position().z));
 	trans.setOrigin(pos);
-	//trans.setRotation(btQuaternion(btVector3(btScalar(game_object.rotation_axis().x), btScalar(game_object.rotation_axis().y), btScalar(game_object.rotation_axis().z)), btRadians(game_object.rotation_amount())));
+	trans.setRotation(btQuaternion(btVector3(btScalar(game_object->rotation_axis().x), btScalar(game_object->rotation_axis().y), btScalar(game_object->rotation_axis().z)), btRadians(game_object->rotation_amount())));
 
 
-	btScalar mass(game_object.mass());
+	btScalar mass(game_object->mass());
 	btVector3 local_inertia;
 	shape->calculateLocalInertia(mass, local_inertia);
+
 
 	btRigidBody * body = localCreateRigidBody(mass, trans, shape, dynamicsWorld);
 	physical_object * object = new physical_object(body);
 	physical_objects.push_back(object);
 }
+
+void bullet_manager::DynamicsWorldStep(std::vector<game_object *> game_objects)
+{
+	if (physical_objects.size() == game_objects.size()) {
+		int i = 0;
+		for (int i = 0; i < physical_objects.size(); i++) {
+			btTransform trans;
+			game_object * game_object_i = game_objects.at(i);
+			physical_object * physical_object_i = physical_objects.at(i);
+
+			btVector3 pos = to_btVector3(game_object_i->position());
+			trans.setOrigin(pos);
+			trans.setRotation(btQuaternion(to_btVector3(game_object_i->rotation_axis()), btRadians(game_object_i->rotation_amount())));
+			btDefaultMotionState* myMotionState = new btDefaultMotionState(trans);
+			
+			physical_object_i->GetBody()->setMotionState(myMotionState); to_btVector3(game_object_i->velocity());
+			physical_object_i->GetBody()->setLinearVelocity(to_btVector3(game_object_i->velocity()));
+		}
+	}
+	///step the simulation
+	if (m_dynamicsWorld)
+	{
+		m_dynamicsWorld->stepSimulation(1. / 60., 0);//ms / 1000000.f);
+	}
+	for (int i = 0; i < game_objects.size(); i++) {
+		game_object * game_object_i = game_objects.at(i);
+		physical_object * physical_object_i = physical_objects.at(i);
+
+		game_object_i->set_position(to_vec3(physical_object_i->GetBody()->getCenterOfMassPosition()));
+		game_object_i->set_rotation_axis(to_vec3(physical_object_i->GetBody()->getCenterOfMassTransform().getRotation().getAxis()));
+		game_object_i->set_rotation_amount(glm::degrees(physical_object_i->GetBody()->getCenterOfMassTransform().getRotation().getAngle()));
+		game_object_i->set_velocity(to_vec3(physical_object_i->GetBody()->getLinearVelocity()));
+	}
+}
+
+/*std::vector<game_object> getGameObjects() {
+	std::vector<game_object> gameObjects;
+
+
+
+	return gameObjects;
+}*/
+
 
 /*void bullet_manager::clientMoveAndDisplay()
 {

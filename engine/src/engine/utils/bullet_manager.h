@@ -49,22 +49,34 @@ class	btTypedConstraint;
 		public:
 			bullet_manager();
 
-			bullet_manager(std::vector<game_object> game_objects);
+			bullet_manager(std::vector<game_object *> game_objects);
 			
 			virtual ~bullet_manager();
 
 			//void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
 
-			void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
+			void	initPhysics(std::vector<game_object *> game_objects, btDynamicsWorld* dynamicsWorld);
 
 			btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
 
-			void add_physical_object(game_object game_object, btDynamicsWorld* dynamicsWorld);
+			void add_physical_object(game_object * game_object, btDynamicsWorld* dynamicsWorld);
 
 			btDynamicsWorld*		getDynamicsWorld()
 			{
 				return m_dynamicsWorld;
 			}
+
+			inline btVector3 to_btVector3(const glm::vec3& vec3) {
+				return btVector3(btScalar(vec3.x), btScalar(vec3.y), btScalar(vec3.z));
+			}
+
+			inline glm::vec3 to_vec3(const btVector3& bt_vec3) {
+				return { bt_vec3.getX(), bt_vec3.getY(), bt_vec3.getZ() };
+			}
+
+			//std::vector<game_object> getGameObjects();
+
+			void DynamicsWorldStep(std::vector<game_object *> gameObjects);
 
 			btBroadphaseInterface*	m_overlappingPairCache;
 
