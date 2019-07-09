@@ -26,7 +26,7 @@ engine::model::model(const std::string& path)
 
 engine::model::~model()
 {
-	LOG_CORE_INFO("[model] Unable to load model '{0}'.", m_path);
+	LOG_CORE_INFO("[model] Destroying model '{0}'.", m_path);
 }
 
 void engine::model::process_node(aiNode * node, const aiScene * scene)
