@@ -9,11 +9,11 @@ main_layer::main_layer()
 {
 	m_model_shader.compile_and_load();
 	m_lamp_shader.compile_and_load();
-	//bullet_manager * manager = new bullet_manager({ m_triangle });
-	m_triangle = new game_object(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), m_triangle_mesh, glm::vec3(0.5f, 1.0f, 1.5f), true, 1.0f, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f);
+
+	m_triangle = new engine::game_object(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), m_triangle_mesh, glm::vec3(0.5f, 1.0f, 1.5f), true, 1.0f, 0, glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f);
 	m_game_objects.push_back(m_triangle);
 
-	manager = new bullet_manager(m_game_objects);
+	manager = new engine::bullet_manager(m_game_objects);
 }
 
 main_layer::~main_layer()

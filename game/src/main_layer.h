@@ -33,11 +33,11 @@ private:
 
 	engine::mesh m_triangle_mesh = engine::mesh({ v1, v2, v3 }, { 0,1,2 }, { engine::texture("res/textures/dragon.png") });
 
-	game_object * m_triangle;
+	engine::game_object * m_triangle;
 
-	bullet_manager * manager;
+	engine::bullet_manager * manager;
 
-	std::vector<game_object *> m_game_objects;
+	std::vector<engine::game_object *> m_game_objects;
 
 
 };

@@ -9,8 +9,7 @@
 #include "LinearMath/btQuickprof.h"
 #include "LinearMath/btAlignedObjectArray.h"
 
-
-class game_object;
+#include "engine/entities/game_object.h"
 
 class btBroadphaseInterface;
 class btOverlappingPairCache;
@@ -24,6 +23,8 @@ class	btDynamicsWorld;
 class	btRigidBody;
 class	btTypedConstraint;
 
+namespace engine
+{
 	class physical_object {
 		btRigidBody* body;	//boid's rigidBody
 
@@ -44,150 +45,50 @@ class	btTypedConstraint;
 	//PI
 	const btScalar PI = 3.1415926535897;
 
-		class bullet_manager
+	class bullet_manager
+	{
+	public:
+		bullet_manager();
+
+		bullet_manager(std::vector<engine::game_object *> game_objects);
+
+		virtual ~bullet_manager();
+
+		void	initPhysics(std::vector<engine::game_object *> game_objects, btDynamicsWorld* dynamicsWorld);
+
+		btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+
+		void add_physical_object(engine::game_object * game_object, btDynamicsWorld* dynamicsWorld);
+
+		btDynamicsWorld*		getDynamicsWorld()
 		{
-		public:
-			bullet_manager();
+			return m_dynamicsWorld;
+		}
 
-			bullet_manager(std::vector<game_object *> game_objects);
-			
-			virtual ~bullet_manager();
+		inline btVector3 to_btVector3(const glm::vec3& vec3) {
+			return btVector3(btScalar(vec3.x), btScalar(vec3.y), btScalar(vec3.z));
+		}
 
-			//void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
+		inline glm::vec3 to_vec3(const btVector3& bt_vec3) {
+			return { bt_vec3.getX(), bt_vec3.getY(), bt_vec3.getZ() };
+		}
 
-			void	initPhysics(std::vector<game_object *> game_objects, btDynamicsWorld* dynamicsWorld);
+		void DynamicsWorldStep(std::vector<engine::game_object *> gameObjects);
 
-			btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+		btBroadphaseInterface*	m_overlappingPairCache;
 
-			void add_physical_object(game_object * game_object, btDynamicsWorld* dynamicsWorld);
+		btCollisionDispatcher*	m_dispatcher;
 
-			btDynamicsWorld*		getDynamicsWorld()
-			{
-				return m_dynamicsWorld;
-			}
+		btConstraintSolver*	m_constraintSolver;
 
-			inline btVector3 to_btVector3(const glm::vec3& vec3) {
-				return btVector3(btScalar(vec3.x), btScalar(vec3.y), btScalar(vec3.z));
-			}
+		btDefaultCollisionConfiguration* m_collisionConfiguration;
 
-			inline glm::vec3 to_vec3(const btVector3& bt_vec3) {
-				return { bt_vec3.getX(), bt_vec3.getY(), bt_vec3.getZ() };
-			}
+		btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
 
-			//std::vector<game_object> getGameObjects();
+		std::vector<physical_object*> physical_objects;
 
-			void DynamicsWorldStep(std::vector<game_object *> gameObjects);
+	protected:
 
-			btBroadphaseInterface*	m_overlappingPairCache;
-
-			btCollisionDispatcher*	m_dispatcher;
-
-			btConstraintSolver*	m_constraintSolver;
-
-			btDefaultCollisionConfiguration* m_collisionConfiguration;
-
-			btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
-
-			std::vector<physical_object*> physical_objects;
-
-			/*enum
-
-			{
-				USE_CCD = 1,
-				USE_NO_CCD
-			};
-			int 	m_ccdMode;*/
-
-		protected:
-			btDynamicsWorld*		m_dynamicsWorld;
-
-//#ifdef USE_BT_CLOCK
-//			btClock m_clock;
-//#endif USE_BT_CLOCK
-
-			///this is the most important class
-			
-
-			///constraint for mouse picking
-			//btTypedConstraint*		m_pickConstraint;
-
-			//virtual void removePickingConstraint();
-
-			//virtual void pickObject(const btVector3& pickPos, const class btCollisionObject* hitObj);
-
-			//int	m_mouseOldX;
-			//int	m_mouseOldY;
-			//int	m_mouseButtons;
-
-			//float m_scaleBottom;
-			//float m_scaleFactor;
-
-			//bool	m_stepping;
-			//bool m_singleStep;
-			//bool m_idle;
-			//int m_lastKey;
-
-			//btVector3		m_sundirection;
-			//btScalar		m_defaultContactProcessingThreshold = 0;
-
-		public:
-			//int	m_modifierKeys;
-			//keep the collision shapes, for deletion/cleanup
-			//
-
-
-
-			//bullet_manager(std::vector<game_object> game_objects);
-			//bullet_manager();
-
-			//virtual ~bullet_manager();
-
-			//void	initPhysics(std::vector<game_object> game_objects, btDynamicsWorld* dynamicsWorld);
-
-			//void	exitPhysics();
-
-			//std::vector<game_object> get_current_state();
-
-			//
-
-			//virtual void clientMoveAndDisplay();
-
-			//virtual void	clientResetScene();
-
-
-
-			
-
-
-			//virtual void myinit();
-
-			//void toggleIdle();
-
-			/*btScalar	getDeltaTimeMicroseconds()
-			{
-#ifdef USE_BT_CLOCK
-				btScalar dt = (btScalar)m_clock.getTimeMicroseconds();
-				m_clock.reset();
-				return dt;
-#else
-				return btScalar(16666.);
-#endif
-			}*/
-
-
-			//btVector3	getRayTo(int x, int y);
-
-			//
-
-			/*bool	isIdle() const
-			{
-				return	m_idle;
-			}*/
-
-			/*void	setIdle(bool idle)
-			{
-				m_idle = idle;
-			}*/
-
-
-		};
+		btDynamicsWorld*		m_dynamicsWorld;
+	};
+}
