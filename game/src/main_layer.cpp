@@ -21,7 +21,7 @@ main_layer::~main_layer()
 
 void main_layer::on_update(double dt)
 {
-	manager->DynamicsWorldStep(m_game_objects);
+	manager->dynamics_world_update(m_game_objects);
 }
 
 void main_layer::on_render(engine::renderer& renderer)

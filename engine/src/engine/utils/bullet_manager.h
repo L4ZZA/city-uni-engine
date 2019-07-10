@@ -31,16 +31,16 @@ namespace engine
 	public:
 		physical_object(btRigidBody* body);
 
-		btRigidBody* GetBody() { return body; };	//returns boid's rigidBody
-		btVector3 GetForward();	//returns boid's direction vector
-		btVector3 GetUp();	//returns boid's up vector
+		btRigidBody* get_body() { return body; };	//returns boid's rigidBody
+		btVector3 get_forward();	//returns boid's direction vector
+		btVector3 get_up();	//returns boid's up vector
 
-		void ApplyForces(); //aplies drag, thrust, lift and gravity
+		void apply_forces(); //aplies drag, thrust, lift and gravity
 	};
 
 	//vectors
-	const btVector3 UpVector(0, 1, 0);
-	const btVector3 ForwardVector(0, 0, 1);
+	const btVector3 up_vector(0, 1, 0);
+	const btVector3 forward_vector(0, 0, 1);
 
 	//PI
 	const btScalar PI = 3.1415926535897;
@@ -54,18 +54,18 @@ namespace engine
 
 		virtual ~bullet_manager();
 
-		void	initPhysics(std::vector<engine::game_object *> game_objects, btDynamicsWorld* dynamicsWorld);
+		void	init_physics(std::vector<engine::game_object *> game_objects, btDynamicsWorld* dynamics_world);
 
-		btRigidBody*	localCreateRigidBody(float mass, const btTransform& startTransform, btCollisionShape* shape, btDynamicsWorld* dynamicsWorld);
+		btRigidBody*	local_create_rigid_body(float mass, const btTransform& start_transform, btCollisionShape* shape, btDynamicsWorld* dynamics_world);
 
-		void add_physical_object(engine::game_object * game_object, btDynamicsWorld* dynamicsWorld);
+		void add_physical_object(engine::game_object * game_object, btDynamicsWorld* dynamics_world);
 
-		btDynamicsWorld*		getDynamicsWorld()
+		btDynamicsWorld*		get_dynamics_world()
 		{
-			return m_dynamicsWorld;
+			return m_dynamics_world;
 		}
 
-		inline btVector3 to_btVector3(const glm::vec3& vec3) {
+		inline btVector3 to_bt_vector3(const glm::vec3& vec3) {
 			return btVector3(btScalar(vec3.x), btScalar(vec3.y), btScalar(vec3.z));
 		}
 
@@ -73,22 +73,22 @@ namespace engine
 			return { bt_vec3.getX(), bt_vec3.getY(), bt_vec3.getZ() };
 		}
 
-		void DynamicsWorldStep(std::vector<engine::game_object *> gameObjects);
+		void dynamics_world_update(std::vector<engine::game_object *> gameObjects);
 
-		btBroadphaseInterface*	m_overlappingPairCache;
+		btBroadphaseInterface*	m_overlapping_pair_cache;
 
 		btCollisionDispatcher*	m_dispatcher;
 
-		btConstraintSolver*	m_constraintSolver;
+		btConstraintSolver*	m_constraint_solver;
 
-		btDefaultCollisionConfiguration* m_collisionConfiguration;
+		btDefaultCollisionConfiguration* m_collision_configuration;
 
-		btAlignedObjectArray<btCollisionShape*>	m_collisionShapes;
+		btAlignedObjectArray<btCollisionShape*>	m_collision_shapes;
 
 		std::vector<physical_object*> physical_objects;
 
 	protected:
 
-		btDynamicsWorld*		m_dynamicsWorld;
+		btDynamicsWorld*		m_dynamics_world;
 	};
 }
