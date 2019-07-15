@@ -48,12 +48,16 @@ IncludeDir["glm"] = "engine/external/glm/"
 IncludeDir["stb_image"] = "engine/external/stb_image/"
 IncludeDir["assimp"] = "engine/external/assimp/include/"
 IncludeDir["assimpcfg"] = "engine/external/assimp/config/"
+IncludeDir["bullet"] = "engine/external/bullet/"
 
 group "dependencies"
     -- iclude other premake files
     include "engine/external/GLFW/"
     include "engine/external/Glad/"
     include "engine/external/assimp/"
+	include "engine/external/bullet/BulletCollision/"
+	include "engine/external/bullet/BulletDynamics/"
+	include "engine/external/bullet/LinearMath/"
 group""
 
 -- === Core Project: engine =======================================================
@@ -99,6 +103,7 @@ project "engine"
         "%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
+		"%{IncludeDir.bullet}",
     }
 
     links
@@ -106,6 +111,9 @@ project "engine"
         "GLFW",
         "Glad",
         "assimp",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath",
     }
 
     -- filters are used to apply property to some specific configurations only
@@ -163,6 +171,7 @@ project "game"
         "engine/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
+		"%{IncludeDir.bullet}",
     }
 
     links
