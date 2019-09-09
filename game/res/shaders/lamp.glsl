@@ -1,4 +1,4 @@
-#shader vertex
+#type vertex
 #version 430
 
 layout(location = 0) in vec3 position;
@@ -13,7 +13,7 @@ void main()
 }
 #endshader
 
-#shader fragment
+#type fragment
 #version 430
 
 layout(location = 0) out vec4 outColor;
@@ -24,4 +24,3 @@ void main()
 {
   outColor = vec4(color.xyz, 1.0);
 }
-#endshader

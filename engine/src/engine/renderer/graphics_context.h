@@ -2,7 +2,7 @@
 
 namespace engine
 {
-	/// \brief 
+	/// \brief Graphics context (platform agnostic) interface
 	class graphics_context
 	{
 	public:

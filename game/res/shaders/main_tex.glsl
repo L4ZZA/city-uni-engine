@@ -1,4 +1,4 @@
-#shader vertex
+#type vertex
 #version 430
 
 layout(location = 0) in vec3 position;
@@ -21,9 +21,8 @@ void main()
   vTexCoords = texcoord;
 
 }
-#endshader
 
-#shader fragment
+#type fragment
 #version 430
 
 layout(location = 0) out vec4 FragColor;
@@ -71,4 +70,3 @@ void main()
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);
 }
-#endshader

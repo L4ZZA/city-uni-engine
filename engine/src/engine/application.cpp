@@ -1,83 +1,87 @@
 #include "pch.h"
 #include "application.h"
-#include "graphics/renderer.h"
-#include "utils/timer.h"
 
-engine::application* engine::application::s_instance{nullptr};
+#include "platform/opengl/gl_shader.h"
+#include "renderer/renderer.h"
+#include "GLFW/glfw3.h"
 
-engine::application::application(const std::string &name, const window_props &properties)
-	: m_title(name), m_properties(properties)
+//----------------------------------------------------------------------------- 
+
+engine::application* engine::application::s_instance{ nullptr }; 
+bool engine::application::s_running{ true }; 
+
+//----------------------------------------------------------------------------- 
+
+engine::application::application()
 {
-	ASSERT(!s_instance, "Application already exists!");
-	s_instance = this;
+    CORE_ASSERT(!s_instance, "Application already exists!");
+    s_instance = this;
 
-	m_window = std::unique_ptr<window>(window::create(name, properties));
-	m_window->event_callback(BIND_EVENT_FN(application::on_event));
+    m_window = std::unique_ptr<engine::window>(window::create());
+    m_window->event_callback(BIND_EVENT_FN(application::on_event));
+
+    render_command::init();
+
 }
 
 engine::application::~application()
 {
-
 }
 
 void engine::application::run()
 {
-	LOG_CORE_INFO("[application] Starting timer.");
-	m_timer = new timer;
-	m_timer->start();
+    while (s_running)
+    {
+        float time = static_cast<float>(glfwGetTime()); //  platform independent
+        timestep timestep = time - m_last_frame_time;
+        m_last_frame_time = time;
 
-	while(m_running)
-	{
-		const double dt = m_timer->elapsed();
-		double millisecondsPerFrame = s_secondsPerFrame * 0.0001;
+        for (auto* layer : m_layers_stack)
+        {
+            layer->on_update(timestep);
+            layer->on_render();
+        }
 
-		if(dt > millisecondsPerFrame)
-		{
+        m_window->on_update();
+    }
 
-			m_renderer.prepare();
-			for(auto* layer : m_layers_stack)
-			{
-				layer->on_update(dt);
-				layer->on_render(m_renderer);
-			}
-		}
-
-		m_window->on_update();
-	}
 }
 
-void engine::application::on_event(event& event)
-{
-	event_dispatcher dispatcher(event);
-	dispatcher.dispatch<window_closed_event>(BIND_EVENT_FN(application::on_window_close));
+void engine::application::on_event(event& event) 
+{ 
+    event_dispatcher dispatcher(event); 
+    // dispatch event on window X pressed 
+    dispatcher.dispatch<window_closed_event>(BIND_EVENT_FN(application::on_window_close)); 
 
-	//LOG_CORE_TRACE("{0}", event);
+    //LOG_CORE_TRACE("{0}", event); 
 
-	// events are executed from top of the stack to bottom (aka end to start of the list)
-	for(auto it = m_layers_stack.end(); it != m_layers_stack.begin(); )
-	{
-		(*--it)->on_event(event);
-		// stop event propagation to next layer if flagged as handled
-		if(event.handled)
-			break;
-	}
-}
+    // events are executed from top of the stack to bottom (aka end to start of the list) 
+    for (auto it = m_layers_stack.end(); it != m_layers_stack.begin(); ) 
+    { 
+        (*--it)->on_event(event); 
+        // stop event propagation to next layer if flagged as handled 
+        if (event.handled) 
+            break; 
+    } 
+} 
 
-void engine::application::push_layer(layer* layer)
-{
-	m_layers_stack.push_layer(layer);
-	layer->on_attach();
-}
+void engine::application::push_layer(layer* layer) 
+{ 
+    m_layers_stack.push_layer(layer); 
+} 
 
-void engine::application::push_overlay(layer* overlay)
-{
-	m_layers_stack.push_overlay(overlay);
-	overlay->on_attach();
-}
+void engine::application::push_overlay(layer* overlay) 
+{ 
+    m_layers_stack.push_overlay(overlay); 
+} 
 
-bool engine::application::on_window_close(window_closed_event& event)
-{
-	m_running = false;
+bool engine::application::on_window_close(window_closed_event&) 
+{ 
+    exit(); 
+    return true; 
+} 
 
-	return true;
-}
+void engine::application::exit() 
+{ 
+    s_running = false; 
+} 

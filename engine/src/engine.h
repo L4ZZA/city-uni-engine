@@ -1,35 +1,25 @@
 #pragma once
 
-// For whoever wants to use Pyro library
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+// For use by engine applications
 
-#include "engine/defs.h"
-#include "engine/core.h"
 #include "engine/application.h"
 #include "engine/layer.h"
 #include "engine/logger.h"
 
-#include "engine/events/event.h"
-#include "engine/events/application_event.h"
-#include "engine/events/key_event.h"
-#include "engine/events/mouse_event.h"
+#include "engine/core/timestep.h"
 
-#include "engine/key_codes.h"
-#include "engine/mouse_buttons_codes.h"
 #include "engine/input.h"
+#include "engine/key_codes.h"
 
-#include "engine/graphics/shader.h"
-#include "engine/graphics/model.h"
-#include "engine/utils/bullet_manager.h"
+// ---renderer------------------------
+#include "engine/renderer/renderer.h"
+#include "engine/renderer/render_command.h"
 
-#include "engine/entities/camera.h"
-#include "engine/utils/maths.h"
+#include "engine/renderer/buffer.h"
+#include "engine/renderer/shader.h"
+#include "engine/renderer/texture.h"
+#include "engine/renderer/vertex_array.h"
+//#include "engine/renderer/model.h"
 
-// ------------- Utils -----------------
-#include "engine/utils/timer.h"
-
-
-// --------- Entry Point ---------------
-//#include "engine/entry_point.h"
+#include "engine/renderer/camera.h"
+// -----------------------------------
