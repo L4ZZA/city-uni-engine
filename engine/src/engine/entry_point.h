@@ -14,9 +14,9 @@ int main(int argc, char** argv)
 
     move_console();
 
-    LOG_INFO("Welcome to the new engine!");
     engine::logger::init();
     LOG_CORE_WARN("Initialized logger");
+    LOG_INFO("Welcome to the new engine!");
 
     auto app = engine::create_application();
     app->run();
