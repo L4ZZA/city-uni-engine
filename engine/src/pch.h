@@ -1,12 +1,13 @@
-﻿#pragma once
+#pragma once
 
+#include <iostream>
 #include <memory>
+#include <utility>
 #include <algorithm>
 #include <functional>
-#include <iostream>
+
 #include <string>
 #include <sstream>
-
 #include <array>
 #include <vector>
 #include <list>
@@ -16,7 +17,6 @@
 #include <unordered_set>
 
 #include "engine/logger.h"
-#include "engine/defs.h"
 
 #ifdef ENGINE_PLATFORM_WIN
 	#include <Windows.h>

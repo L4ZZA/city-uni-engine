@@ -1,191 +1,216 @@
 #include "pch.h"
 #include "win_window.h"
 
-#include "engine/core.h"
 #include "engine/events/application_event.h"
 #include "engine/events/key_event.h"
 #include "engine/events/mouse_event.h"
 
-#include "platform/opengl/context.h"
+#include "engine/core.h"
+#include "platform/opengl/gl_context.h"
+#include "GLFW/glfw3.h"
+#include "engine/input.h"
 
 //=============================================================================
 
 namespace engine
 {
-	static bool s_glfw_initialized = false;
+    static bool s_glfw_initialized = false;
 
-	static void glfw_error_callback(int error_code, const char * description)
-	{
-		LOG_CORE_ERROR("[win_window] GLFW Error ({0}): {1}", error_code, description);
-	}
+    static void glfw_error_callback(int error_code, const char * description)
+    {
+        LOG_CORE_ERROR("GLFW Error ({0}): {1}", error_code, description);
+    }
 }
 
-engine::window* engine::window::create(const std::string& name, window_props const& props)
+engine::window* engine::window::create(window_props const& props)
 {
-	return new win_window(name, props);
+    return new win_window(props);
 }
 
-engine::win_window::win_window(const std::string& name, window_props const& props)
+engine::win_window::win_window(window_props const& props)
 {
-	init(name, props);
+    init(props);
 }
 
 engine::win_window::~win_window()
 {
-	shut_down();
+    shut_down();
 }
 
 void engine::win_window::on_update()
 {
 	glfwPollEvents();
-	m_context->swap_buffers();
+	m_graphics_context->swap_buffers();
 }
 
 void engine::win_window::vsync(bool enabled)
 {
-	if(enabled)
-		glfwSwapInterval(1);
-	else
-		glfwSwapInterval(0);
+    if (enabled)
+        glfwSwapInterval(1);
+    else
+        glfwSwapInterval(0);
 
-	m_data.vsync = enabled;
+    m_data.vsync = enabled;
 }
 
 bool engine::win_window::vsync()
 {
-	return m_data.vsync;
+    return m_data.vsync;
 }
 
-void engine::win_window::init(const std::string& name, window_props const& props)
+void engine::win_window::show_mouse_cursor()
 {
-	if(!core::startup_success)
-		CORE_ASSERT(false, "[win_window] GLFW was not initialized!");
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    m_data.is_mouse_cursor_visible = true;
+}
 
-	m_data.title = name;
-	m_data.x = props.x;
-	m_data.y = props.y;
-	m_data.width = props.width;
-	m_data.height = props.height;
-	m_data.vsync = props.vsync;
+void engine::win_window::hide_mouse_cursor()
+{
+    glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    m_data.is_mouse_cursor_visible = false;
+}
 
-	LOG_CORE_INFO("[win_window] Creating window {0} [{1},{2},{3},{4}]",
-		name, props.y, props.y, props.width, props.height);
+bool engine::win_window::is_cursor_visible() const
+{
+    return m_data.is_mouse_cursor_visible;
+}
 
+void engine::win_window::init(window_props const& props)
+{
+    m_data.title = props.m_title;
+    m_data.width = props.m_width;
+    m_data.height = props.m_height;
+    m_data.last_mouse_x = m_data.width  * 0.5f;
+    m_data.last_mouse_y = m_data.height * 0.5f;
 
-	m_window = glfwCreateWindow(
-		static_cast<int>(props.width),
-		static_cast<int>(props.height),
-		name.c_str(),
-		nullptr, nullptr);
+    LOG_CORE_INFO("Creating window {0} [{1},{2}]", props.m_title, props.m_width, props.m_height);
 
-	// set window origin
-	LOG_CORE_INFO("[win_window] Setting window origin.");
-	glfwSetWindowPos(m_window, props.x, props.y);
+    if (!s_glfw_initialized)
+    {
+        int32_t success = glfwInit();
+        CORE_ASSERT(success, "Could not initialize GLFW!");
+        glfwSetErrorCallback(glfw_error_callback);
+        s_glfw_initialized = true;
+    }
 
-	LOG_CORE_INFO("[win_window] Creating graphics context.");
-	m_context = new opengl_context(m_window);
-	m_context->init();
+    m_window = glfwCreateWindow(
+        static_cast<int>(props.m_width),
+        static_cast<int>(props.m_height),
+        props.m_title.c_str(),
+        nullptr, nullptr);
+
+    glfwMakeContextCurrent(m_window);
+
+	m_graphics_context = new gl_context(m_window);
+	m_graphics_context->init();
 
 	// we're telling glfw to pass the window_data struct to all the defined callbacks
-	// so that we ca work with our defined data.
-	LOG_CORE_INFO("[win_window] Setting WindowUserPointer.");
+	// so that we can work with our defined data.
 	glfwSetWindowUserPointer(m_window, &m_data);
-
-	LOG_CORE_INFO("[win_window] Setting vsync to {}.", m_data.vsync ? "true" : "false");
 	vsync(true);
 
+    // GLFW callbacks
+    glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int32_t width, int32_t height)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+        data.width = width;
+        data.height = height;
 
-	// GLFW callbacks
-	LOG_CORE_INFO("[win_window] Setting WindowSizeCallback.");
-	glfwSetWindowSizeCallback(m_window, [](GLFWwindow* window, int width, int height){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
-		data.width = width;
-		data.height = height;
+        window_resize_event event(width, height);
+        data.event_callback(event);
+    });
 
-		window_resize_event event(width, height);
-		data.event_callback(event);
-	});
+    glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+        window_closed_event event;
+        data.event_callback(event);
+    });
 
-	LOG_CORE_INFO("[win_window] Setting WindowCloseCallback.");
-	glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
-		window_closed_event event;
-		data.event_callback(event);
-	});
+    glfwSetKeyCallback(m_window, [](GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
-	LOG_CORE_INFO("[win_window] Setting KeyCallback.");
-	glfwSetKeyCallback(m_window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+        switch (action)
+        {
+            case GLFW_PRESS:
+            {
+                key_pressed_event event(key, 0);
+                data.event_callback(event);
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+                key_released_event event(key);
+                data.event_callback(event);
+                break;
+            }
+            case GLFW_REPEAT:
+            {
+                key_pressed_event event(key, 1);
+                data.event_callback(event);
+                break;
+            }
+        }
+    });
+    
+    glfwSetCharCallback(m_window, [](GLFWwindow* window, uint32_t key)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
-		switch(action)
-		{
-			case GLFW_PRESS:
-			{
-				key_pressed_event event(key, 0);
-				data.event_callback(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				key_released_event event(key);
-				data.event_callback(event);
-				break;
-			}
-			case GLFW_REPEAT:
-			{
-				key_pressed_event event(key, 1);
-				data.event_callback(event);
-				break;
-			}
-		}
-	});
+        key_typed_event event(key);
+        data.event_callback(event);
+    });
 
-	LOG_CORE_INFO("[win_window] Setting CharCallback.");
-	glfwSetCharCallback(m_window, [](GLFWwindow* window, unsigned int key){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+    glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int32_t button, int32_t action, int32_t mods)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
 
-		key_typed_event event(key);
-		data.event_callback(event);
-	});
+        switch (action)
+        {
+            case GLFW_PRESS:
+            {
+                mouse_button_pressed_event event(button);
+                data.event_callback(event);
+                break;
+            }
+            case GLFW_RELEASE:
+            {
+                mouse_button_released_event event(button);
+                data.event_callback(event);
+                break;
+            }
+        }
+    });
 
-	LOG_CORE_INFO("[win_window] Setting MouseButtonCallback.");
-	glfwSetMouseButtonCallback(m_window, [](GLFWwindow* window, int button, int action, int mods){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+    glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+        mouse_scrolled_event event(static_cast<float>(xOffset), static_cast<float>(yOffset));
+        data.event_callback(event);
+    });
 
-		switch(action)
-		{
-			case GLFW_PRESS:
-			{
-				mouse_button_pressed_event event(button);
-				data.event_callback(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				mouse_button_released_event event(button);
-				data.event_callback(event);
-				break;
-			}
-		}
-	});
+    glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double x_pos, double y_pos)
+    {
+        window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
+        mouse_moved_event event(static_cast<float>(x_pos), static_cast<float>(y_pos));
 
-	LOG_CORE_INFO("[win_window] Setting ScrollCallback.");
-	glfwSetScrollCallback(m_window, [](GLFWwindow* window, double xOffset, double yOffset){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
-		mouse_scrolled_event event(static_cast<float>(xOffset), static_cast<float>(yOffset));
-		data.event_callback(event);
-	});
+        if (!data.is_mouse_cursor_visible)
+        {
+            const float delta_x = static_cast<float>(x_pos) - data.last_mouse_x;
+            const float delta_y = data.last_mouse_y - static_cast<float>(y_pos);
 
-	LOG_CORE_INFO("[win_window] Setting CursorPosCallback.");
-	glfwSetCursorPosCallback(m_window, [](GLFWwindow* window, double xPos, double yPos){
-		window_data &data = *static_cast<window_data*>(glfwGetWindowUserPointer(window));
-		mouse_moved_event event(static_cast<float>(xPos), static_cast<float>(yPos));
-		data.event_callback(event);
-	});
+            //LOG_CORE_TRACE("Delta -> x: {0} | y: {1}", delta_x, delta_y);
+            event = { delta_x, delta_y };
+        }
+
+        data.last_mouse_x = static_cast<float>(x_pos);
+        data.last_mouse_y = static_cast<float>(y_pos);
+        data.event_callback(event);   
+    });
 }
 
 void engine::win_window::shut_down()
 {
-	LOG_CORE_INFO("[win_window] Destroing window.");
-	glfwDestroyWindow(m_window);
+    glfwDestroyWindow(m_window);
 }

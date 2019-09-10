@@ -4,89 +4,89 @@
 
 namespace engine
 {
-	//=========================================================================
+    //=========================================================================
 
-	class key_event : public event
-	{
-	public:
-		int key_code() const { return m_key_code; }
-		EVENT_CLASS_CATEGORY(event_category_keyboard | event_category_input)
+    class ENGINE_API key_event : public event
+    {
+    public:
+        int32_t key_code() const { return m_key_code; }
+        EVENT_CLASS_CATEGORY(event_category_keyboard | event_category_input)
 
-	protected:
-		key_event(int keycode)
-			: m_key_code(keycode)
-		{
-		}
+    protected:
+        key_event(int32_t keycode)
+            : m_key_code(keycode)
+        {
+        }
 
-		int m_key_code;
-	};
+        int32_t m_key_code;
+    };
 
-	//=========================================================================
+    //=========================================================================
 
-	class key_pressed_event : public key_event
-	{
-	public:
-		key_pressed_event(int keycode, int repeatCount)
-			: key_event(keycode), m_repeats_count(repeatCount)
-		{
-		}
+    class ENGINE_API key_pressed_event : public key_event
+    {
+    public:
+        key_pressed_event(int32_t keycode, int32_t repeatCount)
+            : key_event(keycode), m_repeats_count(repeatCount)
+        {
+        }
+        
+        int32_t repeats_count() const { return m_repeats_count; }
 
-		int repeats_count() const { return m_repeats_count; }
+        std::string to_string() const override
+        {
+            std::stringstream ss;
+            ss << "key_pressed_event: " << m_key_code << " (" << m_repeats_count << " repeats)";
+            return ss.str();
+        }
 
-		std::string to_string() const override
-		{
-			std::stringstream ss;
-			ss << "key_pressed_event: " << m_key_code << " (" << m_repeats_count << " repeats)";
-			return ss.str();
-		}
+        EVENT_CLASS_TYPE(key_pressed)
 
-		EVENT_CLASS_TYPE(key_pressed)
+    private:
+        int32_t m_repeats_count;
+    };
 
-	private:
-		int m_repeats_count;
-	};
+    //=========================================================================
 
-	//=========================================================================
+    class ENGINE_API key_released_event : public key_event
+    {
+    public:
+        key_released_event(int32_t keycode)
+            : key_event(keycode)
+        {
+        }
 
-	class key_released_event : public key_event
-	{
-	public:
-		key_released_event(int keycode)
-			: key_event(keycode)
-		{
-		}
+        std::string to_string() const override
+        {
+            std::stringstream ss;
+            ss << "key_released_event: " << m_key_code;
+            return ss.str();
+        }
 
-		std::string to_string() const override
-		{
-			std::stringstream ss;
-			ss << "key_released_event: " << m_key_code;
-			return ss.str();
-		}
+        EVENT_CLASS_TYPE(key_released)
+    };
 
-		EVENT_CLASS_TYPE(key_released)
-	};
+    //=========================================================================
 
-	//=========================================================================
+    /// \brief Represents the char value of the key pressed. 
+    /// [Most commonly known as char_event in windows]
+    class ENGINE_API key_typed_event : public key_event
+    {
+    public:
+        key_typed_event(int32_t keycode)
+            : key_event(keycode)
+        {
+        }
 
-	/// \brief Represents the char value of the key pressed. 
-	/// [Most commonly known as char_event in windows]
-	class key_typed_event : public key_event
-	{
-	public:
-		key_typed_event(int keycode)
-			: key_event(keycode)
-		{
-		}
+        std::string to_string() const override
+        {
+            std::stringstream ss;
+            ss << "key_typed_event: " << m_key_code;
+            return ss.str();
+        }
 
-		std::string to_string() const override
-		{
-			std::stringstream ss;
-			ss << "key_typed_event: " << m_key_code;
-			return ss.str();
-		}
+        EVENT_CLASS_TYPE(key_typed)
+    };
 
-		EVENT_CLASS_TYPE(key_typed)
-	};
-
-	//=========================================================================
+    //=========================================================================
 }

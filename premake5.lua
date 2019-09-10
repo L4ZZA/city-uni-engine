@@ -41,19 +41,22 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["spdlog"] = "engine/external/spdlog/include"
-IncludeDir["GLFW"] = "engine/external/GLFW/include/"
-IncludeDir["Glad"] = "engine/external/Glad/include/"
-IncludeDir["glm"] = "engine/external/glm/"
-IncludeDir["stb_image"] = "engine/external/stb_image/"
-IncludeDir["assimp"] = "engine/external/assimp/include/"
+IncludeDir["spdlog"]    = "engine/external/spdlog/include"
+IncludeDir["GLFW"]      = "engine/external/GLFW/include"
+IncludeDir["Glad"]      = "engine/external/Glad/include"
+IncludeDir["glm"]       = "engine/external/glm"
+IncludeDir["stb_image"] = "engine/external/stb_image"
+IncludeDir["ImGui"]     = "engine/external/imgui"
+IncludeDir["assimp"]    = "engine/external/assimp/include/"
 IncludeDir["assimpcfg"] = "engine/external/assimp/config/"
-IncludeDir["bullet"] = "engine/external/bullet/"
+IncludeDir["bullet"]    = "engine/external/bullet/"
+
 
 group "dependencies"
     -- iclude other premake files
     include "engine/external/GLFW/"
     include "engine/external/Glad/"
+	include "engine/external/stb_image"
     include "engine/external/assimp/"
 	include "engine/external/bullet/BulletCollision/"
 	include "engine/external/bullet/BulletDynamics/"
@@ -81,11 +84,8 @@ project "engine"
         "%{prj.name}/src/**.h", 
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/src/**.hpp",
-        "%{prj.name}/src/**.shader",
-        "%{prj.name}/res/**.shader",
         "%{prj.name}/external/glm/glm/**.hpp", 
         "%{prj.name}/external/glm/glm/**.inl",
-        "%{prj.name}/external/stb_image/stb_image.h",
     }
 
     defines
@@ -99,8 +99,8 @@ project "engine"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.glm}",
-        "%{IncludeDir.stb_image}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
 		"%{IncludeDir.bullet}",
@@ -110,6 +110,8 @@ project "engine"
     {
         "GLFW",
         "Glad",
+		"opengl32.lib",
+        "stb_image",
         "assimp",
 		"BulletCollision",
 		"BulletDynamics",
@@ -119,16 +121,13 @@ project "engine"
     -- filters are used to apply property to some specific configurations only
     filter "system:windows"
         systemversion "latest" -- windows SDK version
-        linkoptions { "/ignore:4221" }
 
         defines
         {
             "ENGINE_PLATFORM_WIN",
-            -- "ENGINE_BUILD_DLL",
+            "ENGINE_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
         }
-
-        links { "opengl32.lib" }
 
     filter "configurations:Debug"
         defines "ENGINE_DEBUG"
@@ -160,15 +159,12 @@ project "game"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        "%{prj.name}/src/**.shader",
-        "%{prj.name}/res/**.shader",
-        "%{prj.name}/src/**.glsl",
-        "%{prj.name}/res/**.glsl",
     }
 
     includedirs
     {
         "engine/src",
+        "engine/external",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
 		"%{IncludeDir.bullet}",
@@ -181,7 +177,6 @@ project "game"
 
     filter "system:windows"
         systemversion "latest"
-        linkoptions { "/ignore:4221" }
 
         defines
         {

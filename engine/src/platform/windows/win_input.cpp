@@ -3,52 +3,69 @@
 #include "engine/application.h"
 #include "GLFW/glfw3.h"
 
-engine::input* engine::input::s_instance;
-
-void engine::win_input::init()
+namespace engine
 {
-	LOG_CORE_INFO("[win_input] Initializing input instance.");
-	s_instance = new win_input();
+    // some how we'll have to delete this?
+    input* input::s_instance = new win_input();
+
+    static bool s_first_mouse = true;
 }
 
-void engine::win_input::shutdown()
+bool engine::win_input::key_pressed_impl(int32_t key_code) const
 {
-	LOG_CORE_INFO("[win_input] Releasing input.");
-	SAFE_RELEASE(s_instance);
+    auto window = application::window().native_window();
+    auto state = glfwGetKey(static_cast<GLFWwindow*>(window), key_code);
+    return state == GLFW_PRESS || state == GLFW_REPEAT;
 }
 
-bool engine::win_input::key_pressed_impl(int key_code) const
+bool engine::win_input::mouse_button_pressed_impl(int32_t button) const
 {
-	auto window = application::instance().get_window().native_window();
-	auto state = glfwGetKey(static_cast<GLFWwindow*>(window), key_code);
-	return state == GLFW_PRESS || state == GLFW_REPEAT;
-}
-
-bool engine::win_input::mouse_button_pressed_impl(int button) const
-{
-	auto window = application::instance().get_window().native_window();
-	auto state = glfwGetMouseButton(static_cast<GLFWwindow*>(window), button);
-	return state == GLFW_PRESS;
+    auto window = application::window().native_window();
+    auto state = glfwGetMouseButton(static_cast<GLFWwindow*>(window), button);
+    return state == GLFW_PRESS;
 }
 
 std::pair<float, float> engine::win_input::mouse_position_impl() const
 {
-	auto window = application::instance().get_window().native_window();
-	double xpos, ypos;
-	glfwGetCursorPos(static_cast<GLFWwindow*>(window), &xpos, &ypos);
+    auto& our_window = application::window();
+    auto window = our_window.native_window();
+    double x_pos, y_pos;
+    glfwGetCursorPos(static_cast<GLFWwindow*>(window), &x_pos, &y_pos);
 
-	return { static_cast<float>(xpos), static_cast<float>(ypos) };
+    if(s_first_mouse)
+    {
+        s_last_position.first  = x_pos;
+        s_last_position.second = y_pos;
+        s_first_mouse = false;
+    }
+
+    float x = static_cast<float>(x_pos);
+    float y = static_cast<float>(y_pos);
+    if(!our_window.is_cursor_visible())
+    {
+        float delta_x = x - s_last_position.first;
+        float delta_y = s_last_position.second - y; // reversed since y-coordinates range from bottom to top
+        s_last_position.first  = x_pos;
+        s_last_position.second = y_pos;
+        return { delta_x, delta_y };
+    }
+
+    return { static_cast<float>(x_pos), static_cast<float>(y_pos) };
 }
 
 float engine::win_input::mouse_x_impl() const
 {
-	// c++ 17 way to assign std::pair(s)
-	auto[x, y] = mouse_position_impl();
-	return x;
+    // c++ 17 way to assign std::pair(s)
+    auto window = application::window().native_window();
+    double x_pos, y_pos;
+    glfwGetCursorPos(static_cast<GLFWwindow*>(window), &x_pos, &y_pos);
+    return static_cast<float>(x_pos);
 }
 
 float engine::win_input::mouse_y_impl() const
 {
-	auto[x, y] = mouse_position_impl();
-	return y;
+    auto window = application::window().native_window();
+    double x_pos, y_pos;
+    glfwGetCursorPos(static_cast<GLFWwindow*>(window), &x_pos, &y_pos);
+    return static_cast<float>(y_pos);
 }
