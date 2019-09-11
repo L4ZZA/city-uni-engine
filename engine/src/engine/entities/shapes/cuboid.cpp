@@ -3,7 +3,7 @@
 #include <engine.h>
 
 engine::cuboid::cuboid(glm::vec3 position, bool is_static, glm::vec3 half_extents, const std::vector<ref<texture_2d>> textures, bool inwards)
-	: game_object(is_static, 0.0f, glm::vec3(half_extents)), m_half_extents(half_extents)
+	: game_object(is_static, 0.0f, half_extents), m_half_extents(half_extents)
 {
 	float orientation = 1;
 	if (inwards)
