@@ -1,57 +1,107 @@
 #pragma once
 
-#include "engine/renderer/shader.h"
 
 namespace engine
 {
-    class game_object
+	class mesh;
+	class texture_2d;
+	class vertex_array;
+
+	/// \brief Base class for storing the physical information about the objects in the game
+	class game_object
     {
     public:
-        game_object(const glm::vec3 position, const glm::vec3 direction, const glm::vec3 velocity, /*engine::mesh mesh,*/ const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape, glm::vec3 rotation_axis, float rotation_amount);
-        game_object(/*engine::mesh mesh,*/ int32_t type, glm::vec3 bounding_shape);
-        ~game_object();
+		/// \brief Constructors
+		game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes, const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape, glm::vec3 rotation_axis, float rotation_amount);
+		game_object(const glm::vec3 position, const bool is_static, int32_t type, glm::vec3 bounding_shape);
+		game_object(std::vector<ref<mesh>> meshes, int32_t type, glm::vec3 bounding_shape);
+		/// \brief Destructor
+		~game_object();
 
-        void move(double dt, glm::vec3 direction);
-        glm::vec3 position() const { return m_position; }
-        glm::vec3 direction() const { return m_direction; }
-        glm::vec3 velocity() const { return m_velocity; }
-        //engine::mesh get_mesh() const { return m_mesh; }
-        glm::vec3 scale() const { return m_scale; }
-        bool is_static() const { return m_static; }
-        float mass() const { return m_mass; }
-        int32_t type() const { return m_type; }
-        glm::vec3 bounding_shape() const { return m_bounding_shape; }
-        glm::vec3 rotation_axis() const { return m_rotation_axis; }
-        float rotation_amount() const { return m_rotation_amount; }
+		/// \brief Getter methods
+		glm::vec3 position() const { return m_position; }
+		glm::vec3 velocity() const { return m_velocity; }
+		glm::vec3 acceleration() const { return m_acceleration; }
 
-        void set_position(glm::vec3 position) { m_position = position; }
-        void set_direction(glm::vec3 direction) { m_direction = direction; }
-        void set_velocity(glm::vec3 velocity) { m_velocity = velocity; }
-        //void set_mesh(engine::mesh mesh) { m_mesh = mesh; }
-        glm::vec3 set_scale(glm::vec3 scale) { m_scale = m_scale; }
-        void set_mass(float mass) { m_mass = mass; }
-        void set_type(int32_t type) { m_type = type; }
-        void set_bounding_shape(glm::vec3 bounding_shape) { m_bounding_shape = bounding_shape; }
-        void set_rotation_axis(glm::vec3 rotation_axis) { m_rotation_axis = rotation_axis; }
-        void set_rotation_amount(float rotation_amount) { m_rotation_amount = rotation_amount; }
+		glm::vec3 right() const { return m_right; }
+		glm::vec3 up() const { return m_up; }
+		glm::vec3 forward() const { return m_forward; }
+
+		glm::vec3 rotation_axis() const { return m_rotation_axis; }
+		float rotation_amount() const { return m_rotation_amount; }
+		glm::vec3 angular_velocity() const { return m_angular_velocity; }
+		glm::vec3 torque() const { return m_torque; }
+
+		glm::vec3 scale() const { return m_scale; }
+		bool is_static() const { return m_static; }
+		float mass() const { return m_mass; }
+		int32_t type() const { return m_type; }
+		glm::vec3 bounding_shape() const { return m_bounding_shape; }
+		std::vector<ref<mesh>> get_meshes() const { return m_meshes; }
+		std::vector<ref<texture_2d>> get_textures() const { return m_textures; }
+		ref<vertex_array> get_va() const { return m_va; }
+
+		glm::vec3 offset() { return m_offset; }
+
+		/// \brief Setter methods
+		void set_position(glm::vec3 position) { m_position = position; }
+		void set_velocity(glm::vec3 velocity) { m_velocity = velocity; }
+		void set_acceleration(glm::vec3 acceleration) { m_acceleration = acceleration; }
+
+		void set_right(glm::vec3 right) { m_right = right; }
+		void set_up(glm::vec3 up) { m_up = up; }
+		void set_forward(glm::vec3 forward) { m_forward = forward; }
+
+		void set_rotation_axis(glm::vec3 rotation_axis) { m_rotation_axis = rotation_axis; }
+		void set_rotation_amount(float rotation_amount) { m_rotation_amount = rotation_amount; }
+		void set_angular_velocity(glm::vec3 angular_velocity) { m_angular_velocity = angular_velocity; }
+		void set_torque(glm::vec3 torque) { m_torque = torque; }
+
+		void set_scale(glm::vec3 scale) { m_scale = scale; }
+		void set_mass(float mass) { m_mass = mass; }
+		void set_type(int32_t type) { m_type = type; }
+		void set_bounding_shape(glm::vec3 bounding_shape) { m_bounding_shape = bounding_shape; }
+		void set_mesh(ref<mesh> mesh) { m_meshes.push_back(mesh); }
+		void set_mesh(std::vector<ref<mesh>> meshes) { m_meshes = meshes; }
+		void set_textures(std::vector<ref<texture_2d>> textures) { m_textures = textures; }
+		void set_va(ref<vertex_array> va) { m_va = va; }
+
+		void set_offset(glm::vec3 offset) { m_offset = offset; }
 
     private:
-        glm::vec3     m_position{ 0.f };
-        glm::vec3     m_direction{ 0.f };
-        glm::vec3     m_velocity{ 0.f };
-        glm::vec3     m_rotation_axis{ 0.f };
-        float         m_rotation_amount{ 0.f };
-        //engine::mesh  m_mesh;
-        glm::vec3     m_scale;
-        bool          m_static;
-        float         m_mass;
+		/// \brief Fields
+		// object's position, velocity and acceleration vectors
+		glm::vec3		m_position{ 0.f };
+		glm::vec3		m_velocity{ 0.f };
+		glm::vec3		m_acceleration{ 0.f };
 
-        std::string m_directory;
-        std::string m_path;
+		// object's orientation vectors
+		glm::vec3		m_right{ 1.0f, 0.0f, 0.0f };
+		glm::vec3		m_up{ 0.0f, 1.0f, 0.0f };
+		glm::vec3		m_forward{ 0.0f, 0.0f, 1.0f };
 
-        int32_t m_type;
+		// object's rotation axis vector and rotation amount variable
+		glm::vec3		m_rotation_axis{ 0.0f, 1.0f, 0.0f };
+		float			m_rotation_amount{ 0.f };
 
-        glm::vec3    m_bounding_shape{ 0.f };
+		// object's angular velocity and torque vectors
+		glm::vec3		m_angular_velocity{ 0.0f };
+		glm::vec3		m_torque{ 0.0f };
 
+		// object's meshes
+		std::vector<ref<mesh>> m_meshes;
+		std::vector<ref<texture_2d>> m_textures;
+		ref<vertex_array> m_va;
+
+		// object's scale vector, mass variable and static switch
+		glm::vec3		m_scale{ 1.0f };
+		float			m_mass{ 1.0f };
+		bool			m_static{ false };
+
+		// object's bounding shape type and dimensions
+		int32_t			m_type;
+		glm::vec3		m_bounding_shape{ 0.f };
+
+		glm::vec3 m_offset = glm::vec3(0.0f);
     };
 }
