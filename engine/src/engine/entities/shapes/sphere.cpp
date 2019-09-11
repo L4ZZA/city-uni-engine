@@ -80,12 +80,12 @@ engine::sphere::sphere(glm::vec3 position, bool is_static, uint32_t stacks, uint
 		{engine::e_shader_data_type::float2, "a_tex_coord"},
 		});
 
-	const engine::ref<engine::vertex_array> m_cube_va = engine::vertex_array::create();
-	m_cube_va->add_buffer(sphere_vb);
-	m_cube_va->add_buffer(sphere_ib);
+	const engine::ref<engine::vertex_array> sphere_va = engine::vertex_array::create();
+	sphere_va->add_buffer(sphere_vb);
+	sphere_va->add_buffer(sphere_ib);
 
 	set_textures(textures);
-	set_va(m_cube_va);
+	set_va(sphere_va);
 }
 
 engine::sphere::~sphere() {}

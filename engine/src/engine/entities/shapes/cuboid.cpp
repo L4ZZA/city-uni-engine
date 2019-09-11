@@ -70,12 +70,12 @@ engine::cuboid::cuboid(glm::vec3 position, bool is_static, glm::vec3 half_extent
 		{engine::e_shader_data_type::float2, "a_tex_coord"},
 		});
 
-	const engine::ref<engine::vertex_array> m_cube_va = engine::vertex_array::create();
-	m_cube_va->add_buffer(cuboid_vb);
-	m_cube_va->add_buffer(cuboid_ib);
+	const engine::ref<engine::vertex_array> cuboid_va = engine::vertex_array::create();
+	cuboid_va->add_buffer(cuboid_vb);
+	cuboid_va->add_buffer(cuboid_ib);
 
 	set_textures(textures);
-	set_va(m_cube_va);
+	set_va(cuboid_va);
 }
 
 engine::cuboid::~cuboid() {}
