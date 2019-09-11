@@ -13,7 +13,7 @@ namespace engine
     public:
 		/// \brief Constructors
 		game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes, const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape, glm::vec3 rotation_axis, float rotation_amount);
-		game_object(const glm::vec3 position, const bool is_static, int32_t type, glm::vec3 bounding_shape);
+		game_object(const bool is_static, int32_t type, glm::vec3 bounding_shape);
 		game_object(std::vector<ref<mesh>> meshes, int32_t type, glm::vec3 bounding_shape);
 		/// \brief Destructor
 		~game_object();
@@ -37,9 +37,9 @@ namespace engine
 		float mass() const { return m_mass; }
 		int32_t type() const { return m_type; }
 		glm::vec3 bounding_shape() const { return m_bounding_shape; }
-		std::vector<ref<mesh>> get_meshes() const { return m_meshes; }
-		std::vector<ref<texture_2d>> get_textures() const { return m_textures; }
-		ref<vertex_array> get_va() const { return m_va; }
+		const std::vector<ref<mesh>>& meshes() const { return m_meshes; }
+		const std::vector<ref<texture_2d>>& textures() const { return m_textures; }
+		const ref<vertex_array>& get_va() const { return m_va; }
 
 		glm::vec3 offset() { return m_offset; }
 

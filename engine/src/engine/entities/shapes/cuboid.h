@@ -1,5 +1,5 @@
 #pragma once
-#include "../game_object.h"
+#include "engine/entities/game_object.h"
 
 namespace engine
 {

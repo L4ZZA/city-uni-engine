@@ -6,8 +6,8 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
-engine::model::model(const std::string& path)
-    :m_path(path)
+engine::model::model(const std::string& path, const bool is_static)
+    : game_object(is_static, 0.f, glm::vec3(1.f)), m_path(path)
 {
     LOG_CORE_INFO("[model] Creating model '{0}'.", m_path);
     Assimp::Importer importer;
@@ -22,6 +22,10 @@ engine::model::model(const std::string& path)
     m_directory = path.substr(0, path.find_last_of('/') + 1);
 
     process_node(scene->mRootNode, scene);
+
+	set_offset((max_point + min_point) / 2.0f);
+	m_size = max_point - min_point;
+	set_bounding_shape(m_size / 2.0f);
 }
 
 engine::model::~model()
@@ -34,7 +38,7 @@ void engine::model::process_node(aiNode* node, const aiScene* scene)
     for(uint32_t i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        m_meshes.push_back(process_mesh(mesh, scene));
+        set_mesh(process_mesh(mesh, scene));
     }
 
     for(uint32_t i = 0; i < node->mNumChildren; i++)
@@ -43,7 +47,7 @@ void engine::model::process_node(aiNode* node, const aiScene* scene)
     }
 }
 
-engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScene* scene) const
+engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<mesh::vertex> vertices;
     std::vector<uint32_t> indices;
@@ -56,7 +60,17 @@ engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScen
 
         // Position
         glm::vec3 pos(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-        vert.position = pos;
+		vert.position = pos;
+
+		if (first_point)
+		{
+			min_point = pos; max_point = pos;
+			first_point = false;
+		}
+		else
+		{
+			min_max_compare(pos);
+		}
 
         // Normal
         glm::vec3 norm(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
@@ -132,4 +146,20 @@ std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMate
     }
 
     return textures;
+}
+
+void engine::model::min_max_compare(glm::vec3 point)
+{
+	if (point.x < min_point.x)
+		min_point.x = point.x;
+	if (point.x > max_point.x)
+		max_point.x = point.x;
+	if (point.y < min_point.y)
+		min_point.y = point.y;
+	if (point.y > max_point.y)
+		max_point.y = point.y;
+	if (point.z < min_point.z)
+		min_point.z = point.z;
+	if (point.z > max_point.z)
+		max_point.z = point.z;
 }

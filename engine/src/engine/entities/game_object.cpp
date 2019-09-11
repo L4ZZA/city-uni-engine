@@ -14,8 +14,8 @@ engine::game_object::game_object(std::vector<ref<mesh>> meshes, int32_t type, gl
 {
 }
 
-engine::game_object::game_object(const glm::vec3 position, const bool is_static, int32_t type, glm::vec3 bounding_shape)
-	: m_position(position), m_static(is_static), m_type(type), m_bounding_shape(bounding_shape)
+engine::game_object::game_object(const bool is_static, int32_t type, glm::vec3 bounding_shape)
+	: m_static(is_static), m_type(type), m_bounding_shape(bounding_shape)
 {
 }
 

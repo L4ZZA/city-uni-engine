@@ -1,4 +1,5 @@
-﻿#pragma once
+#pragma once
+#include "engine/entities/game_object.h"
 
 struct aiNode;
 struct aiScene;
@@ -12,22 +13,27 @@ namespace engine
     class texture_2d;
 
     /// \brief
-    class model
+    class model : public game_object
     {
     public:
-        model(const std::string& path);
+        model(const std::string& path, const bool is_static);
         ~model();
-
-        const std::vector<ref<mesh>>& meshes() const { return m_meshes; }
 
     private: // methods
         void process_node(aiNode* node, const aiScene* scene);
-        ref<engine::mesh> process_mesh(aiMesh* mesh, const aiScene* scene) const;
+        ref<engine::mesh> process_mesh(aiMesh* mesh, const aiScene* scene);
         std::vector<ref<texture_2d>> load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const;
 
+		void min_max_compare(glm::vec3 point);
+		glm::vec3 size() { return m_size; }
+
     private: // fields
-        std::vector<ref<mesh>> m_meshes;
         std::string m_directory;
         std::string m_path;
+
+		glm::vec3 min_point;
+		glm::vec3 max_point;
+		bool first_point = true;
+		glm::vec3 m_size;
     };
 }
