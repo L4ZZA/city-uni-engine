@@ -20,6 +20,7 @@
 #include "engine/renderer/texture.h"
 #include "engine/renderer/vertex_array.h"
 //#include "engine/renderer/model.h"
+#include "engine/utils/bullet_manager.h"
 
 #include "engine/renderer/camera.h"
 // -----------------------------------
