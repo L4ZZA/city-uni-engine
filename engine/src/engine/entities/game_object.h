@@ -6,6 +6,7 @@ namespace engine
 	class mesh;
 	class texture_2d;
 	class vertex_array;
+	class shader;
 
 	/// \brief Base class for storing the physical information about the objects in the game
 	class game_object
@@ -39,7 +40,7 @@ namespace engine
 		glm::vec3 bounding_shape() const { return m_bounding_shape; }
 		const std::vector<ref<mesh>>& meshes() const { return m_meshes; }
 		const std::vector<ref<texture_2d>>& textures() const { return m_textures; }
-		const ref<vertex_array>& get_va() const { return m_va; }
+		const ref<vertex_array>& va() const { return m_va; }
 
 		glm::vec3 offset() { return m_offset; }
 
@@ -67,6 +68,10 @@ namespace engine
 		void set_va(ref<vertex_array> va) { m_va = va; }
 
 		void set_offset(glm::vec3 offset) { m_offset = offset; }
+
+
+		const glm::mat4& transform();
+		void bind_textures();
 
     private:
 		/// \brief Fields

@@ -1,13 +1,15 @@
 #include "pch.h"
 #include "model.h"
 #include "mesh.h"
+#include "renderer.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+
 engine::model::model(const std::string& path, const bool is_static)
-    : game_object(is_static, 0.f, glm::vec3(1.f)), m_path(path)
+    : game_object(is_static, 0, glm::vec3(1.f)), m_path(path)
 {
     LOG_CORE_INFO("[model] Creating model '{0}'.", m_path);
     Assimp::Importer importer;

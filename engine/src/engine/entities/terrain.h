@@ -10,7 +10,7 @@ namespace engine
 	{
 	public:
 		/// \brief Constructor
-		terrain(glm::vec3 position, bool is_static, float length, float depth, float width, std::vector<ref<texture_2d>> textures);
+		terrain(bool is_static, float length, float depth, float width, std::vector<ref<texture_2d>> textures);
 		/// \brief Destructor
 		~terrain();
 

@@ -3,7 +3,7 @@
 #include <engine.h>
 
 engine::sphere::sphere(glm::vec3 position, bool is_static, uint32_t stacks, uint32_t slices, float radius, const std::vector<ref<texture_2d>> textures)
-	: game_object(is_static, 1.0f, glm::vec3(radius)), m_stacks(stacks), m_slices(slices), m_radius(radius)
+	: game_object(is_static, 1, glm::vec3(radius)), m_stacks(stacks), m_slices(slices), m_radius(radius)
 {
 	std::vector<float> vertices;
 	std::vector<uint32_t> indices;

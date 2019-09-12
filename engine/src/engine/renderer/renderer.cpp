@@ -37,12 +37,19 @@ void engine::renderer::submit(
 
 void engine::renderer::submit(
     const ref<shader>& shader, 
-    const ref<model>& model,
+	const ref<game_object>& object,
     const glm::mat4& transform /*= glm::mat4(1.f)*/)
 {
-    auto model_meshes = model->meshes();
-    for (const auto& mesh : model_meshes)
-    {
-        submit(shader, mesh, transform);
-    }
+	if (object->meshes().size() > 0)
+	{
+		auto model_meshes = object->meshes();
+		for (const auto& mesh : model_meshes)
+		{
+			submit(shader, mesh, transform);
+		}
+	}
+	else
+	{
+		submit(shader, object->va(), transform);
+	}
 }

@@ -10,7 +10,7 @@ namespace engine
 	{
 	public:
 		/// \brief Constructor
-		cuboid(glm::vec3 position, bool is_static, glm::vec3 half_extents, const std::vector<ref<texture_2d>> textures, bool inwards);
+		cuboid(bool is_static, glm::vec3 half_extents, const std::vector<ref<texture_2d>> textures, bool inwards);
 
 		/// \brief Destructor
 		~cuboid();

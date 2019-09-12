@@ -20,7 +20,13 @@
 #include "engine/renderer/texture.h"
 #include "engine/renderer/vertex_array.h"
 //#include "engine/renderer/model.h"
-#include "engine/utils/bullet_manager.h"
-
 #include "engine/renderer/camera.h"
-// -----------------------------------
+
+// ---entities------------------------
+#include "engine/entities/shapes/cuboid.h"
+#include "engine/entities/shapes/sphere.h"
+#include "engine/entities/terrain.h"
+#include "engine/entities/skybox.h"
+
+// ---utils---------------------------
+#include "engine/utils/bullet_manager.h"

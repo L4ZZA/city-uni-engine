@@ -2,7 +2,7 @@
 #include "skybox.h"
 #include <engine.h>
 
-engine::skybox::skybox(float size, glm::vec3 position, float rotation, const std::vector<ref<texture_2d>> textures) : game_object(true, 0.0f, glm::vec3(size)), m_size(size)
+engine::skybox::skybox(float size, glm::vec3 position, float rotation, const std::vector<ref<texture_2d>> textures) : game_object(true, 0, glm::vec3(size)), m_size(size)
 {
 	float skybox_vertices[]
 	{

@@ -87,8 +87,9 @@ static const std::string flat_color_fragment_shader = R"(
 static const std::string textured_vertex_shader_3d = R"(  
     #version 430  
   
-    layout(location = 0) in vec3 a_position;  
-    layout(location = 1) in vec2 a_tex_coord;  
+    layout(location = 0) in vec3 a_position;
+	layout(location = 1) in vec3 a_normal;
+    layout(location = 2) in vec2 a_tex_coord;  
   
     uniform mat4 u_view_projection;  
     uniform mat4 u_transform;  
@@ -115,7 +116,7 @@ static const std::string textured_fragment_shader_3d = R"(
     {  
         o_color = texture(u_sampler, v_tex_coord); 
     }  
-)"; 
+)";
 
 example_layer::example_layer() 
     :m_2d_camera(-1.6f, 1.6f, -0.9f, 0.9f), 
@@ -125,7 +126,7 @@ example_layer::example_layer()
     //engine::input::anchor_mouse(true);
     engine::application::window().hide_mouse_cursor();
 
-    //======= triangle =========
+    /*//======= triangle =========
 
     float vertices[3 * 7]
     {
@@ -236,17 +237,21 @@ example_layer::example_layer()
 
     m_cube_va = engine::vertex_array::create(); 
     m_cube_va->add_buffer(cube_vb); 
-    m_cube_va->add_buffer(cube_ib);
+    m_cube_va->add_buffer(cube_ib);*/
 
     m_color_shader.reset(new engine::gl_shader(vertex_shader, fragment_shader));
     m_flat_color_shader.reset(new engine::gl_shader(flat_color_vertex_shader, flat_color_fragment_shader));
     m_textured_shader.reset(new engine::gl_shader(textured_vertex_shader_3d, textured_fragment_shader_3d));
 
     std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->bind();
-    std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->set_uniform("u_sampler", 0); 
+    std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->set_uniform("u_sampler", 0);
 
-    m_texture = engine::texture_2d::create("assets/textures/checkerboard.png"); 
-    m_face_texture = engine::texture_2d::create("assets/textures/face.png"); 
+	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
+	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
+
+	engine::ref<engine::cuboid> cuboid = std::make_shared<engine::cuboid>(false, glm::vec3(1.0f), std::vector<engine::ref<engine::texture_2d>>{ m_face_texture }, false);
+
+	m_game_objects.push_back(cuboid);
 } 
 
 void example_layer::on_update(const engine::timestep& timestep) 
@@ -275,7 +280,7 @@ void example_layer::on_render()
 
     engine::renderer::begin_scene(m_3d_camera, m_textured_shader); 
 
-    std::vector<glm::vec3> cubePositions 
+    /*std::vector<glm::vec3> cubePositions 
     { 
         glm::vec3(0.0f,  0.0f,  0.0f), 
         glm::vec3(2.0f,  5.0f, -15.0f), 
@@ -287,9 +292,9 @@ void example_layer::on_render()
         glm::vec3(1.5f,  2.0f, -2.5f), 
         glm::vec3(1.5f,  0.2f, -1.5f), 
         glm::vec3(-1.3f,  1.0f, -1.5f) 
-    }; 
+    };*/
 
-    for(uint32_t i = 0; i < cubePositions.size(); i++) 
+    /*for(uint32_t i = 0; i < cubePositions.size(); i++) 
     { 
         glm::mat4 transform(1.0f); 
         transform = glm::translate(transform, cubePositions[i]); 
@@ -301,13 +306,16 @@ void example_layer::on_render()
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
         m_face_texture->bind(); 
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
-    } 
+    }*/
 
-    engine::renderer::end_scene(); 
+	for (const auto& object : m_game_objects)
+	{
+		render_object(object, m_textured_shader);
+	}
 
+    engine::renderer::end_scene();
 
-
-    //engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
+	//engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
 
     //static auto scale = glm::scale(glm::mat4(1), glm::vec3(0.1f)); 
 
@@ -340,3 +348,10 @@ void example_layer::on_event(engine::event& event)
     } 
 
 } 
+
+void example_layer::render_object(engine::ref<engine::game_object> game_object, engine::ref<engine::shader> shader)
+{
+	glm::mat4 object_transform = game_object->transform();
+	game_object->bind_textures();
+	engine::renderer::submit(shader, game_object, object_transform);
+}
