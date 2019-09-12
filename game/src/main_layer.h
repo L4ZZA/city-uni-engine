@@ -1,10 +1,12 @@
 #pragma once
 #include <engine.h>
+#include "engine/utils/timer.h"
 
 class example_layer : public engine::layer
 {
 public:
     example_layer();
+	~example_layer();
 
     void on_update(const engine::timestep& timestep) override;
     void on_render() override; 
@@ -21,8 +23,14 @@ private:
     engine::ref<engine::vertex_array>   m_cube_va{}; 
     engine::ref<engine::texture_2d>     m_texture{}; 
     engine::ref<engine::texture_2d>     m_face_texture{};
-
+	engine::ref<engine::texture_2d>     m_terrain_texture{};
+	engine::ref<engine::texture_2d>     m_skybox_texture{};
+	engine::ref<engine::skybox>			m_skybox{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
+
+	engine::bullet_manager* m_manager;
+
+	engine::timer timer;
 
     engine::orthographic_camera       m_2d_camera; 
     engine::perspective_camera        m_3d_camera; 

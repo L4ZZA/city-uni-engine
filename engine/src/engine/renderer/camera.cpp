@@ -69,7 +69,7 @@ engine::perspective_camera::perspective_camera(
     m_near_plane(near_z), 
     m_far_plane(far_z) 
 { 
-    m_position = glm::vec3(0.0f, 0.0f, 3.0f);  
+    m_position = glm::vec3(0.0f, 1.0f, 3.0f);  
     m_front_vector = glm::vec3(0.0f, 0.0f, -1.0f);
     m_up_vector = glm::vec3(0.0f, 1.0f,  0.0f);
     m_view_mat = glm::lookAt(m_position, m_position + m_front_vector, m_up_vector);

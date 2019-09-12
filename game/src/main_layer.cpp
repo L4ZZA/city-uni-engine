@@ -239,6 +239,8 @@ example_layer::example_layer()
     m_cube_va->add_buffer(cube_vb); 
     m_cube_va->add_buffer(cube_ib);*/
 
+	
+
     m_color_shader.reset(new engine::gl_shader(vertex_shader, fragment_shader));
     m_flat_color_shader.reset(new engine::gl_shader(flat_color_vertex_shader, flat_color_fragment_shader));
     m_textured_shader.reset(new engine::gl_shader(textured_vertex_shader_3d, textured_fragment_shader_3d));
@@ -249,16 +251,53 @@ example_layer::example_layer()
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
 
-	engine::ref<engine::cuboid> cuboid = std::make_shared<engine::cuboid>(false, glm::vec3(1.0f), std::vector<engine::ref<engine::texture_2d>>{ m_face_texture }, false);
+	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
+	m_skybox = std::make_shared<engine::skybox>(50.f, m_3d_camera.position(), 0.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox.jpg") });
 
+	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
+	engine::ref<engine::terrain> terrain = std::make_shared<engine::terrain>(true, 100.f, 0.5f, 100.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/moss2.png") });
+	terrain->set_position(glm::vec3(0.f, -0.5f, 0.f));
+	m_game_objects.push_back(terrain);
+	
+	engine::ref<engine::cuboid> cuboid = std::make_shared<engine::cuboid>(false, glm::vec3(0.5f), std::vector<engine::ref<engine::texture_2d>>{ m_face_texture }, false);
+	cuboid->set_position(glm::vec3(0.f, 5.f, -5.f));
 	m_game_objects.push_back(cuboid);
-} 
+
+	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
+	engine::model dragon_base = engine::model("res/models/dragon.obj", false);
+	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
+
+	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_base);
+	dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
+	dragon_1->set_position(glm::vec3(0.f, 2.5f, -2.5f));
+	dragon_1->set_scale(1.5f / dragon_1->size());
+	m_game_objects.push_back(dragon_1);
+
+	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_base);
+	dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
+	dragon_2->set_position(glm::vec3(0.f, 10.f, -2.5f));
+	dragon_2->set_scale(1.f / dragon_2->size());
+	m_game_objects.push_back(dragon_2);
+
+	m_manager = new engine::bullet_manager(m_game_objects);
+}
+
+example_layer::~example_layer()
+{
+	delete m_manager;
+}
 
 void example_layer::on_update(const engine::timestep& timestep) 
-{ 
+{
+
     m_3d_camera.on_update(timestep);
 
-    if(engine::input::key_pressed(engine::key_codes::KEY_LEFT)) // left 
+	m_skybox->update(m_3d_camera.position(), 0.f);
+
+	m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
+
+	timer.start();
+    /*if(engine::input::key_pressed(engine::key_codes::KEY_LEFT)) // left 
         m_rect_pos.x -= m_rect_speed * timestep; 
     else if(engine::input::key_pressed(engine::key_codes::KEY_RIGHT)) // right 
         m_rect_pos.x += m_rect_speed * timestep; 
@@ -266,7 +305,7 @@ void example_layer::on_update(const engine::timestep& timestep)
     if(engine::input::key_pressed(engine::key_codes::KEY_DOWN)) // down 
         m_rect_pos.y -= m_rect_speed * timestep; 
     else if(engine::input::key_pressed(engine::key_codes::KEY_UP)) // up 
-        m_rect_pos.y += m_rect_speed * timestep; 
+        m_rect_pos.y += m_rect_speed * timestep; */
 } 
 
 void example_layer::on_render() 
@@ -307,6 +346,8 @@ void example_layer::on_render()
         m_face_texture->bind(); 
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
     }*/
+
+	render_object(m_skybox, m_textured_shader);
 
 	for (const auto& object : m_game_objects)
 	{

@@ -19,13 +19,14 @@ namespace engine
         model(const std::string& path, const bool is_static);
         ~model();
 
+		glm::vec3 size() { return m_size; }
+
     private: // methods
         void process_node(aiNode* node, const aiScene* scene);
         ref<engine::mesh> process_mesh(aiMesh* mesh, const aiScene* scene);
         std::vector<ref<texture_2d>> load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const;
 
 		void min_max_compare(glm::vec3 point);
-		glm::vec3 size() { return m_size; }
 
     private: // fields
         std::string m_directory;
