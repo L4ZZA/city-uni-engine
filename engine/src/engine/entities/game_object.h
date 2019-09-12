@@ -66,9 +66,9 @@ namespace engine
 		void set_mesh(std::vector<ref<mesh>> meshes) { m_meshes = meshes; }
 		void set_textures(std::vector<ref<texture_2d>> textures) { m_textures = textures; }
 		void set_va(ref<vertex_array> va) { m_va = va; }
-
 		void set_offset(glm::vec3 offset) { m_offset = offset; }
 
+		void set_rotation(glm::vec3 direction);
 
 		const glm::mat4& transform();
 		void bind_textures();

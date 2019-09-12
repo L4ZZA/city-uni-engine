@@ -269,13 +269,14 @@ example_layer::example_layer()
 
 	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_base);
 	dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
-	dragon_1->set_position(glm::vec3(0.f, 2.5f, -2.5f));
-	dragon_1->set_scale(1.5f / dragon_1->size());
+	dragon_1->set_position(glm::vec3(2.f, 1.f, -2.f));
+	dragon_1->set_scale(1.f / dragon_1->size());
 	m_game_objects.push_back(dragon_1);
 
 	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_base);
 	dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
-	dragon_2->set_position(glm::vec3(0.f, 10.f, -2.5f));
+	dragon_2->set_position(glm::vec3(-0.f, 1.f, -2.f));
+	//dragon_2->set_rotation(m_3d_camera.position() - dragon_2->position());
 	dragon_2->set_scale(1.f / dragon_2->size());
 	m_game_objects.push_back(dragon_2);
 
@@ -294,7 +295,10 @@ void example_layer::on_update(const engine::timestep& timestep)
 
 	m_skybox->update(m_3d_camera.position(), 0.f);
 
-	m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
+	m_game_objects.at(2)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f,1.f,0.f)));
+	m_game_objects.at(3)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));
+
+	//m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
 
 	timer.start();
     /*if(engine::input::key_pressed(engine::key_codes::KEY_LEFT)) // left 

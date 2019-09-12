@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "game_object.h"
 #include "engine/renderer/texture.h"
+#include "engine/utils/bullet_manager.h"
 
 engine::game_object::game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes,
 	const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape,
@@ -28,8 +29,8 @@ const glm::mat4& engine::game_object::transform()
 	// by centering the object's centre of mass on its position
 	glm::mat4 object_transform = glm::mat4(1.0f);
 	object_transform = glm::translate(object_transform, position() - offset()*scale());
-	object_transform = glm::scale(object_transform, scale());
 	object_transform = glm::rotate(object_transform, rotation_amount(), rotation_axis());
+	object_transform = glm::scale(object_transform, scale());
 
 	return object_transform;
 }
@@ -45,4 +46,12 @@ void engine::game_object::bind_textures()
 			texture->bind();
 		}
 	}
+}
+
+void engine::game_object::set_rotation(glm::vec3 direction)
+{
+	glm::vec3 norm_direction = glm::normalize(direction);
+	set_rotation_axis(glm::cross(norm_direction, glm::vec3(0.0f, 0.0f, 1.0f)));
+	float rotation = -acos(glm::dot(norm_direction, glm::vec3(0.0f, 0.0f, 1.0f)));
+	set_rotation_amount(rotation);
 }
