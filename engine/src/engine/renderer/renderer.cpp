@@ -40,7 +40,8 @@ void engine::renderer::submit(
 	const ref<game_object>& object,
     const glm::mat4& transform /*= glm::mat4(1.f)*/)
 {
-	if (object->meshes().size() > 0)
+    const bool has_meshes = !object->meshes().empty();
+	if (has_meshes)
 	{
 		auto model_meshes = object->meshes();
 		for (const auto& mesh : model_meshes)
