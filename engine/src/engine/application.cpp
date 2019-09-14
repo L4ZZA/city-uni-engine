@@ -32,13 +32,13 @@ void engine::application::run()
 {
     while (s_running)
     {
-        float time = static_cast<float>(glfwGetTime()); //  platform independent
-        timestep timestep = time - m_last_frame_time;
+        const auto time = static_cast<float>(glfwGetTime()); //  platform independent
+        timestep time_step = time - m_last_frame_time;
         m_last_frame_time = time;
 
         for (auto* layer : m_layers_stack)
         {
-            layer->on_update(timestep);
+            layer->on_update(time_step);
             layer->on_render();
         }
 

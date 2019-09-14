@@ -16,7 +16,7 @@ namespace engine
         window_props(std::string const &title = "engine",
                      uint32_t width = 1280,
                      uint32_t height = 720)
-                : m_title(title), m_width(width), m_height(height)
+            : m_title(title), m_width(width), m_height(height), m_vsync(false)
         {
         }
     };
