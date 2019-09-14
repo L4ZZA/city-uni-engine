@@ -150,6 +150,7 @@ std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMate
     return textures;
 }
 
+// TODO - objects (any object for now, more edge cases will be explained on the way) should be passed as !!! const& !!!
 void engine::model::min_max_compare(glm::vec3 point)
 {
 	if (point.x < min_point.x)

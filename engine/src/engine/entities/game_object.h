@@ -12,11 +12,13 @@ namespace engine
 	class game_object
     {
     public:
-		/// \brief Constructors
+        // TODO - lines shouldn't exceed 100 characters, for better readability.
+        // TODO - comments in header files should start with "/// \brief ", and there should be one per member/method so that intellisense can show tooltips properly
 		game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes, const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape, glm::vec3 rotation_axis, float rotation_amount);
 		game_object(const bool is_static, int32_t type, glm::vec3 bounding_shape);
 		game_object(std::vector<ref<mesh>> meshes, int32_t type, glm::vec3 bounding_shape);
-		/// \brief Destructor
+        // TODO - [IMPORTANT] classes that will be inherited by other ones have to have their destructor virtual or they won't be destructed properly!! 
+		/// \brief Destructor -TODO: comments like these are not useful. If the method does something other ppl need to be aware of that's what you should write.
 		~game_object();
 
 		/// \brief Getter methods
@@ -74,6 +76,7 @@ namespace engine
 		void bind_textures();
 
     private:
+		// TODO - comments in header files should start with "/// \brief ", and there should be one per member/method so that intellisense can show tooltips properly
 		/// \brief Fields
 		// object's position, velocity and acceleration vectors
 		glm::vec3		m_position{ 0.f };
@@ -101,6 +104,7 @@ namespace engine
 		// object's scale vector, mass variable and static switch
 		glm::vec3		m_scale{ 1.0f };
 		float			m_mass{ 1.0f };
+        // TODO - static member variable should start with s_ prefix.
 		bool			m_static{ false };
 
 		// object's bounding shape type and dimensions
