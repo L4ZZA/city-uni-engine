@@ -84,40 +84,6 @@ static const std::string flat_color_fragment_shader = R"(
     } 
 )"; 
 
-static const std::string textured_vertex_shader_3d = R"(  
-    #version 430  
-  
-    layout(location = 0) in vec3 a_position;
-	layout(location = 1) in vec3 a_normal;
-    layout(location = 2) in vec2 a_tex_coord;  
-  
-    uniform mat4 u_view_projection;  
-    uniform mat4 u_transform;  
-  
-    out vec2 v_tex_coord;   
-  
-    void main()  
-    {  
-        v_tex_coord = a_tex_coord;  
-        gl_Position = u_view_projection * u_transform * vec4(a_position, 1.0);  
-    }  
-)"; 
-
-static const std::string textured_fragment_shader_3d = R"(  
-    #version 430  
-  
-    layout(location = 0) out vec4 o_color;  
-  
-    in vec2 v_tex_coord;  
-  
-    uniform sampler2D u_sampler;   
-  
-    void main()  
-    {  
-        o_color = texture(u_sampler, v_tex_coord); 
-    }  
-)";
-
 example_layer::example_layer() 
     :m_2d_camera(-1.6f, 1.6f, -0.9f, 0.9f), 
     m_3d_camera(engine::application::window().width(), engine::application::window().height()) 
@@ -239,11 +205,9 @@ example_layer::example_layer()
     m_cube_va->add_buffer(cube_vb); 
     m_cube_va->add_buffer(cube_ib);*/
 
-	
-
-    m_color_shader.reset(new engine::gl_shader(vertex_shader, fragment_shader));
-    m_flat_color_shader.reset(new engine::gl_shader(flat_color_vertex_shader, flat_color_fragment_shader));
-    m_textured_shader.reset(new engine::gl_shader(textured_vertex_shader_3d, textured_fragment_shader_3d));
+    m_color_shader = engine::shader::create(vertex_shader, fragment_shader);
+    m_flat_color_shader = engine::shader::create(flat_color_vertex_shader, flat_color_fragment_shader);
+    m_textured_shader = engine::shader::create("assets/shaders/mesh.glsl");
 
     std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->set_uniform("u_sampler", 0);
@@ -288,10 +252,9 @@ example_layer::~example_layer()
 	delete m_manager;
 }
 
-void example_layer::on_update(const engine::timestep& timestep) 
+void example_layer::on_update(const engine::timestep& time_step) 
 {
-
-    m_3d_camera.on_update(timestep);
+    m_3d_camera.on_update(time_step);
 
 	m_skybox->update(m_3d_camera.position(), 0.f);
 
@@ -300,7 +263,6 @@ void example_layer::on_update(const engine::timestep& timestep)
 
 	//m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
 
-	timer.start();
     /*if(engine::input::key_pressed(engine::key_codes::KEY_LEFT)) // left 
         m_rect_pos.x -= m_rect_speed * timestep; 
     else if(engine::input::key_pressed(engine::key_codes::KEY_RIGHT)) // right 
