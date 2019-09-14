@@ -112,7 +112,7 @@ engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScen
         std::vector<ref<texture_2d>> specularMaps = load_textures(material, aiTextureType_SPECULAR, "specular");
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
-    return ref<engine::mesh>(mesh::create(vertices, indices));
+    return mesh::create(vertices, indices);
 }
 
 std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const

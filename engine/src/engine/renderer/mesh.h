@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "texture.h"
 #include "vertex_array.h"
 
@@ -43,7 +43,8 @@ namespace engine
         virtual const ref<vertex_array>& va() const = 0;
         virtual uint32_t indices_count() const = 0;
 
-        static mesh* create(const std::vector<vertex>& vertices,
+        static ref<mesh> create(
+            const std::vector<vertex>& vertices,
             const std::vector<uint32_t>& indices);
     };
 }
