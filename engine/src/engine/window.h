@@ -25,7 +25,7 @@ namespace engine
     class ENGINE_API window
     {
     public:
-        static window* create(window_props const &props = window_props());
+        static scope<window> create(window_props const &props = window_props());
 
         //---------------------------------------------------------------------
 

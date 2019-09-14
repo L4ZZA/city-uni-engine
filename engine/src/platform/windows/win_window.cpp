@@ -22,9 +22,9 @@ namespace engine
     }
 }
 
-engine::window* engine::window::create(window_props const& props)
+engine::scope<engine::window> engine::window::create(window_props const& props)
 {
-    return new win_window(props);
+    return std::make_unique<win_window>(props);
 }
 
 engine::win_window::win_window(window_props const& props)

@@ -38,13 +38,13 @@ namespace engine
         bool on_window_close(window_closed_event &event);
 
     private:
-        std::unique_ptr<engine::window>   m_window;
-        layers_stack                    m_layers_stack;
-        float                           m_last_frame_time = 0.f;
+        scope<engine::window> m_window;
+        layers_stack          m_layers_stack;
+        float                 m_last_frame_time = 0.f;
 
-    private:
-        static application*             s_instance;
-        static bool                     s_running; 
+    private:                  
+        static application*   s_instance;
+        static bool           s_running; 
 
     public: 
         static void exit(); 
