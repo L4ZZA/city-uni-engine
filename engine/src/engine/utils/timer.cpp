@@ -31,9 +31,7 @@ double engine::timer::elapsed()
 
 double engine::timer::elapsed_millis()
 {
-	// current time in seconds
-	const double current = glfwGetTime();
-	return current - m_start_time;
+	return elapsed() * 1000.f;
 }
 
 double engine::timer::total() const
