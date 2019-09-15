@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "application.h"
-
-#include "platform/opengl/gl_shader.h"
-#include "renderer/renderer.h"
+#include "engine/renderer/renderer.h"
 #include "GLFW/glfw3.h"
 
 //----------------------------------------------------------------------------- 

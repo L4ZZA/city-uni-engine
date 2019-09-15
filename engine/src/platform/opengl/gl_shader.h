@@ -4,7 +4,7 @@
 namespace engine
 {
     /// \brief OpenGL shader implementation.
-    class gl_shader : public shader
+    class gl_shader final : public shader
     {
     public:
         gl_shader(const std::string& file_path);

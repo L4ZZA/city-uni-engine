@@ -1,6 +1,6 @@
 // --------- Entry Point ---------------
 #include "main_layer.h"
-#include "engine/entry_point.h"
+#include "engine/core/entry_point.h"
 #include "engine/events/key_event.h"
 
 

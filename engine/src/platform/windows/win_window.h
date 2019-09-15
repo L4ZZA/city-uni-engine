@@ -1,5 +1,5 @@
 #pragma once
-#include "engine/window.h"
+#include "engine/core/window.h"
 #include "engine/renderer/graphics_context.h"
 #include "GLFW/glfw3.h"
 

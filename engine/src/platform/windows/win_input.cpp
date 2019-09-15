@@ -1,6 +1,6 @@
-﻿#include "pch.h"
-#include "win_input.h"
-#include "engine/application.h"
+#include "pch.h"
+#include "platform/windows/win_input.h"
+#include "engine/core/application.h"
 #include "GLFW/glfw3.h"
 
 namespace engine

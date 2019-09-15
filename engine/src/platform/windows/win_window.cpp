@@ -8,7 +8,7 @@
 #include "engine/core.h"
 #include "platform/opengl/gl_context.h"
 #include "GLFW/glfw3.h"
-#include "engine/input.h"
+#include "engine/core/input.h"
 
 //=============================================================================
 

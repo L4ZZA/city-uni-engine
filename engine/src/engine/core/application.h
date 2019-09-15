@@ -1,11 +1,11 @@
 #pragma once
 
-#include "core.h"
+#include "engine/core.h"
 
 #include "window.h"
-#include "layers_stack.h"
-#include "events/event.h"
-#include "events/application_event.h"
+#include "engine/core/layers_stack.h"
+#include "engine/events/event.h"
+#include "engine/events/application_event.h"
 #include "engine/core/timestep.h"
 
 
