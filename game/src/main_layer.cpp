@@ -1,9 +1,6 @@
 #include "main_layer.h"
 #include "platform/opengl/gl_shader.h"
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
 #include "engine/events/key_event.h"
@@ -84,119 +81,120 @@ example_layer::example_layer()
     //engine::input::anchor_mouse(true);
     engine::application::window().hide_mouse_cursor();
 
-    //======= triangle =========
+ //   //======= triangle =========
+ //
+ //   float vertices[3 * 7]
+ //   {
+ //       -.5f, -.5f, .0f,    .8f, .2f, .8f, 1.0f,
+ //        .5f, -.5f, .0f,    .2f, .3f, .8f, 1.0f,
+ //        .0f,  .5f, .0f,    .8f, .8f, .2f, 1.0f,
+ //   };
+ //
+ //   engine::ref<engine::vertex_buffer> triangle_vb(engine::vertex_buffer::create(vertices, sizeof(vertices))); 
+ //
+ //   const engine::buffer_layout layout 
+ //   { 
+ //       {engine::e_shader_data_type::float3, "a_position"},  
+ //       {engine::e_shader_data_type::float2, "a_tex_coord"},  
+ //   }; 
+ //   triangle_vb->layout(layout); 
+ //
+ //   uint32_t indices[3]{0,1,2}; 
+ //   const engine::ref<engine::index_buffer> triangle_ib(engine::index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t))); 
+ //
+ //   m_triangle_va = engine::vertex_array::create();
+ //   m_triangle_va->add_buffer(triangle_vb); 
+ //   m_triangle_va->add_buffer(triangle_ib); 
+ //
+ //   //======== rectangle ========= 
+ //
+ //   float rect_vertices[] 
+ //   { 
+ //       -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
+ //        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 
+ //        0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 
+ //       -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 
+ //   }; 
+ //
+ //   const engine::ref<engine::vertex_buffer> rect_vb(engine::vertex_buffer::create(rect_vertices, sizeof(rect_vertices))); 
+ //
+ //   uint32_t rect_indices[]{0,1,2, 2,3,0}; 
+ //   const engine::ref<engine::index_buffer> rect_ib(engine::index_buffer::create(rect_indices, sizeof(rect_indices) / sizeof(uint32_t))); 
+ //
+ //   rect_vb->layout({ 
+ //       {engine::e_shader_data_type::float3, "a_position"}, 
+ //       {engine::e_shader_data_type::float2, "a_tex_coord"}, 
+ //   }); 
+ //
+ //   m_rect_va = engine::vertex_array::create(); 
+ //   m_rect_va->add_buffer(rect_vb); 
+ //   m_rect_va->add_buffer(rect_ib); 
+ //
+ //   //======== cube ========= 
+ //
+ //   float cube_vertices[] 
+ //   { 
+ //       // FRONT 
+ //       -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // A 
+ //        0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // B 
+ //        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // C 
+ //       -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // D 
+ //
+ //       // BACK 
+ //       -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // E 
+ //        0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // F 
+ //        0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // G 
+ //       -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // H 
+ //       
+ //       // LEFT  
+ //       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // E = 8 
+ //       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // H = 9 
+ //       -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // D = 10 
+ //       -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // A = 11 
+ //       
+ //       // RIGHT 
+ //        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // F = 12 
+ //        0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // G = 13 
+ //        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // C = 14 
+ //        0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // B = 15 
+ //       
+ //       // BOTTOM 
+ //       -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // E = 16 
+ //        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // F = 17 
+ //        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, // B = 18 
+ //       -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, // A = 19 
+ //       
+ //       // TOP 
+ //       -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, // G = 20 
+ //        0.5f,  0.5f, -0.5f,  1.0f, 0.0f, // H = 21 
+ //        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // D = 22 
+ //       -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // C = 23 
+ //   }; 
+ //
+ //   const engine::ref<engine::vertex_buffer> cube_vb(engine::vertex_buffer::create(cube_vertices, sizeof(cube_vertices))); 
+ //
+ //   uint32_t cube_indices[] 
+ //   { 
+ //       0, 1, 2,    2, 3, 0, // FRONT 
+ //       5, 4, 7,    7, 6, 5, // BACK 
+ //       8,11,10,   10, 9, 8, // LEFT 
+ //       15,12,13,   13,14,15, // RIGHT 
+ //       16,17,18,   18,19,16, // BOTTOM 
+ //       21,20,23,   23,22,21  // TOP 
+ //
+ //   }; 
+ //   const engine::ref<engine::index_buffer> cube_ib(engine::index_buffer::create(cube_indices, sizeof(cube_indices) / sizeof(uint32_t))); 
+ //
+ //   cube_vb->layout({ 
+ //       {engine::e_shader_data_type::float3, "a_position"}, 
+ //       {engine::e_shader_data_type::float2, "a_tex_coord"}, 
+ //   }); 
+ //
+ //   m_cube_va = engine::vertex_array::create(); 
+ //   m_cube_va->add_buffer(cube_vb); 
+ //   m_cube_va->add_buffer(cube_ib);
 
-    float vertices[3 * 7]
-    {
-        -.5f, -.5f, .0f,    .8f, .2f, .8f, 1.0f,
-         .5f, -.5f, .0f,    .2f, .3f, .8f, 1.0f,
-         .0f,  .5f, .0f,    .8f, .8f, .2f, 1.0f,
-    };
-
-    engine::ref<engine::vertex_buffer> triangle_vb(engine::vertex_buffer::create(vertices, sizeof(vertices))); 
-
-    const engine::buffer_layout layout 
-    { 
-        {engine::e_shader_data_type::float3, "a_position"},  
-        {engine::e_shader_data_type::float2, "a_tex_coord"},  
-    }; 
-    triangle_vb->layout(layout); 
-
-    uint32_t indices[3]{0,1,2}; 
-    const engine::ref<engine::index_buffer> triangle_ib(engine::index_buffer::create(indices, sizeof(indices) / sizeof(uint32_t))); 
-
-    m_triangle_va = engine::vertex_array::create();
-    m_triangle_va->add_buffer(triangle_vb); 
-    m_triangle_va->add_buffer(triangle_ib); 
-
-    //======== rectangle ========= 
-
-    float rect_vertices[] 
-    { 
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 
-        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 
-    }; 
-
-    const engine::ref<engine::vertex_buffer> rect_vb(engine::vertex_buffer::create(rect_vertices, sizeof(rect_vertices))); 
-
-    uint32_t rect_indices[]{0,1,2, 2,3,0}; 
-    const engine::ref<engine::index_buffer> rect_ib(engine::index_buffer::create(rect_indices, sizeof(rect_indices) / sizeof(uint32_t))); 
-
-    rect_vb->layout({ 
-        {engine::e_shader_data_type::float3, "a_position"}, 
-        {engine::e_shader_data_type::float2, "a_tex_coord"}, 
-    }); 
-
-    m_rect_va = engine::vertex_array::create(); 
-    m_rect_va->add_buffer(rect_vb); 
-    m_rect_va->add_buffer(rect_ib); 
-
-    //======== cube ========= 
-
-    float cube_vertices[] 
-    { 
-        // FRONT 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // A 
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // B 
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // C 
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // D 
-
-        // BACK 
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // E 
-         0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // F 
-         0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // G 
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // H 
-        
-        // LEFT  
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // E = 8 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // H = 9 
-        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // D = 10 
-        -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // A = 11 
-        
-        // RIGHT 
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // F = 12 
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // G = 13 
-         0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // C = 14 
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // B = 15 
-        
-        // BOTTOM 
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // E = 16 
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // F = 17 
-         0.5f, -0.5f,  0.5f,  1.0f, 1.0f, // B = 18 
-        -0.5f, -0.5f,  0.5f,  0.0f, 1.0f, // A = 19 
-        
-        // TOP 
-        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, // G = 20 
-         0.5f,  0.5f, -0.5f,  1.0f, 0.0f, // H = 21 
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // D = 22 
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // C = 23 
-    }; 
-
-    const engine::ref<engine::vertex_buffer> cube_vb(engine::vertex_buffer::create(cube_vertices, sizeof(cube_vertices))); 
-
-    uint32_t cube_indices[] 
-    { 
-        0, 1, 2,    2, 3, 0, // FRONT 
-        5, 4, 7,    7, 6, 5, // BACK 
-        8,11,10,   10, 9, 8, // LEFT 
-        15,12,13,   13,14,15, // RIGHT 
-        16,17,18,   18,19,16, // BOTTOM 
-        21,20,23,   23,22,21  // TOP 
-
-    }; 
-    const engine::ref<engine::index_buffer> cube_ib(engine::index_buffer::create(cube_indices, sizeof(cube_indices) / sizeof(uint32_t))); 
-
-    cube_vb->layout({ 
-        {engine::e_shader_data_type::float3, "a_position"}, 
-        {engine::e_shader_data_type::float2, "a_tex_coord"}, 
-    }); 
-
-    m_cube_va = engine::vertex_array::create(); 
-    m_cube_va->add_buffer(cube_vb); 
-    m_cube_va->add_buffer(cube_ib);
-
+    //TODO - move shaders to files and put them into shader library
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     const auto mesh_shader = m_shader_library.load("assets/shaders/mesh.glsl");
@@ -210,11 +208,13 @@ example_layer::example_layer()
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = std::make_shared<engine::skybox>(50.f, m_3d_camera.position(), 0.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox.jpg") });
 
+    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
 	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
 	engine::ref<engine::terrain> terrain = std::make_shared<engine::terrain>(true, 100.f, 0.5f, 100.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/moss2.png") });
 	terrain->set_position(glm::vec3(0.f, -0.5f, 0.f));
 	m_game_objects.push_back(terrain);
-	
+
+    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
 	engine::ref<engine::cuboid> cuboid = std::make_shared<engine::cuboid>(false, glm::vec3(0.5f), std::vector<engine::ref<engine::texture_2d>>{ m_face_texture }, false);
 	cuboid->set_position(glm::vec3(0.f, 5.f, -5.f));
 	m_game_objects.push_back(cuboid);
@@ -262,6 +262,7 @@ void example_layer::on_update(const engine::timestep& time_step)
 
 	m_skybox->update(m_3d_camera.position(), 0.f);
 
+    // TODO - too many chars per line, goes out of the screen
 	m_game_objects.at(2)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f,1.f,0.f)));
 	m_game_objects.at(3)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));
 
@@ -279,11 +280,7 @@ void example_layer::on_update(const engine::timestep& time_step)
 } 
 
 void example_layer::on_render() 
-{ 
-    //ImGui::Begin("Settings"); 
-    //ImGui::ColorEdit3("Squares color", glm::value_ptr(m_rect_color)); 
-    //ImGui::End(); 
-
+{
     engine::render_command::clear_color({0.2f, 0.3f, 0.3f, 1.0f}); 
     engine::render_command::clear();
 
@@ -318,6 +315,7 @@ void example_layer::on_render()
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
     }*/
 
+    // TODO - delete method and use -> engine::renderer::submit() instead
 	render_object(m_skybox, textured_shader);
 
 	for (const auto& object : m_game_objects)
