@@ -8,15 +8,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "engine/events/key_event.h"
 
-//glm::mat4 camera(float translate, glm::vec2 const& rotate)
-//{
-//    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.f);
-//    glm::mat4 View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -translate));
-//    View = glm::rotate(View, rotate.y, glm::vec3(-1.0f, 0.0f, 0.0f));
-//    View = glm::rotate(View, rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
-//    glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-//    return Projection * View * Model;
-//}
 
 // TODO - move all shaders into shader library
 static const std::string vertex_shader = R"(
@@ -229,17 +220,26 @@ example_layer::example_layer()
 	m_game_objects.push_back(cuboid);
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::model dragon_mesh = engine::model("assets/models/dragon.obj", false);
+	engine::model dragon_model = engine::model("assets/models/dragon.obj", false);
+
+    // TODO - use props to initialize dragons' game objecs
+    //engine::game_object_properties dragon_props;
+    //dragon_props.is_static = false;
+    //dragon_props.position = {2.f, 1.f, -2.f};
+    //dragon_props.meshes = dragon_model.meshes();  <-- this will allow you to reuse the meshes and texture across game objects.
+
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_mesh);
-	dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
+    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
+	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_model);
+	//dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
 	dragon_1->set_position(glm::vec3(2.f, 1.f, -2.f));
 	dragon_1->set_scale(1.f / dragon_1->size());
 	m_game_objects.push_back(dragon_1);
 
-	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_mesh);
-	dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
+    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
+	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_model);
+	//dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
 	dragon_2->set_position(glm::vec3(-0.f, 1.f, -2.f));
 	//dragon_2->set_rotation(m_3d_camera.position() - dragon_2->position());
 	dragon_2->set_scale(1.f / dragon_2->size());

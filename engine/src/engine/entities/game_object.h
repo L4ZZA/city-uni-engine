@@ -8,10 +8,28 @@ namespace engine
 	class vertex_array;
 	class shader;
 
+    /// \brief Struct used to initialise/create a game object
+	struct game_object_properties final
+	{
+        std::vector<ref<mesh>> meshes{};
+        glm::vec3 position{0};
+        glm::vec3 velocity{0};
+        glm::vec3 scale{1};
+	    glm::vec3 bounding_shape{0};
+	    glm::vec3 rotation_axis{0};
+        int32_t type = 0;
+        float mass = 1.f;
+        float rotation_amount = 0.f;
+        bool is_static = false;
+	};
+
+
 	/// \brief Base class for storing the physical information about the objects in the game
 	class game_object
     {
     public:
+        // TODO - use the following commented ctor only
+        //game_object(const game_object_properties& props);
         // TODO - lines shouldn't exceed 100 characters, for better readability.
         // TODO - comments in header files should start with "/// \brief ", and there should be one per member/method so that intellisense can show tooltips properly
 		game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes, const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape, glm::vec3 rotation_axis, float rotation_amount);
@@ -31,14 +49,14 @@ namespace engine
 		glm::vec3 forward() const { return m_forward; }
 
 		glm::vec3 rotation_axis() const { return m_rotation_axis; }
-		float rotation_amount() const { return m_rotation_amount; }
+		float     rotation_amount() const { return m_rotation_amount; }
 		glm::vec3 angular_velocity() const { return m_angular_velocity; }
 		glm::vec3 torque() const { return m_torque; }
 
 		glm::vec3 scale() const { return m_scale; }
-		bool is_static() const { return m_static; }
-		float mass() const { return m_mass; }
-		int32_t type() const { return m_type; }
+		bool      is_static() const { return m_static; }
+		float     mass() const { return m_mass; }
+		int32_t   type() const { return m_type; }
 		glm::vec3 bounding_shape() const { return m_bounding_shape; }
 		const std::vector<ref<mesh>>& meshes() const { return m_meshes; }
 		const std::vector<ref<texture_2d>>& textures() const { return m_textures; }
@@ -74,6 +92,9 @@ namespace engine
 
 		const glm::mat4& transform();
 		void bind_textures();
+
+    public:
+        //static ref<game_object> create(const game_object_properties& props);
 
     private:
 		// TODO - comments in header files should start with "/// \brief ", and there should be one per member/method so that intellisense can show tooltips properly
