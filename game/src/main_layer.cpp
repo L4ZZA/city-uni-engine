@@ -18,6 +18,7 @@
 //    return Projection * View * Model;
 //}
 
+// TODO - move all shaders into shader library
 static const std::string vertex_shader = R"(
     #version 430
 
@@ -92,7 +93,7 @@ example_layer::example_layer()
     //engine::input::anchor_mouse(true);
     engine::application::window().hide_mouse_cursor();
 
-    /*//======= triangle =========
+    //======= triangle =========
 
     float vertices[3 * 7]
     {
@@ -203,7 +204,7 @@ example_layer::example_layer()
 
     m_cube_va = engine::vertex_array::create(); 
     m_cube_va->add_buffer(cube_vb); 
-    m_cube_va->add_buffer(cube_ib);*/
+    m_cube_va->add_buffer(cube_ib);
 
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
@@ -228,22 +229,25 @@ example_layer::example_layer()
 	m_game_objects.push_back(cuboid);
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::model dragon_base = engine::model("assets/models/dragon.obj", false);
+	engine::model dragon_mesh = engine::model("assets/models/dragon.obj", false);
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_base);
+	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_mesh);
 	dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
 	dragon_1->set_position(glm::vec3(2.f, 1.f, -2.f));
 	dragon_1->set_scale(1.f / dragon_1->size());
 	m_game_objects.push_back(dragon_1);
 
-	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_base);
+	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_mesh);
 	dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
 	dragon_2->set_position(glm::vec3(-0.f, 1.f, -2.f));
 	//dragon_2->set_rotation(m_3d_camera.position() - dragon_2->position());
 	dragon_2->set_scale(1.f / dragon_2->size());
 	m_game_objects.push_back(dragon_2);
 
+    // TODO - should be a smart pointer [probably unique_ptr<>, aka scope<>]
+    // TODO - create as singleton in engine (bullet_manager.cpp) since there can't be more than one bullet_manager
+    // TODO - pass objects through method init(...) or something like that
 	m_manager = new engine::bullet_manager(m_game_objects);
 }
 
