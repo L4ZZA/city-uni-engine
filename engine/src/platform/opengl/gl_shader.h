@@ -15,12 +15,12 @@ namespace engine
         void unbind() const override;
         const std::string& name() const override;
 
-        void set_uniform(const std::string& name, int32_t val) override; 
-        void set_uniform(const std::string& name, float val) override; 
-        void set_uniform(const std::string& name, const glm::vec2& vec) override; 
-        void set_uniform(const std::string& name, const glm::vec3& vec) override; 
-        void set_uniform(const std::string& name, const glm::vec4& vec) override; 
-        void set_uniform(const std::string& name, const glm::mat4& mat) override; 
+        void set_uniform(const std::string& name, int32_t val); 
+        void set_uniform(const std::string& name, float val); 
+        void set_uniform(const std::string& name, const glm::vec2& vec); 
+        void set_uniform(const std::string& name, const glm::vec3& vec); 
+        void set_uniform(const std::string& name, const glm::vec4& vec); 
+        void set_uniform(const std::string& name, const glm::mat4& mat); 
 
     private:
         void compile(const std::unordered_map<uint32_t, std::string>& sources);

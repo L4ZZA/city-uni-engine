@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "renderer.h"
+#include "platform/opengl/gl_shader.h"
 
 engine::renderer::scene_data* engine::renderer::s_scene_data = new scene_data;
 
@@ -8,7 +9,7 @@ void engine::renderer::begin_scene(camera& camera, const ref<shader>& shader)
     s_scene_data->view_projection_matrix = camera.view_projection_matrix();
     s_scene_data->shader = shader;
     shader->bind();
-    shader->set_uniform("u_view_projection", s_scene_data->view_projection_matrix);
+    std::dynamic_pointer_cast<engine::gl_shader>(shader)->set_uniform("u_view_projection", s_scene_data->view_projection_matrix);
 }
 
 void engine::renderer::end_scene()
@@ -21,7 +22,7 @@ void engine::renderer::submit(
     const ref<vertex_array>& vertex_array, 
     const glm::mat4& transform /*= glm::mat4(1.f)*/)
 {
-    shader->set_uniform("u_transform", transform);
+    std::dynamic_pointer_cast<engine::gl_shader>(shader)->set_uniform("u_transform", transform);
 
     vertex_array->bind();
     render_command::submit(vertex_array);
