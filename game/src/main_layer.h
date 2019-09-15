@@ -13,12 +13,13 @@ public:
     void on_event(engine::event& event) override;
 	void render_object(engine::ref<engine::game_object>, engine::ref<engine::shader> shader);
 
-private: 
+private:
+    engine::shader_library              m_shader_library;
     engine::ref<engine::shader>         m_color_shader{}; 
     engine::ref<engine::vertex_array>   m_triangle_va{}; 
 
     engine::ref<engine::shader>         m_flat_color_shader{}; 
-    engine::ref<engine::shader>         m_textured_shader{};
+    //engine::ref<engine::shader>         m_textured_shader{};
     engine::ref<engine::vertex_array>   m_rect_va{}; 
     engine::ref<engine::vertex_array>   m_cube_va{}; 
     engine::ref<engine::texture_2d>     m_texture{}; 

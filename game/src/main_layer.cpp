@@ -205,12 +205,12 @@ example_layer::example_layer()
     m_cube_va->add_buffer(cube_vb); 
     m_cube_va->add_buffer(cube_ib);*/
 
-    m_color_shader = engine::shader::create(vertex_shader, fragment_shader);
-    m_flat_color_shader = engine::shader::create(flat_color_vertex_shader, flat_color_fragment_shader);
-    m_textured_shader = engine::shader::create("assets/shaders/mesh.glsl");
+    m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
+    m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
+    const auto mesh_shader = m_shader_library.load("assets/shaders/mesh.glsl");
 
-    std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->bind();
-    std::dynamic_pointer_cast<engine::gl_shader>(m_textured_shader)->set_uniform("u_sampler", 0);
+    std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
+    std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
@@ -281,9 +281,10 @@ void example_layer::on_render()
     //ImGui::End(); 
 
     engine::render_command::clear_color({0.2f, 0.3f, 0.3f, 1.0f}); 
-    engine::render_command::clear(); 
+    engine::render_command::clear();
 
-    engine::renderer::begin_scene(m_3d_camera, m_textured_shader); 
+    const auto textured_shader = m_shader_library.get("mesh");
+    engine::renderer::begin_scene(m_3d_camera, textured_shader); 
 
     /*std::vector<glm::vec3> cubePositions 
     { 
@@ -313,11 +314,11 @@ void example_layer::on_render()
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
     }*/
 
-	render_object(m_skybox, m_textured_shader);
+	render_object(m_skybox, textured_shader);
 
 	for (const auto& object : m_game_objects)
 	{
-		render_object(object, m_textured_shader);
+		render_object(object, textured_shader);
 	}
 
     engine::renderer::end_scene();

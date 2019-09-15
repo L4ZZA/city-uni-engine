@@ -28,15 +28,16 @@ static std::string shader_type_to_string(uint32_t type)
 }
 
 engine::gl_shader::gl_shader(const std::string& file_path)
-    : m_path(file_path)
 {
     const std::string source  = read_file(file_path);
     const auto shader_sources = pre_process(source);
+    // Extract name from file_path
+    m_name = extract_name(file_path);
     compile(shader_sources);
 }
 
-engine::gl_shader::gl_shader(const std::string& vertex_source, const std::string& fragment_source)
-    : m_path("[from source]")
+engine::gl_shader::gl_shader(const std::string& name, const std::string& vertex_source, const std::string& fragment_source)
+    : m_name(name)
 {
     std::unordered_map<uint32_t, std::string> sources;
     sources[GL_VERTEX_SHADER] = vertex_source;
@@ -108,6 +109,11 @@ void engine::gl_shader::set_uniform(const std::string& name, const glm::mat4& ma
     //LOG_CORE_TRACE("[shader] set_uniform (glm::mat4) (prog {0}): uniform: '{1}' = {2}(mat4)", m_program_id, name, mat); 
 }
 
+const std::string& engine::gl_shader::name() const
+{
+    return m_name;
+}
+
 std::string engine::gl_shader::read_file(const std::string& file_path)
 {
     std::string result;
@@ -131,17 +137,17 @@ std::unordered_map<uint32_t, std::string> engine::gl_shader::pre_process(const s
 {
     std::unordered_map<uint32_t, std::string> sources;
     const char* type_token = "#type";
-    size_t type_token_length = strlen(type_token);
+    const size_t type_token_length = strlen(type_token);
     size_t pos = source.find(type_token, 0);
     while (pos != std::string::npos)
     {
-        size_t eol = source.find_first_of("\r\n", pos);
+        const size_t eol = source.find_first_of("\r\n", pos);
         CORE_ASSERT(eol != std::string::npos, "[gl_shader] Syntax error.");
-        size_t begin = pos + type_token_length + 1;
+        const size_t begin = pos + type_token_length + 1;
         std::string type = source.substr(begin, eol - begin);
         CORE_ASSERT(shader_type_from_string(type), "[gl_shader] Invalid shader type specified.");
 
-        size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+        const size_t nextLinePos = source.find_first_not_of("\r\n", eol);
         pos = source.find(type_token, nextLinePos);
         sources[shader_type_from_string(type)] =
             source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos));
@@ -152,7 +158,7 @@ std::unordered_map<uint32_t, std::string> engine::gl_shader::pre_process(const s
 
 void engine::gl_shader::compile(const std::unordered_map<uint32_t, std::string>& sources)
 {
-    uint32_t program = glCreateProgram();
+    const uint32_t program = glCreateProgram();
     std::vector<uint32_t> shader_ids(sources.size());
 
     for (auto&[type, source] : sources)
@@ -163,7 +169,7 @@ void engine::gl_shader::compile(const std::unordered_map<uint32_t, std::string>&
         const char* source_cstr = source.c_str();
         glShaderSource(shader, 1, &source_cstr, 0);
 
-        LOG_CORE_INFO("[gl_shader] Compiling {} shader: {}", s_type, m_path);
+        LOG_CORE_INFO("[gl_shader] Compiling {}-shader: {}", s_type, m_name);
         glCompileShader(shader);
 
         int32_t is_compiled = 0;
@@ -217,5 +223,14 @@ void engine::gl_shader::compile(const std::unordered_map<uint32_t, std::string>&
 
     for (auto id : shader_ids)
         glDetachShader(program, id);
+}
+
+std::string engine::gl_shader::extract_name(const std::string& file_path)
+{
+    auto last_slash = file_path.find_last_of("/\\");
+    last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
+    const auto last_dot = file_path.rfind('.');
+    const auto count = last_dot == std::string::npos ? file_path.size() - last_slash : last_dot - last_slash;
+    return file_path.substr(last_slash, count);
 } 
 
