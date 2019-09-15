@@ -228,7 +228,7 @@ example_layer::example_layer()
 	m_game_objects.push_back(cuboid);
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::model dragon_base = engine::model("res/models/dragon.obj", false);
+	engine::model dragon_base = engine::model("assets/models/dragon.obj", false);
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
 	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_base);
