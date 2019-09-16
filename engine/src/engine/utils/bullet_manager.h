@@ -33,7 +33,7 @@ namespace engine
 	public:
 		physical_object(btRigidBody* body);
 
-		btRigidBody* get_body() { return body; };	//returns object's rigidBody
+		btRigidBody* get_body() const { return body; };	//returns object's rigidBody
 		btVector3 get_forward();	//returns object's  forward direction vector
 		btVector3 get_up();			//returns object's up vector
 		btVector3 get_right();		//returns object's right direction vector
@@ -73,8 +73,10 @@ namespace engine
 		// updates the variables of each physical object to synchronise with game objects, steps the simulation and then updates the game objects to synchronise with the physical objects
 		void dynamics_world_update(std::vector<engine::ref<engine::game_object>> game_objects, double dt);
 
+		static ref<bullet_manager> create(std::vector<ref<game_object>> game_objects);
+
 		// getter methods
-		btDynamicsWorld* get_dynamics_world() { return m_dynamics_world; }
+		btDynamicsWorld* get_dynamics_world() const { return m_dynamics_world; }
 		inline btVector3 to_bt_vector3(const glm::vec3& vec3) { return btVector3(btScalar(vec3.x), btScalar(vec3.y), btScalar(vec3.z)); }
 		inline glm::vec3 to_vec3(const btVector3& bt_vec3) { return { bt_vec3.getX(), bt_vec3.getY(), bt_vec3.getZ() }; }
 

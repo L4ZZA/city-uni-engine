@@ -4,21 +4,22 @@
 #include "engine/utils/bullet_manager.h"
 
 // TODO - see header ;)
-//engine::game_object::game_object(const game_object_properties& props)
-//    : m_position(props.position),
-//    m_velocity(props.velocity),
-//    m_rotation_axis(props.rotation_axis),
-//    m_rotation_amount(props.rotation_amount),
-//    m_meshes(props.meshes),
-//    m_scale(props.scale),
-//    m_mass(props.mass),
-//    m_static(props.is_static),
-//    m_type(props.type),
-//    m_bounding_shape(props.bounding_shape)
-//{
-//}
+engine::game_object::game_object(const game_object_properties& props)
+    : m_position(props.position),
+    m_velocity(props.velocity),
+    m_rotation_axis(props.rotation_axis),
+    m_rotation_amount(props.rotation_amount),
+    m_meshes(props.meshes),
+	m_textures(props.textures),
+    m_scale(props.scale),
+    m_mass(props.mass),
+    s_static(props.is_static),
+    m_type(props.type),
+    m_bounding_shape(props.bounding_shape)
+{
+}
 
-engine::game_object::game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes,
+/*engine::game_object::game_object(const glm::vec3 position, const glm::vec3 velocity, std::vector<ref<mesh>> meshes,
     const glm::vec3 scale, const bool is_static, float mass, int32_t type, glm::vec3 bounding_shape,
     glm::vec3 rotation_axis, float rotation_amount)
     : m_position(position), m_velocity(velocity), m_scale(scale), m_static(is_static), m_meshes(meshes), m_mass(mass),
@@ -34,7 +35,7 @@ engine::game_object::game_object(std::vector<ref<mesh>> meshes, int32_t type, gl
 engine::game_object::game_object(const bool is_static, int32_t type, glm::vec3 bounding_shape)
     : m_static(is_static), m_type(type), m_bounding_shape(bounding_shape)
 {
-}
+}*/
 
 engine::game_object::~game_object() {}
 
@@ -60,7 +61,7 @@ void engine::game_object::bind_textures()
     }
 }
 
-void engine::game_object::set_rotation(glm::vec3 direction)
+void engine::game_object::turn_towards(glm::vec3 direction)
 {
     glm::vec3 norm_direction = glm::normalize(direction);
     set_rotation_axis(glm::cross(norm_direction, glm::vec3(0.0f, 0.0f, 1.0f)));
@@ -69,7 +70,7 @@ void engine::game_object::set_rotation(glm::vec3 direction)
 }
 
 // TODO - use this once you fix the above [and back (header)]
-//std::shared_ptr<engine::game_object> engine::game_object::create(const game_object_properties& props)
-//{
-//    return std::make_shared<game_object>(props);
-//}
+engine::ref<engine::game_object> engine::game_object::create(const engine::game_object_properties& props)
+{
+    return std::make_shared<engine::game_object>(props);
+}

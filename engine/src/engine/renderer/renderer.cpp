@@ -38,9 +38,10 @@ void engine::renderer::submit(
 
 void engine::renderer::submit(
     const ref<shader>& shader, 
-	const ref<game_object>& object,
-    const glm::mat4& transform /*= glm::mat4(1.f)*/)
+	const ref<game_object>& object)
 {
+	glm::mat4 transform = object->transform();
+	object->bind_textures();
     const bool has_meshes = !object->meshes().empty();
 	if (has_meshes)
 	{
@@ -49,9 +50,5 @@ void engine::renderer::submit(
 		{
 			submit(shader, mesh, transform);
 		}
-	}
-	else
-	{
-		submit(shader, object->va(), transform);
 	}
 }

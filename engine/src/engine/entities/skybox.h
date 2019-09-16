@@ -1,28 +1,36 @@
 #pragma once
-#include "game_object.h"
 
 namespace engine
 {
+	class mesh;
+	class texture_2d;
 
 	/// \brief Class creating a skybox object containing an inverted cube shape of a specified size
-	class skybox : public game_object
+	class skybox
 	{
 	public:
 		/// \brief Constructor
-		skybox(float size, glm::vec3 camera_position, float rotation, const std::vector<ref<texture_2d>> textures);
+		skybox(float size, std::vector<ref<texture_2d>> textures);
 		/// \brief Destructor
 		~skybox();
 
 		/// \brief Methods
 		// getter methods
-		float size() { return m_size; }
+		float size() const { return m_size; }
+		ref<engine::mesh> mesh() const { return m_mesh; }
+		std::vector<ref<texture_2d>> textures() const { return m_textures; }
 
-		// update method keeping the skbox centered on the camera and updating the rotation (if skybox is rotating)
-		void update(glm::vec3 camera_position, float rotation);
+		static ref<skybox> create(float size, std::vector<ref<texture_2d>> textures);
 
 	private:
 		/// \brief Fields
 		// size of the skybox 
 		float m_size;
+
+		// skybox mesh
+		ref<engine::mesh> m_mesh;
+
+		// skybox textures
+		std::vector<ref<texture_2d>> m_textures;
 	};
 }

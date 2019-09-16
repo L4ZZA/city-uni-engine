@@ -14,7 +14,7 @@ namespace engine
 
 		/// \brief Methods
 		// getter
-		ref<game_object> object() { return m_object; }
+		ref<game_object> object() const { return m_object; }
 
 		// setter
 		void set_object(ref<game_object> object) { m_object = object; }
@@ -23,8 +23,9 @@ namespace engine
 		virtual void update(double dt) {}
 
 	protected:
-		// updating the acceleration and torque of the character's object
+		// updating the acceleration of the character's object
 		void move(glm::vec3 accelerate, double dt);
+		//updating the torque of the character's object
 		void turn(glm::vec3 torque, double dt);
 
 		/// \brief Field

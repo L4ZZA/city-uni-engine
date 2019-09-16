@@ -11,7 +11,6 @@ public:
     void on_update(const engine::timestep& time_step) override;
     void on_render() override; 
     void on_event(engine::event& event) override;
-	void render_object(engine::ref<engine::game_object>, engine::ref<engine::shader> shader);
 
 private:
     engine::shader_library              m_shader_library;
@@ -29,7 +28,7 @@ private:
 	engine::ref<engine::skybox>			m_skybox{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
-	engine::bullet_manager* m_manager;
+	engine::ref<engine::bullet_manager> m_manager;
 
     engine::orthographic_camera       m_2d_camera; 
     engine::perspective_camera        m_3d_camera; 

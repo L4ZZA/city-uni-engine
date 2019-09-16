@@ -2,10 +2,7 @@
 #include "character.h"
 #include "engine/entities/game_object.h"
 
-engine::character::character(ref<game_object> object)
-{
-	m_object = object;
-}
+engine::character::character(ref<game_object> object) : m_object(object) {}
 
 engine::character::~character() {}
 

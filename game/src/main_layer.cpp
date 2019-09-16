@@ -206,65 +206,56 @@ example_layer::example_layer()
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
-	m_skybox = std::make_shared<engine::skybox>(50.f, m_3d_camera.position(), 0.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox.jpg") });
+	m_skybox = engine::skybox::create(50.f,
+		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox.jpg") });
 
-    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
 	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
-	engine::ref<engine::terrain> terrain = std::make_shared<engine::terrain>(true, 100.f, 0.5f, 100.f, std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/moss2.png") });
-	terrain->set_position(glm::vec3(0.f, -0.5f, 0.f));
-	m_game_objects.push_back(terrain);
+	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
+	engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
+	engine::game_object_properties terrain_props;
+	terrain_props.meshes = { terrain_shape->mesh() };
+	terrain_props.textures = terrain_textures;
+	m_game_objects.push_back(engine::game_object::create(terrain_props));
 
-    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
-	engine::ref<engine::cuboid> cuboid = std::make_shared<engine::cuboid>(false, glm::vec3(0.5f), std::vector<engine::ref<engine::texture_2d>>{ m_face_texture }, false);
-	cuboid->set_position(glm::vec3(0.f, 5.f, -5.f));
-	m_game_objects.push_back(cuboid);
+	engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
+	engine::game_object_properties cuboid_props;
+	cuboid_props.position = { 0.f, 5.f, -5.f };
+	cuboid_props.meshes = { cuboid_shape->mesh() };
+	cuboid_props.textures = { m_texture };
+	m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::model dragon_model = engine::model("assets/models/dragon.obj", false);
-
-    // TODO - use props to initialize dragons' game objecs
-    //engine::game_object_properties dragon_props;
-    //dragon_props.is_static = false;
-    //dragon_props.position = {2.f, 1.f, -2.f};
-    //dragon_props.meshes = dragon_model.meshes();  <-- this will allow you to reuse the meshes and texture across game objects.
-
+	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
-	engine::ref<engine::model> dragon_1 = std::make_shared<engine::model>(dragon_model);
-	//dragon_1->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
-	dragon_1->set_position(glm::vec3(2.f, 1.f, -2.f));
-	dragon_1->set_scale(1.f / dragon_1->size());
-	m_game_objects.push_back(dragon_1);
+	engine::game_object_properties dragon_props;
+	dragon_props.meshes = dragon_model->meshes();
+	dragon_props.textures = { dragon_texture };
+	dragon_props.scale = 1.f / dragon_model->size();
+	//first dragon object
+	dragon_props.position = { 2.f, 1.f, -2.f };
+	m_game_objects.push_back(engine::game_object::create(dragon_props));
 
-    // TODO - don't force users to use std::make_shared. see example engine::texture_2d::create(...)
-	engine::ref<engine::model> dragon_2 = std::make_shared<engine::model>(dragon_model);
-	//dragon_2->set_textures(std::vector<engine::ref<engine::texture_2d>>{ dragon_texture });
-	dragon_2->set_position(glm::vec3(-0.f, 1.f, -2.f));
-	//dragon_2->set_rotation(m_3d_camera.position() - dragon_2->position());
-	dragon_2->set_scale(1.f / dragon_2->size());
-	m_game_objects.push_back(dragon_2);
+	//second dragon object
+	dragon_props.position = { -2.f, 1.f, -2.f };
+	m_game_objects.push_back(engine::game_object::create(dragon_props));
 
-    // TODO - should be a smart pointer [probably unique_ptr<>, aka scope<>]
-    // TODO - create as singleton in engine (bullet_manager.cpp) since there can't be more than one bullet_manager
-    // TODO - pass objects through method init(...) or something like that
-	m_manager = new engine::bullet_manager(m_game_objects);
+	m_manager = engine::bullet_manager::create(m_game_objects);
 }
 
-example_layer::~example_layer()
-{
-	delete m_manager;
-}
+example_layer::~example_layer() {}
 
 void example_layer::on_update(const engine::timestep& time_step) 
 {
     m_3d_camera.on_update(time_step);
 
-	m_skybox->update(m_3d_camera.position(), 0.f);
+	m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
+		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
+			m_3d_camera.position().z), glm::vec3(0.f,1.f,0.f)));
 
-    // TODO - too many chars per line, goes out of the screen
-	m_game_objects.at(2)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f,1.f,0.f)));
-	m_game_objects.at(3)->set_rotation(glm::cross(m_game_objects.at(2)->position() - glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y, m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));
+	m_game_objects.at(3)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
+		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
+			m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));
 
 	//m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
 
@@ -316,11 +307,17 @@ void example_layer::on_render()
     }*/
 
     // TODO - delete method and use -> engine::renderer::submit() instead
-	render_object(m_skybox, textured_shader);
+	glm::mat4 skybox_tranform(1.0f);
+	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	for (const auto& texture : m_skybox->textures())
+	{
+		texture->bind();
+	}
+	engine::renderer::submit(textured_shader, m_skybox->mesh(), skybox_tranform);
 
 	for (const auto& object : m_game_objects)
 	{
-		render_object(object, textured_shader);
+		engine::renderer::submit(textured_shader, object);
 	}
 
     engine::renderer::end_scene();
@@ -357,11 +354,4 @@ void example_layer::on_event(engine::event& event)
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     } 
 
-} 
-
-void example_layer::render_object(engine::ref<engine::game_object> game_object, engine::ref<engine::shader> shader)
-{
-	glm::mat4 object_transform = game_object->transform();
-	game_object->bind_textures();
-	engine::renderer::submit(shader, game_object, object_transform);
 }

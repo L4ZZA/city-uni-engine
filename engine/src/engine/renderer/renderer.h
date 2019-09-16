@@ -23,8 +23,7 @@ namespace engine
             const glm::mat4& transform = glm::mat4(1.f));
         static void submit(
             const ref<shader>& shader, 
-            const ref<game_object>& object,
-            const glm::mat4& transform = glm::mat4(1.f));
+            const ref<game_object>& object);
 
         inline static renderer_api::e_api api() { return renderer_api::api(); }
 

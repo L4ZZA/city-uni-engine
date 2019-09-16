@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "engine/utils/bullet_manager.h"
+#include "engine/renderer/mesh.h"
 #include "LinearMath/btIDebugDraw.h"
 #include "BulletDynamics/Dynamics/btDynamicsWorld.h"
 
@@ -164,17 +165,17 @@ void engine::bullet_manager::add_physical_object(engine::ref<engine::game_object
 		break;
 	}
 	//if type is a convex shape 
-	/*case 2:
+	case 2:
 	{
 		btConvexHullShape * c_shape = new btConvexHullShape();
-		for (int32_t i = 0; i < game_object->get_meshes().at(0).vertices().size(); i++)
+		for (int32_t i = 0; i < game_object->meshes().at(0)->vertices().size(); i++)
 		{
-			engine::mesh::vertex vertex = game_object->get_meshes().at(0).vertices().at(i);
+			engine::mesh::vertex vertex = game_object->meshes().at(0)->vertices().at(i);
 			c_shape->addPoint(btVector3(btScalar(vertex.position.x), btScalar(vertex.position.y), btScalar(vertex.position.z)));
 		}
 		shape = c_shape;
 		break;
-	}*/
+	}
 	}
 	m_collision_shapes.push_back(shape);
 
@@ -265,4 +266,9 @@ void engine::bullet_manager::dynamics_world_update(std::vector<engine::ref<engin
 		game_object_i->set_angular_velocity(to_vec3(physical_object_i->get_body()->getAngularVelocity()));
 
 	}
+}
+
+engine::ref<engine::bullet_manager> engine::bullet_manager::create(std::vector<engine::ref<engine::game_object>> game_objects)
+{
+	return std::make_shared<engine::bullet_manager>(game_objects);
 }

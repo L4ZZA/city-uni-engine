@@ -13,33 +13,53 @@ namespace engine
     class texture_2d;
 
     /// \brief
-    class model final : public game_object
+    class model final
     {
     public:
-        model(const std::string& path, const bool is_static);
+        model(const std::string& path);
         ~model();
 
-        // TODO - getters should always have a const specifier before the curly brackets since they don't modify any class member 
-		glm::vec3 size() { return m_size; }
+		///\brief - Getters
+		glm::vec3 size() const { return m_size; }
+		glm::vec3 offset() const { return m_offset; }
+		std::vector <ref<engine::mesh>> meshes() const { return m_meshes; }
+		std::vector <ref<engine::texture_2d>> textures() const { return m_textures; }
 
-
+		// create the object's smart pointer 
+		static std::shared_ptr<engine::model> engine::model::create(const std::string& path);
+		
     private: // methods
         void process_node(aiNode* node, const aiScene* scene);
         ref<engine::mesh> process_mesh(aiMesh* mesh, const aiScene* scene);
         std::vector<ref<texture_2d>> load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const;
-
-        // TODO - put comment in brief on what this function does since it doesn't only compare values, but also changes some other values. Update name accordingly.
-        ///\brief 
+		
+        ///\brief - compares the values of the vertex that is being loaded with min and max values
+		/// if any coordinate is smaller than min or bigger than max, record it as new min/max value
 		void min_max_compare(glm::vec3 point);
 
     private: // fields
         std::string m_directory;
         std::string m_path;
 
-        // TODO - member variables need to be prefixed with "m_"
-		glm::vec3 min_point;
-		glm::vec3 max_point;
-		bool first_point = true;
+		// model's meshes
+		std::vector<ref<mesh>> m_meshes;
+
+		// model's textures
+		std::vector<ref<texture_2d>> m_textures;
+
+		// min values of the model in x, y and z coordinates
+		glm::vec3 m_min_point;
+
+		// max values of the model in x, y and z coordinates
+		glm::vec3 m_max_point;
+
+		// switch that checks if the current point is the first point loaded for the model
+		bool m_first_point = true;
+
+		// dimensions of the object in x, y and z
 		glm::vec3 m_size;
+
+		// offset of the model from the origin of the local coordinates
+		glm::vec3 m_offset;
     };
 }

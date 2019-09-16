@@ -10,20 +10,23 @@ namespace engine
 	{
 	public:
 		/// \brief Constructor
-		terrain(bool is_static, float length, float depth, float width, std::vector<ref<texture_2d>> textures);
+		terrain(float length, float depth, float width);
 		/// \brief Destructor
 		~terrain();
 
 		/// \brief Getter methods
-		float width() { return m_width; }
-		float length() { return m_length; }
-		float depth() { return m_depth; }
+		float width() const { return m_width; }
+		float length() const { return m_length; }
+		float depth() const { return m_depth; }
 
+		static ref<terrain> create(float length, float depth, float width);
 	private:
 		/// \brief Fields
-		// terrain's dimensions
+		// terrain's width
 		float m_width;
+		// terrain's depth
 		float m_depth;
+		// terrain's length
 		float m_length;
 	};
 }

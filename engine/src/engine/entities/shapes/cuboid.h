@@ -1,23 +1,25 @@
 #pragma once
-#include "engine/entities/game_object.h"
 
 namespace engine
 {
-	class texture_2d;
+	class mesh;
 
 	/// \brief Class creating a cuboid object with a mesh of a specified size
-	class cuboid : public game_object
+	class cuboid
 	{
 	public:
 		/// \brief Constructor
-		cuboid(bool is_static, glm::vec3 half_extents, const std::vector<ref<texture_2d>> textures, bool inwards);
+		cuboid(glm::vec3 half_extents, bool inwards);
 
 		/// \brief Destructor
 		~cuboid();
 
 		/// \brief Getter methods
-		glm::vec3 half_extents() { return m_half_extents; }
-		bool inwards() { return m_inwards; }
+		glm::vec3 half_extents() const { return m_half_extents; }
+		bool inwards() const { return m_inwards; }
+		ref<engine::mesh> mesh() const { return m_mesh; }
+
+		static ref<cuboid> create(glm::vec3 half_extents, bool inwards);
 	private:
 		/// \brief Fields
 		// Dimensions of the cuboid specified by a vector of half-extents. Cuboid is centered on the origin in local coordinates.
@@ -25,5 +27,7 @@ namespace engine
 
 		// Boolean recording if the cube should be inverted (used in skybox)
 		bool m_inwards;
+
+		ref<engine::mesh> m_mesh;
 	};
 }
