@@ -7,8 +7,8 @@ engine::ref<engine::shader> engine::shader::create(const std::string& file_path)
 {
     switch (renderer::api())
     {
-        case renderer_api::e_api::none: CORE_ASSERT(false, "[shader] e_renderer_api::none currently not supported!"); return nullptr;
-        case renderer_api::e_api::open_gl: return std::make_shared<gl_shader>(file_path);
+        case e_api_type::none: CORE_ASSERT(false, "[shader] e_renderer_api::none currently not supported!"); return nullptr;
+        case e_api_type::open_gl: return std::make_shared<gl_shader>(file_path);
     }
 
     CORE_ASSERT(false, "[shader] Unknown renderer api!");
@@ -21,8 +21,8 @@ engine::ref<engine::shader> engine::shader::create(const std::string& name, cons
 
     switch (renderer::api())
     {
-        case renderer_api::e_api::none: CORE_ASSERT(false, "[shader] e_renderer_api::none currently not supported!"); return nullptr;
-        case renderer_api::e_api::open_gl: return std::make_shared<gl_shader>(name, vertex_source, fragment_source);
+        case e_api_type::none: CORE_ASSERT(false, "[shader] e_renderer_api::none currently not supported!"); return nullptr;
+        case e_api_type::open_gl: return std::make_shared<gl_shader>(name, vertex_source, fragment_source);
     }
 
     CORE_ASSERT(false, "[shader] Unknown renderer api!");

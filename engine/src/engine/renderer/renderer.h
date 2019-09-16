@@ -10,6 +10,8 @@ namespace engine
     class renderer
     {
     public:
+        static void init();
+
         static void begin_scene(camera& camera, const ref<shader>& shader);
         static void end_scene();
 
@@ -25,8 +27,9 @@ namespace engine
             const ref<shader>& shader, 
             const ref<game_object>& object);
 
-        inline static renderer_api::e_api api() { return renderer_api::api(); }
-
+        static e_api_type api() { return renderer_api::api(); }
+        static renderer& get() { return *s_instance; }
+        static const scope<shader_library>& shaders_library() { return get().m_shader_library; }
     private:
         struct scene_data
         {
@@ -35,5 +38,7 @@ namespace engine
         };
 
         static scene_data* s_scene_data;
+        static renderer*   s_instance;
+        scope<shader_library> m_shader_library;
     };
 }

@@ -3,6 +3,16 @@
 #include "platform/opengl/gl_shader.h"
 
 engine::renderer::scene_data* engine::renderer::s_scene_data = new scene_data;
+engine::renderer* engine::renderer::s_instance = new renderer();
+
+void engine::renderer::init()
+{
+    s_instance->m_shader_library = std::make_unique<shader_library>();
+    renderer_api::init();
+
+    renderer::shaders_library()->load("assets/shaders/mesh_static.glsl");
+    //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
+}
 
 void engine::renderer::begin_scene(camera& camera, const ref<shader>& shader)
 {

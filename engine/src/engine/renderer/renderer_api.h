@@ -4,35 +4,36 @@
 #include "engine/renderer/mesh.h"
 
 namespace engine
-{
+{  
+    enum class e_api_type 
+    { 
+        none, open_gl = 1 
+    };
+
     enum class e_primitive_type; 
     /// \brief   
     class renderer_api  
     {  
-    public:  
-        enum class e_api 
-        { 
-            none = 0, open_gl = 1 
-        }; 
-
     public: 
-        virtual ~renderer_api() = default; 
-        virtual void init() = 0;  
-        virtual void clear() = 0;  
-        virtual void clear_color(const glm::vec4& color) = 0;  
+        ~renderer_api() = default; 
+        static void init();  
+        static void clear();  
+        static void clear_color(const glm::vec4& color);  
         
-        virtual void enable_wireframe() = 0;  
-        virtual void disable_wireframe() = 0;  
+        static void enable_wireframe();  
+        static void disable_wireframe();  
         
-        virtual void draw_indexed(const ref<vertex_array>& vertex_array) = 0;  
-        virtual void draw_indexed(const ref<mesh>& mesh) = 0;  
-        virtual void primitive_type(const e_primitive_type& type) = 0;  
-        static e_api api() { return s_renderer_api; } 
+        static void draw_indexed(const ref<vertex_array>& vertex_array);  
+        static void draw_indexed(const ref<mesh>& mesh);  
+        static void primitive_type(const e_primitive_type& type);  
+        static e_api_type api() { return s_renderer_api; } 
 
-    protected:  
-        virtual void enable_alpha() = 0;  
-        virtual void enable_culling() = 0;  
+    private:  
+        static void enable_alpha();  
+        static void enable_culling();
+
+    private:
         static e_primitive_type s_primitive_type;
-        inline static e_api s_renderer_api = e_api::open_gl; 
+        static e_api_type       s_renderer_api; 
     };  
 }
