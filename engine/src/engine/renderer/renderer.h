@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "model.h"
 #include "camera.h"
+#include "engine/entities/skybox.h"
 
 namespace engine
 {
@@ -26,6 +27,10 @@ namespace engine
         static void submit(
             const ref<shader>& shader, 
             const ref<game_object>& object);
+		static void submit(
+			const ref<shader>& shader,
+			const ref<skybox>& skybox,
+			const glm::mat4& transform = glm::mat4(1.f));
 
         static e_api_type api() { return renderer_api::api(); }
         static renderer& get() { return *s_instance; }

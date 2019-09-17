@@ -17,7 +17,7 @@ namespace engine
 		/// \brief Methods
 		// getter methods
 		float size() const { return m_size; }
-		ref<engine::mesh> mesh() const { return m_mesh; }
+		std::vector < ref<engine::mesh>> meshes() const { return m_meshes; }
 		std::vector<ref<texture_2d>> textures() const { return m_textures; }
 
 		static ref<skybox> create(float size, std::vector<ref<texture_2d>> textures);
@@ -28,7 +28,7 @@ namespace engine
 		float m_size;
 
 		// skybox mesh
-		ref<engine::mesh> m_mesh;
+		std::vector<ref<engine::mesh>> m_meshes;
 
 		// skybox textures
 		std::vector<ref<texture_2d>> m_textures;

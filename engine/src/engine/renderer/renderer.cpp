@@ -62,3 +62,21 @@ void engine::renderer::submit(
 		}
 	}
 }
+
+void engine::renderer::submit(
+	const ref<shader>& shader,
+	const ref<skybox>& skybox,
+	const glm::mat4& transform)
+{
+	if (skybox->textures().size() == skybox->meshes().size())
+	{
+		uint32_t i = 0;
+		auto model_meshes = skybox->meshes();
+		for (const auto& mesh : model_meshes)
+		{
+			skybox->textures().at(i)->bind();
+			submit(shader, mesh, transform);
+			i++;
+		}
+	}
+}

@@ -207,7 +207,12 @@ example_layer::example_layer()
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
-		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox.jpg") });
+		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
+														engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
+														engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
+														engine::texture_2d::create("assets/textures/skybox/SkyboxLeft.bmp"),
+														engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
+														engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")});
 
 	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
 	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
@@ -225,20 +230,20 @@ example_layer::example_layer()
 	m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
-	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
+	//engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
+	//engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-	engine::game_object_properties dragon_props;
+	//engine::game_object_properties dragon_props;
 	//dragon_props.meshes = dragon_model->meshes();
-	dragon_props.textures = { dragon_texture };
-	dragon_props.scale = 1.f / dragon_model->size();
+	//dragon_props.textures = { dragon_texture };
+	//dragon_props.scale = 1.f / dragon_model->size();
 	//first dragon object
-	dragon_props.position = { 2.f, 1.f, -2.f };
-	m_game_objects.push_back(engine::game_object::create(dragon_props));
+	//dragon_props.position = { 2.f, 1.f, -2.f };
+	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
 	//second dragon object
-	dragon_props.position = { -2.f, 1.f, -2.f };
-	m_game_objects.push_back(engine::game_object::create(dragon_props));
+	//dragon_props.position = { -2.f, 1.f, -2.f };
+	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
 	m_manager = engine::bullet_manager::create(m_game_objects);
 }
@@ -249,13 +254,13 @@ void example_layer::on_update(const engine::timestep& time_step)
 {
     m_3d_camera.on_update(time_step);
 
-	m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
+	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
 			m_3d_camera.position().z), glm::vec3(0.f,1.f,0.f)));
 
 	m_game_objects.at(3)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
-			m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));
+			m_3d_camera.position().z), glm::vec3(0.f, 1.f, 0.f)));*/
 
 	//m_manager->dynamics_world_update(m_game_objects, timer.elapsed());
 
@@ -313,7 +318,7 @@ void example_layer::on_render()
 	{
 		texture->bind();
 	}
-	engine::renderer::submit(textured_shader, m_skybox->mesh(), skybox_tranform);
+	engine::renderer::submit(textured_shader, m_skybox, skybox_tranform);
 
 	for (const auto& object : m_game_objects)
 	{
@@ -321,6 +326,10 @@ void example_layer::on_render()
 	}
 
     engine::renderer::end_scene();
+
+	std::stack<glm::mat4> matrix_stack;
+	matrix_stack.push(glm::mat4(1.0f));
+	
 
 	//engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
 
@@ -349,9 +358,13 @@ void example_layer::on_event(engine::event& event)
         auto& e = dynamic_cast<engine::key_pressed_event&>(event); 
         if(e.key_code() == engine::key_codes::KEY_TAB) 
         { 
-            engine::render_command::toggle_wireframe(); 
+            engine::render_command::toggle_wireframe();
+
+			
+
+		
+
         } 
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     } 
-
 }
