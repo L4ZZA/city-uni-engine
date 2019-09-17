@@ -13,7 +13,6 @@ public:
     void on_event(engine::event& event) override;
 
 private:
-    engine::shader_library              m_shader_library;
     engine::ref<engine::shader>         m_color_shader{}; 
     engine::ref<engine::vertex_array>   m_triangle_va{}; 
 

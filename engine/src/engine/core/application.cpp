@@ -18,8 +18,7 @@ engine::application::application()
     m_window = window::create();
     m_window->event_callback(BIND_EVENT_FN(application::on_event));
 
-    render_command::init();
-
+    renderer::init();
 }
 
 engine::application::~application()
