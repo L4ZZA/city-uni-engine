@@ -230,16 +230,16 @@ example_layer::example_layer()
 	m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	//engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
-	//engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
+	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
+	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-	//engine::game_object_properties dragon_props;
-	//dragon_props.meshes = dragon_model->meshes();
-	//dragon_props.textures = { dragon_texture };
-	//dragon_props.scale = 1.f / dragon_model->size();
+	engine::game_object_properties dragon_props;
+	dragon_props.meshes = dragon_model->meshes();
+	dragon_props.textures = { dragon_texture };
+	dragon_props.scale = 1.f / dragon_model->size();
 	//first dragon object
-	//dragon_props.position = { 2.f, 1.f, -2.f };
-	//m_game_objects.push_back(engine::game_object::create(dragon_props));
+	dragon_props.position = { 2.f, 1.f, -2.f };
+	m_game_objects.push_back(engine::game_object::create(dragon_props));
 
 	//second dragon object
 	//dragon_props.position = { -2.f, 1.f, -2.f };
