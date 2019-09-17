@@ -5,8 +5,17 @@
 #include <iostream>
 #include <vector>
 
-namespace engine
-{
+namespace engine{
+namespace utils{
+        
+    static std::string file_extension(const std::string& file_name)
+    {
+        const auto dot_pos = file_name.find_last_of('.');
+        const auto extension_size = file_name.size() - dot_pos;
+        std::string extension = file_name.substr(dot_pos + 1, extension_size);
+        return extension;
+    }
+
 	static std::string read_file(const std::string &file_path)
 	{
 		std::fstream file_stream;
@@ -63,32 +72,5 @@ namespace engine
 		return result;
 	}
 
-	static std::vector<std::string> split(const std::string &s, char delimiter)
-	{
-		std::vector<std::string> tokens;
-		std::string token;
-		std::istringstream tokenStream(s);
-		while(std::getline(tokenStream, token, delimiter))
-		{
-			tokens.push_back(token);
-		}
-		return tokens;
-	}
-
-	/// \brief https://stackoverflow.com/a/24327749/6120464
-	static std::vector<std::string> split_fast(std::string const& original, char separator)
-	{
-		std::vector<std::string> results;
-		std::string::const_iterator start = original.begin();
-		std::string::const_iterator end = original.end();
-		std::string::const_iterator next = std::find(start, end, separator);
-		while(next != end)
-		{
-			results.push_back(std::string(start, next));
-			start = next + 1;
-			next = std::find(start, end, separator);
-		}
-		results.push_back(std::string(start, next));
-		return results;
-	}
+}
 }
