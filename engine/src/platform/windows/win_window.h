@@ -1,5 +1,5 @@
 #pragma once
-#include "engine/window.h"
+#include "engine/core/window.h"
 #include "engine/renderer/graphics_context.h"
 #include "GLFW/glfw3.h"
 
@@ -40,8 +40,8 @@ namespace engine
         virtual void shut_down();
 
     private:
-        GLFWwindow* m_window;
-		graphics_context* m_graphics_context;
+        GLFWwindow* m_window = nullptr;
+		graphics_context* m_graphics_context = nullptr;
 
         /// \brief struct to pass to the glfw callback user_ptr
         struct window_data

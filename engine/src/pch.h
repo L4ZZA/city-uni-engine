@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "engine/logger.h"
+#include "engine/core/logger.h"
 
 #ifdef ENGINE_PLATFORM_WIN
 	#include <Windows.h>

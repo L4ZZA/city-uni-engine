@@ -8,7 +8,7 @@
 #include "engine/core.h"
 #include "platform/opengl/gl_context.h"
 #include "GLFW/glfw3.h"
-#include "engine/input.h"
+#include "engine/core/input.h"
 
 //=============================================================================
 
@@ -22,9 +22,9 @@ namespace engine
     }
 }
 
-engine::window* engine::window::create(window_props const& props)
+engine::scope<engine::window> engine::window::create(window_props const& props)
 {
-    return new win_window(props);
+    return std::make_unique<win_window>(props);
 }
 
 engine::win_window::win_window(window_props const& props)
