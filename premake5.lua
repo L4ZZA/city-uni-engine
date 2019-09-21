@@ -50,16 +50,18 @@ IncludeDir["ImGui"]			= "engine/external/imgui"
 IncludeDir["assimp"]		= "engine/external/assimp/include/"
 IncludeDir["assimpcfg"]		= "engine/external/assimp/config/"
 IncludeDir["bullet"]		= "engine/external/bullet/"
+IncludeDir["fmod"]			= "engine/external/FMOD/include/"
 
 -- library directories relative to root folder (sln dir)
 LibDir = {}
-LibDir["stb_image"]		= "engine/external/stb_image/lib/"
+LibDir["stb_image"]			= "engine/external/stb_image/lib/"
 LibDir["GLFW"]				= "engine/external/GLFW/lib/"
 LibDir["Glad"]				= "engine/external/Glad/lib/"
 LibDir["assimp"]			= "engine/external/assimp/lib/"
 LibDir["bullet_cls"]		= "engine/external/bullet/BulletCollision/lib/"
 LibDir["bullet_dnc"]		= "engine/external/bullet/BulletDynamics/lib/"
 LibDir["bullet_lm"]			= "engine/external/bullet/LinearMath/lib/"
+LibDir["fmod"]				= "engine/external/FMOD/lib/x64/"
 
 
 group "dependencies"
@@ -114,6 +116,7 @@ project "engine"
         "%{IncludeDir.assimpcfg}",
 		"%{IncludeDir.bullet}",
 		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.fmod}",
     }
 
 	libdirs
@@ -125,6 +128,7 @@ project "engine"
 		"%{LibDir.bullet_cls}",
         "%{LibDir.bullet_dnc}",
         "%{LibDir.bullet_lm}",
+		"%{LibDir.fmod}",
     }
 
     links
@@ -137,6 +141,7 @@ project "engine"
 		"BulletDynamics.lib",
 		"LinearMath.lib",
 		"stb_image.lib",
+		"fmod_vc.lib",
     }
 
     -- filters are used to apply property to some specific configurations only
