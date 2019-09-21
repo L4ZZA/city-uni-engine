@@ -41,15 +41,25 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["spdlog"]    = "engine/external/spdlog/include"
-IncludeDir["GLFW"]      = "engine/external/GLFW/include"
-IncludeDir["Glad"]      = "engine/external/Glad/include"
-IncludeDir["glm"]       = "engine/external/glm"
-IncludeDir["stb_image"] = "engine/external/stb_image"
-IncludeDir["ImGui"]     = "engine/external/imgui"
-IncludeDir["assimp"]    = "engine/external/assimp/include/"
-IncludeDir["assimpcfg"] = "engine/external/assimp/config/"
-IncludeDir["bullet"]    = "engine/external/bullet/"
+IncludeDir["spdlog"]		= "engine/external/spdlog/include/"
+IncludeDir["GLFW"]			= "engine/external/GLFW/include/"
+IncludeDir["Glad"]			= "engine/external/Glad/include/"
+IncludeDir["glm"]			= "engine/external/glm"
+IncludeDir["stb_image"]		= "engine/external/stb_image/"
+IncludeDir["ImGui"]			= "engine/external/imgui"
+IncludeDir["assimp"]		= "engine/external/assimp/include/"
+IncludeDir["assimpcfg"]		= "engine/external/assimp/config/"
+IncludeDir["bullet"]		= "engine/external/bullet/"
+
+-- library directories relative to root folder (sln dir)
+LibDir = {}
+LibDir["stb_image"]		= "engine/external/stb_image/lib/"
+LibDir["GLFW"]				= "engine/external/GLFW/lib/"
+LibDir["Glad"]				= "engine/external/Glad/lib/"
+LibDir["assimp"]			= "engine/external/assimp/lib/"
+LibDir["bullet_cls"]		= "engine/external/bullet/BulletCollision/lib/"
+LibDir["bullet_dnc"]		= "engine/external/bullet/BulletDynamics/lib/"
+LibDir["bullet_lm"]			= "engine/external/bullet/LinearMath/lib/"
 
 
 group "dependencies"
@@ -100,22 +110,33 @@ project "engine"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}",
         "%{IncludeDir.assimp}",
         "%{IncludeDir.assimpcfg}",
 		"%{IncludeDir.bullet}",
+		"%{IncludeDir.stb_image}",
+    }
+
+	libdirs
+    {
+        "%{LibDir.stb_image}",
+        "%{LibDir.GLFW}",
+        "%{LibDir.Glad}",
+		"%{LibDir.assimp}",
+		"%{LibDir.bullet_cls}",
+        "%{LibDir.bullet_dnc}",
+        "%{LibDir.bullet_lm}",
     }
 
     links
     {
-        "GLFW",
-        "Glad",
+        "GLFW.lib",
+        "Glad.lib",
 		"opengl32.lib",
-        "stb_image",
-        "assimp",
-		"BulletCollision",
-		"BulletDynamics",
-		"LinearMath",
+        "assimp.lib",
+		"BulletCollision.lib",
+		"BulletDynamics.lib",
+		"LinearMath.lib",
+		"stb_image.lib",
     }
 
     -- filters are used to apply property to some specific configurations only
