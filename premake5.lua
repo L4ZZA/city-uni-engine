@@ -98,6 +98,9 @@ project "engine"
         "%{prj.name}/src/**.hpp",
         "%{prj.name}/external/glm/glm/**.hpp", 
         "%{prj.name}/external/glm/glm/**.inl",
+		"%{prj.name}/external/FMOD/include/**.h", 
+		"%{prj.name}/external/FMOD/include/**.hpp", 
+        "%{prj.name}/external/FMOD/include/**.cs",
     }
 
     defines

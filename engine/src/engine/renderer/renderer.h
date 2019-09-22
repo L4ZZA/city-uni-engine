@@ -4,6 +4,7 @@
 #include "shader.h"
 #include "model.h"
 #include "camera.h"
+#include "engine/entities/game_object.h"
 #include "engine/entities/skybox.h"
 
 namespace engine

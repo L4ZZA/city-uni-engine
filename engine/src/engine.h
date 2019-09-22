@@ -23,6 +23,7 @@
 #include "engine/renderer/camera.h"
 
 // ---entities------------------------
+#include "engine/entities/game_object.h"
 #include "engine/entities/shapes/cuboid.h"
 #include "engine/entities/shapes/sphere.h"
 #include "engine/entities/terrain.h"
@@ -30,3 +31,4 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
+#include "engine/utils/audio_manager.h"

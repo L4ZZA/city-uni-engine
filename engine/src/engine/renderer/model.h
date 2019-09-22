@@ -1,5 +1,4 @@
 #pragma once
-#include "engine/entities/game_object.h"
 
 struct aiNode;
 struct aiScene;
