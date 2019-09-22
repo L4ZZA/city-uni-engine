@@ -121,26 +121,26 @@ project "engine"
 
 	libdirs
     {
-        "%{LibDir.stb_image}",
-        "%{LibDir.GLFW}",
-        "%{LibDir.Glad}",
-		"%{LibDir.assimp}",
-		"%{LibDir.bullet_cls}",
-        "%{LibDir.bullet_dnc}",
-        "%{LibDir.bullet_lm}",
+        -- "%{LibDir.stb_image}",
+        -- "%{LibDir.GLFW}",
+        -- "%{LibDir.Glad}",
+		-- "%{LibDir.assimp}",
+		-- "%{LibDir.bullet_cls}",
+        -- "%{LibDir.bullet_dnc}",
+        -- "%{LibDir.bullet_lm}",
 		"%{LibDir.fmod}",
     }
 
     links
     {
-        "GLFW.lib",
-        "Glad.lib",
+        "GLFW",
+        "Glad",
 		"opengl32.lib",
-        "assimp.lib",
-		"BulletCollision.lib",
-		"BulletDynamics.lib",
-		"LinearMath.lib",
-		"stb_image.lib",
+        "stb_image",
+        "assimp",
+		"BulletCollision",
+		"BulletDynamics",
+		"LinearMath",
 		"fmod_vc.lib",
     }
 

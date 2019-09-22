@@ -1,7 +1,4 @@
 #pragma once
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
 
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btMatrix3x3.h"
@@ -56,14 +53,14 @@ namespace engine
 	public:
 		/// \brief Constructors
 		bullet_manager();
-		bullet_manager(std::vector<engine::ref<engine::game_object>> game_objects);
+		bullet_manager(const std::vector<engine::ref<engine::game_object>>& game_objects);
 
 		/// \brief Destructor
 		~bullet_manager();
 
 		/// \brief Methods
 		// initialises the physics simulation, creates the physical objects vector and sets up all the parameters
-		void	init_physics(std::vector<engine::ref<engine::game_object>> game_objects, btDynamicsWorld* dynamics_world);
+		void	init_physics(const std::vector<engine::ref<engine::game_object>>& game_objects, btDynamicsWorld* dynamics_world);
 
 		// Creates a new physical object from a game object and adds it to the vector
 		void add_physical_object(engine::ref<engine::game_object> game_object, btDynamicsWorld* dynamics_world);
@@ -71,9 +68,9 @@ namespace engine
 		btRigidBody*	local_create_rigid_body(float mass, const btTransform& start_transform, btCollisionShape* shape, btDynamicsWorld* dynamics_world);
 
 		// updates the variables of each physical object to synchronise with game objects, steps the simulation and then updates the game objects to synchronise with the physical objects
-		void dynamics_world_update(std::vector<engine::ref<engine::game_object>> game_objects, double dt);
+		void dynamics_world_update(const std::vector<engine::ref<engine::game_object>>& game_objects, double dt);
 
-		static ref<bullet_manager> create(std::vector<ref<game_object>> game_objects);
+		static ref<bullet_manager> create(const std::vector<ref<game_object>>& game_objects);
 
 		// getter methods
 		btDynamicsWorld* get_dynamics_world() const { return m_dynamics_world; }

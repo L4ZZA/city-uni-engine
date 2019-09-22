@@ -53,7 +53,7 @@ btVector3 engine::physical_object::get_right()
 }
 
 //Constructor passing the game object vector
-engine::bullet_manager::bullet_manager(std::vector<engine::ref<engine::game_object>> game_objects)
+engine::bullet_manager::bullet_manager(const std::vector<engine::ref<engine::game_object>>& game_objects)
 {
 	init_physics(game_objects, m_dynamics_world);
 }
@@ -83,7 +83,7 @@ engine::bullet_manager::~bullet_manager()
 }
 
 //Physics initialisation
-void	engine::bullet_manager::init_physics(std::vector<engine::ref<engine::game_object>> game_objects, btDynamicsWorld* dynamics_world)
+void	engine::bullet_manager::init_physics(const std::vector<engine::ref<engine::game_object>>& game_objects, btDynamicsWorld* dynamics_world)
 {
 
 	// init world
@@ -209,7 +209,7 @@ void engine::bullet_manager::add_physical_object(engine::ref<engine::game_object
 }
 
 //Step the sinulation (update method)
-void engine::bullet_manager::dynamics_world_update(std::vector<engine::ref<engine::game_object>> game_objects, double dt)
+void engine::bullet_manager::dynamics_world_update(const std::vector<engine::ref<engine::game_object>>& game_objects, double dt)
 {
 	if (physical_objects.size() == game_objects.size())
 	{
@@ -268,7 +268,7 @@ void engine::bullet_manager::dynamics_world_update(std::vector<engine::ref<engin
 	}
 }
 
-engine::ref<engine::bullet_manager> engine::bullet_manager::create(std::vector<engine::ref<engine::game_object>> game_objects)
+engine::ref<engine::bullet_manager> engine::bullet_manager::create(const std::vector<engine::ref<engine::game_object>>& game_objects)
 {
 	return std::make_shared<engine::bullet_manager>(game_objects);
 }
