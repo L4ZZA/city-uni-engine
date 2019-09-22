@@ -1,6 +1,7 @@
 #pragma once
 #include <engine.h>
 #include "engine/utils/timer.h"
+#include "engine/renderer/skinned_mesh.h"
 
 class example_layer : public engine::layer
 {
@@ -25,6 +26,7 @@ private:
 	engine::ref<engine::texture_2d>     m_terrain_texture{};
 	engine::ref<engine::texture_2d>     m_skybox_texture{};
 	engine::ref<engine::skybox>			m_skybox{};
+    engine::SkinnedMesh                 m_skinned_mesh;
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
 	engine::ref<engine::bullet_manager> m_manager;

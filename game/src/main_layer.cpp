@@ -204,7 +204,7 @@ example_layer::example_layer()
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
-
+    m_skinned_mesh.LoadMesh("assets/models/animated/boblampclean.md5mesh");
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
 		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),

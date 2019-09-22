@@ -20,6 +20,8 @@
 #include "pch.h"
 #include "skinned_mesh.h"
 #include "glad/glad.h"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/postprocess.h> // Post processing flags
 
 #define GLCheckError() (glGetError() == GL_NO_ERROR)
 
@@ -116,7 +118,8 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
 
     bool Ret = false;
 
-    m_pScene = m_Importer.ReadFile(Filename.c_str(), ASSIMP_LOAD_FLAGS);
+    auto importer = new Assimp::Importer();
+    m_pScene = importer->ReadFile(Filename.c_str(), ASSIMP_LOAD_FLAGS);
 
     if(m_pScene)
     {
@@ -126,12 +129,12 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
     }
     else
     {
-        LOG_CORE_ERROR("Error parsing '{}': '{}'\n", Filename.c_str(), m_Importer.GetErrorString());
+        LOG_CORE_ERROR("Error parsing '{}': '{}'\n", Filename.c_str(), importer->GetErrorString());
     }
 
     // Make sure the VAO is not changed from the outside
     glBindVertexArray(0);
-
+    delete importer;
     return Ret;
 }
 

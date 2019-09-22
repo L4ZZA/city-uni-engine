@@ -22,10 +22,7 @@
 
 #include <map>
 #include <vector>
-#include <glm/mat4x2.hpp>
-#include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>       // Output data structure
-#include <assimp/postprocess.h> // Post processing flags
 
 namespace engine{
     class SkinnedMesh
@@ -138,6 +135,5 @@ namespace engine{
         glm::mat4 m_GlobalInverseTransform;
         
         const aiScene* m_pScene;
-        Assimp::Importer m_Importer;
     };
 }
