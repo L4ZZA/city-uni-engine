@@ -206,7 +206,7 @@ example_layer::example_layer()
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
-	m_skybox = engine::skybox::create(50.f,
+	m_skybox = engine::skybox::create(10.f,
 		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
 														engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
 														engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
@@ -230,7 +230,7 @@ example_layer::example_layer()
 	m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
+	/*engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
 	engine::game_object_properties dragon_props;
@@ -239,7 +239,7 @@ example_layer::example_layer()
 	dragon_props.scale = 1.f / dragon_model->size();
 	//first dragon object
 	dragon_props.position = { 2.f, 1.f, -2.f };
-	m_game_objects.push_back(engine::game_object::create(dragon_props));
+	m_game_objects.push_back(engine::game_object::create(dragon_props));*/
 
 	//second dragon object
 	//dragon_props.position = { -2.f, 1.f, -2.f };
@@ -313,7 +313,7 @@ void example_layer::on_render()
 
     // TODO - delete method and use -> engine::renderer::submit() instead
 	glm::mat4 skybox_tranform(1.0f);
-	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	//skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
 	for (const auto& texture : m_skybox->textures())
 	{
 		texture->bind();
