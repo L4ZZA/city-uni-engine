@@ -194,6 +194,8 @@ project "game"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
 		"%{IncludeDir.bullet}",
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.assimpcfg}",
     }
 
     links
