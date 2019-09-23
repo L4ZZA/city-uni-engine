@@ -198,15 +198,21 @@ example_layer::example_layer()
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     auto mesh_shader = engine::renderer::shaders_library()->get("mesh_static");
+	auto mesh_lighting_shader = engine::renderer::shaders_library()->get("mesh_lighting");
 
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
+
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->bind();
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->set_uniform("u_sampler", 0);
+
+	m_light = engine::light::create(glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 0.1f, 1.f, 0.5f);
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
-	m_skybox = engine::skybox::create(10.f,
+	m_skybox = engine::skybox::create(50.f,
 		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
 														engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
 														engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
@@ -281,7 +287,14 @@ void example_layer::on_render()
     engine::render_command::clear();
 
     const auto textured_shader = engine::renderer::shaders_library()->get("mesh_static");
-    engine::renderer::begin_scene(m_3d_camera, textured_shader); 
+    //engine::renderer::begin_scene(m_3d_camera, textured_shader);
+
+	const auto textured_lighting_shader = engine::renderer::shaders_library()->get("mesh_lighting");
+	engine::renderer::begin_scene(m_3d_camera, textured_lighting_shader);
+
+	m_light->submit(textured_lighting_shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("view_pos", m_3d_camera.position());
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("shininess", 1.0f);
 
     /*std::vector<glm::vec3> cubePositions 
     { 
@@ -313,16 +326,16 @@ void example_layer::on_render()
 
     // TODO - delete method and use -> engine::renderer::submit() instead
 	glm::mat4 skybox_tranform(1.0f);
-	//skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
 	for (const auto& texture : m_skybox->textures())
 	{
 		texture->bind();
 	}
-	engine::renderer::submit(textured_shader, m_skybox, skybox_tranform);
+	engine::renderer::submit(textured_lighting_shader, m_skybox, skybox_tranform);
 
 	for (const auto& object : m_game_objects)
 	{
-		engine::renderer::submit(textured_shader, object);
+		engine::renderer::submit(textured_lighting_shader, object);
 	}
 
     engine::renderer::end_scene();

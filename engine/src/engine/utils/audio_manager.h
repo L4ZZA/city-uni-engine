@@ -4,11 +4,6 @@
 
 namespace engine
 {
-<<<<<<< Updated upstream
-	
-
-=======
->>>>>>> Stashed changes
 	class sound;
 
 	enum class sound_type

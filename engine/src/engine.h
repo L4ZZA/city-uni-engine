@@ -21,6 +21,7 @@
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/model.h"
 #include "engine/renderer/camera.h"
+#include "engine/renderer/light.h"
 
 // ---entities------------------------
 #include "engine/entities/game_object.h"

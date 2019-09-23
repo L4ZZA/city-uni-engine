@@ -25,6 +25,7 @@ private:
 	engine::ref<engine::texture_2d>     m_terrain_texture{};
 	engine::ref<engine::texture_2d>     m_skybox_texture{};
 	engine::ref<engine::skybox>			m_skybox{};
+	engine::ref<engine::light>			m_light{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
 	engine::ref<engine::bullet_manager> m_manager;
