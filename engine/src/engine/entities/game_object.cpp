@@ -13,6 +13,8 @@ engine::game_object::game_object(const game_object_properties& props)
 	m_textures(props.textures),
     m_scale(props.scale),
     m_mass(props.mass),
+	m_restitution(props.restitution),
+	m_friction(props.friction),
     s_static(props.is_static),
     m_type(props.type),
     m_bounding_shape(props.bounding_shape)

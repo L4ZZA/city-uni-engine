@@ -137,9 +137,8 @@ btRigidBody*	engine::bullet_manager::local_create_rigid_body(float mass, const b
 	btRigidBody* body = new btRigidBody(mass, 0, shape, local_inertia);
 	body->setWorldTransform(start_transform);
 #endif//
-
 	get_dynamics_world()->addRigidBody(body);
-
+	
 	return body;
 }
 
@@ -204,6 +203,10 @@ void engine::bullet_manager::add_physical_object(engine::ref<engine::game_object
 
 	btRigidBody * body = local_create_rigid_body(mass, trans, shape, dynamics_world);
 
+	body->setRestitution(game_object->restitution());
+	body->setFriction(game_object->friction());
+
+	//body->setRestitution(game_object->restitution());
 	physical_object * object = new physical_object(body);
 	physical_objects.push_back(object);
 }

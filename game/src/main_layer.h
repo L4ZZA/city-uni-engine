@@ -28,7 +28,8 @@ private:
 	engine::ref<engine::light>			m_light{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
-	engine::ref<engine::bullet_manager> m_manager;
+	engine::ref<engine::bullet_manager> m_physics_manager{};
+	engine::ref<engine::audio_manager> m_audio_manager{};
 
     engine::orthographic_camera       m_2d_camera; 
     engine::perspective_camera        m_3d_camera; 

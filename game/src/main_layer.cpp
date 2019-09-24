@@ -226,14 +226,35 @@ example_layer::example_layer()
 	engine::game_object_properties terrain_props;
 	terrain_props.meshes = { terrain_shape->mesh() };
 	terrain_props.textures = terrain_textures;
+	terrain_props.is_static = true;
+	terrain_props.type = 0;
+	terrain_props.bounding_shape = glm::vec3(100.f, 0.5f, 100.f);
+	terrain_props.restitution = 0.92f;
 	m_game_objects.push_back(engine::game_object::create(terrain_props));
 
 	engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
 	engine::game_object_properties cuboid_props;
-	cuboid_props.position = { 0.f, 5.f, -5.f };
+	cuboid_props.position = { 4.f, 10.f, -5.f };
 	cuboid_props.meshes = { cuboid_shape->mesh() };
 	cuboid_props.textures = { m_texture };
+	cuboid_props.type = 0;
+	cuboid_props.bounding_shape = glm::vec3(0.5f);
+	//cuboid_props.rotation_axis = glm::normalize(glm::vec3(0.5, 1.f, 0.f));
+	//cuboid_props.rotation_amount = 0.5f;
+	cuboid_props.restitution = 0.1f;
+	cuboid_props.mass = 0.000001f;
 	m_game_objects.push_back(engine::game_object::create(cuboid_props));
+
+	engine::ref<engine::sphere> sphere_shape = engine::sphere::create(10, 20, 0.5f);
+	engine::game_object_properties sphere_props;
+	sphere_props.position = { 0.f, 5.f, -5.f };
+	sphere_props.meshes = { sphere_shape->mesh() };
+	sphere_props.textures = { m_texture };
+	sphere_props.type = 1;
+	sphere_props.bounding_shape = glm::vec3(0.5f);
+	sphere_props.restitution = 0.92f;
+	sphere_props.mass = 0.000001f;
+	m_game_objects.push_back(engine::game_object::create(sphere_props));
 
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
 	/*engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
@@ -251,7 +272,7 @@ example_layer::example_layer()
 	//dragon_props.position = { -2.f, 1.f, -2.f };
 	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
-	m_manager = engine::bullet_manager::create(m_game_objects);
+	m_physics_manager = engine::bullet_manager::create(m_game_objects);
 }
 
 example_layer::~example_layer() {}
@@ -259,6 +280,8 @@ example_layer::~example_layer() {}
 void example_layer::on_update(const engine::timestep& time_step) 
 {
     m_3d_camera.on_update(time_step);
+
+	m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
 
 	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
