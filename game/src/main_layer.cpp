@@ -357,6 +357,8 @@ void example_layer::on_render()
 		engine::renderer::submit(textured_shader, object);
 	}
 
+    m_skinned_mesh.Render();
+
     engine::renderer::end_scene();
 
 	std::stack<glm::mat4> matrix_stack;

@@ -18,7 +18,7 @@
 
 
 #include "pch.h"
-#include "engine/core/logger.h"
+#include "engine/core.h"
 #include "skinned_mesh.h"
 #include "glad/glad.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
@@ -106,10 +106,12 @@ void engine::SkinnedMesh::Clear()
 }
 
 
-bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
+bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
 {
     // Release the previously loaded mesh (if it exists)
     Clear();
+
+    LOG_CORE_INFO("[SkinnedMesh] Loading mesh: {}", filename);
 
     // Create the VAO
     glGenVertexArrays(1, &m_VAO);
@@ -121,17 +123,17 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
     bool Ret = false;
 
     auto importer = new Assimp::Importer();
-    m_pScene = importer->ReadFile(Filename.c_str(), s_assimp_flags);
+    m_pScene = importer->ReadFile(filename.c_str(), s_assimp_flags);
 
     if(m_pScene)
     {
         m_GlobalInverseTransform = aiMatrixToGlm(m_pScene->mRootNode->mTransformation);
         m_GlobalInverseTransform = glm::inverse(m_GlobalInverseTransform);
-        Ret = InitFromScene(m_pScene, Filename);
+        Ret = InitFromScene(m_pScene, filename);
     }
     else
     {
-        LOG_CORE_ERROR("Error parsing '{}': '{}'\n", Filename.c_str(), importer->GetErrorString());
+        LOG_CORE_ERROR("Error parsing '{}': '{}'\n", filename.c_str(), importer->GetErrorString());
     }
 
     // Make sure the VAO is not changed from the outside
@@ -141,7 +143,7 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
 }
 
 
-bool engine::SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& Filename)
+bool engine::SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& filename)
 {
     m_Entries.resize(pScene->mNumMeshes);
     m_Textures.resize(pScene->mNumMaterials);
@@ -181,7 +183,7 @@ bool engine::SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string
         InitMesh(i, paiMesh, Positions, Normals, TexCoords, Bones, Indices);
     }
 
-    if(!InitMaterials(pScene, Filename))
+    if(!InitMaterials(pScene, filename))
     {
         return false;
     }
@@ -305,7 +307,7 @@ bool engine::SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string
         Dir = Filename.substr(0, SlashIndex);
     }
 
-    bool Ret = true;
+    bool ret = true;
 
     // Initialize the materials
     for(uint32_t i = 0; i < pScene->mNumMaterials; i++)
@@ -346,7 +348,7 @@ bool engine::SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string
         }
     }
 
-    return Ret;
+    return ret;
 }
 
 

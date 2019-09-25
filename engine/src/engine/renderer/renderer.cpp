@@ -15,6 +15,7 @@ void engine::renderer::init()
     renderer_api::init();
 
     renderer::shaders_library()->load("assets/shaders/static_mesh.glsl");
+    renderer::shaders_library()->load("assets/shaders/animated_mesh.glsl");
     //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
 }
 

@@ -6,9 +6,8 @@
 #include "engine/core/layer.h"
 #include "engine/core/logger.h"
 
-#include "engine/core/timestep.h"
-
 #include "engine/core/input.h"
+#include "engine/core/timestep.h"
 #include "engine/key_codes.h"
 
 // ---renderer------------------------
@@ -21,6 +20,8 @@
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/model.h"
 #include "engine/renderer/camera.h"
+#include "engine/renderer/mesh.h"
+#include "engine/renderer/skinned_mesh.h"
 
 // ---entities------------------------
 #include "engine/entities/shapes/cuboid.h"
@@ -30,3 +31,4 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
+#include "engine/utils/timer.h"

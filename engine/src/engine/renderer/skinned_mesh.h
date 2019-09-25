@@ -33,7 +33,7 @@ namespace engine{
 
         ~SkinnedMesh();
 
-        bool LoadMesh(const std::string& Filename);
+        bool LoadMesh(const std::string& filename);
 
         void Render();
 	    
@@ -86,7 +86,7 @@ namespace engine{
         uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
         const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string& NodeName);
         void ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
-        bool InitFromScene(const aiScene* pScene, const std::string& Filename);
+        bool InitFromScene(const aiScene* pScene, const std::string& filename);
         void InitMesh(uint32_t MeshIndex,
                       const aiMesh* paiMesh,
                       std::vector<glm::vec3>& Positions,
@@ -100,8 +100,9 @@ namespace engine{
 
     #define INVALID_MATERIAL 0xFFFFFFFF
       
-    enum VB_TYPES {
-        INDEX_BUFFER,
+    enum VB_TYPES 
+    {
+        INDEX_BUFFER = 0,
         POS_VB,
         NORMAL_VB,
         TEXCOORD_VB,
