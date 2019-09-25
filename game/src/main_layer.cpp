@@ -197,7 +197,10 @@ example_layer::example_layer()
     //TODO - move shaders to files and put them into shader library
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
-    auto mesh_shader = engine::renderer::shaders_library()->get("mesh_static");
+    auto static_mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
+
+    std::dynamic_pointer_cast<engine::gl_shader>(static_mesh_shader)->bind();
+    std::dynamic_pointer_cast<engine::gl_shader>(static_mesh_shader)->set_uniform("u_sampler", 0);
 
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
@@ -280,7 +283,7 @@ void example_layer::on_render()
     engine::render_command::clear_color({0.2f, 0.3f, 0.3f, 1.0f}); 
     engine::render_command::clear();
 
-    const auto textured_shader = engine::renderer::shaders_library()->get("mesh_static");
+    const auto textured_shader = engine::renderer::shaders_library()->get("static_mesh");
     engine::renderer::begin_scene(m_3d_camera, textured_shader); 
 
     /*std::vector<glm::vec3> cubePositions 

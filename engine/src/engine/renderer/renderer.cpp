@@ -14,7 +14,7 @@ void engine::renderer::init()
     s_instance->m_shader_library = std::make_unique<shader_library>();
     renderer_api::init();
 
-    renderer::shaders_library()->load("assets/shaders/mesh_static.glsl");
+    renderer::shaders_library()->load("assets/shaders/static_mesh.glsl");
     //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
 }
 
