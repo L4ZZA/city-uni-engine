@@ -1,7 +1,61 @@
 #pragma once
 #include <engine.h>
-#include "engine/utils/timer.h"
-#include "engine/renderer/skinned_mesh.h"
+
+struct BaseLight
+{
+    glm::vec3 Color;
+    float AmbientIntensity;
+    float DiffuseIntensity;
+
+    BaseLight()
+    {
+        Color = glm::vec3(0.0f, 0.0f, 0.0f);
+        AmbientIntensity = 0.0f;
+        DiffuseIntensity = 0.0f;
+    }
+};
+
+struct DirectionalLight : public BaseLight
+{        
+    glm::vec3 Direction;
+
+    DirectionalLight()
+    {
+        Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+    }
+};
+
+struct PointLight : public BaseLight
+{
+    glm::vec3 Position;
+
+    struct
+    {
+        float Constant;
+        float Linear;
+        float Exp;
+    } Attenuation;
+
+    PointLight()
+    {
+        Position = glm::vec3(0.0f, 0.0f, 0.0f);
+        Attenuation.Constant = 1.0f;
+        Attenuation.Linear = 0.0f;
+        Attenuation.Exp = 0.0f;
+    }
+};
+
+struct SpotLight : public PointLight
+{
+    glm::vec3 Direction;
+    float Cutoff;
+
+    SpotLight()
+    {
+        Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+        Cutoff = 0.0f;
+    }
+};
 
 class example_layer : public engine::layer
 {
@@ -27,6 +81,7 @@ private:
 	engine::ref<engine::texture_2d>     m_skybox_texture{};
 	engine::ref<engine::skybox>			m_skybox{};
     engine::SkinnedMesh                 m_skinned_mesh;
+    DirectionalLight m_directionalLight;
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
 	engine::ref<engine::bullet_manager> m_manager;

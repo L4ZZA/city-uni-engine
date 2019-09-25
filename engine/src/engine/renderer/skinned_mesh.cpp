@@ -67,11 +67,12 @@ void engine::SkinnedMesh::VertexBoneData::AddBoneData(uint32_t BoneID, float Wei
     }
 
     // should never get here - more bones than we have space for
-    CORE_ASSERT(false,"");
+    CORE_ASSERT(false, "[SkinnedMesh] Too many bones added.");
 }
 
 engine::SkinnedMesh::SkinnedMesh()
 {
+    LOG_CORE_INFO("[SkinnedMesh] Obect created.");
     m_VAO = 0;
     memset(m_Buffers.data(), 0, sizeof(uint32_t) * NUM_VBs);
     m_NumBones = 0;
@@ -285,6 +286,8 @@ void engine::SkinnedMesh::LoadBones(uint32_t MeshIndex, const aiMesh* pMesh, std
 
 bool engine::SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
 {
+    LOG_CORE_INFO("[SkinnedMesh] Loading materials.");
+    
     // Extract the directory part from the file name
     std::string::size_type SlashIndex = Filename.find_last_of("/");
     std::string Dir;

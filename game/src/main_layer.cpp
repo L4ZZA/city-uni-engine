@@ -198,12 +198,41 @@ example_layer::example_layer()
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     auto static_mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
+    auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
 
     std::dynamic_pointer_cast<engine::gl_shader>(static_mesh_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(static_mesh_shader)->set_uniform("u_sampler", 0);
 
-    std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
-    std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
+    // set color texture unit
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->bind();
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gColorMap", 0);
+
+    m_directionalLight.Color = glm::vec3(1.0f, 1.0f, 1.0f);
+    m_directionalLight.AmbientIntensity = 0.55f;
+    m_directionalLight.DiffuseIntensity = 0.9f;
+    m_directionalLight.Direction = glm::vec3(1.0f, 0.0, 0.0);
+
+    //m_WVPLocation                         = GetUniformLocation("gWVP");
+    //m_WorldMatrixLocation                 = GetUniformLocation("gWorld");
+    //m_colorTextureLocation                = GetUniformLocation("gColorMap");
+    //m_eyeWorldPosLocation                 = GetUniformLocation("gEyeWorldPos");
+    //m_dirLightLocation.Color              = GetUniformLocation("gDirectionalLight.Base.Color");
+    //m_dirLightLocation.AmbientIntensity   = GetUniformLocation("gDirectionalLight.Base.AmbientIntensity");
+    //m_dirLightLocation.Direction          = GetUniformLocation("gDirectionalLight.Direction");
+    //m_dirLightLocation.DiffuseIntensity   = GetUniformLocation("gDirectionalLight.Base.DiffuseIntensity");
+    //m_matSpecularIntensityLocation        = GetUniformLocation("gMatSpecularIntensity");
+    //m_matSpecularPowerLocation            = GetUniformLocation("gSpecularPower");
+    //m_numPointLightsLocation              = GetUniformLocation("gNumPointLights");
+    //m_numSpotLightsLocation               = GetUniformLocation("gNumSpotLights");
+
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gDirectionalLight.Base.Color", m_directionalLight.Color);
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gDirectionalLight.Base.AmbientIntensity", m_directionalLight.AmbientIntensity);
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gDirectionalLight.Direction", glm::normalize(m_directionalLight.Direction));
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gDirectionalLight.Base.DiffuseIntensity", m_directionalLight.DiffuseIntensity);
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gMatSpecularIntensity", 0.f);
+    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gSpecularPower", 0.f);
+
+
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
@@ -362,11 +391,6 @@ void example_layer::on_event(engine::event& event)
         if(e.key_code() == engine::key_codes::KEY_TAB) 
         { 
             engine::render_command::toggle_wireframe();
-
-			
-
-		
-
         } 
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     } 

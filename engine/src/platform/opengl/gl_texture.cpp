@@ -7,6 +7,8 @@
 engine::gl_texture_2d::gl_texture_2d(const std::string& path)
     : m_path(path)
 {
+    LOG_CORE_INFO("[gl_texture_2d] Creating texture: {}", m_path);
+    
     int width, height, channels;
     stbi_set_flip_vertically_on_load(true);
     stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
