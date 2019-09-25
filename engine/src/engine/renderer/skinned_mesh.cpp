@@ -18,6 +18,7 @@
 
 
 #include "pch.h"
+#include "engine/core/logger.h"
 #include "skinned_mesh.h"
 #include "glad/glad.h"
 #include <assimp/Importer.hpp>      // C++ importer interface

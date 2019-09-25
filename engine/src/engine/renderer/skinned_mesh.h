@@ -1,4 +1,3 @@
-#pragma once
 /*
 
 	Copyright 2011 Etay Meiri
@@ -16,6 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+#pragma once
 
 #include "engine/core.h"
 #include "engine/renderer/texture.h"

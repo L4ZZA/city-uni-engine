@@ -1,5 +1,9 @@
 #include "pch.h"
-#include "renderer.h"
+#include "engine/core.h"
+#include "engine/renderer/renderer.h"
+#include "engine/renderer/vertex_array.h"
+#include "engine/entities/game_object.h"
+#include "engine/entities/skybox.h"
 #include "platform/opengl/gl_shader.h"
 
 engine::renderer::scene_data* engine::renderer::s_scene_data = new scene_data;
