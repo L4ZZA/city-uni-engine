@@ -111,8 +111,8 @@ namespace engine{
         uint32_t m_VAO;
         std::array<uint32_t, NUM_VBs> m_Buffers;
 
-        struct MeshEntry {
-            MeshEntry()
+        struct submesh {
+            submesh()
             {
                 NumIndices    = 0;
                 BaseVertex    = 0;
@@ -126,7 +126,7 @@ namespace engine{
             unsigned int MaterialIndex;
         };
         
-        std::vector<MeshEntry> m_Entries;
+        std::vector<submesh> m_Entries;
         std::vector<ref<texture_2d>> m_Textures;
          
         std::map<std::string,uint32_t> m_BoneMapping; // maps a bone name to its index

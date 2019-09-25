@@ -31,9 +31,9 @@
 #define BONE_ID_LOCATION     3
 #define BONE_WEIGHT_LOCATION 4
 
-#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices)
+static auto s_assimp_flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
-static glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 & from)
+static glm::mat4 aiMatrixToGlm(const aiMatrix4x4 & from)
 {
     glm::mat4 to;
     //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
@@ -43,7 +43,7 @@ static glm::mat4 aiMatrix4x4ToGlm(const aiMatrix4x4 & from)
     to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
     return to;
 }
-static glm::mat3 aiMatrix4x4ToGlm(const aiMatrix3x3 & from)
+static glm::mat3 aiMatrixToGlm(const aiMatrix3x3 & from)
 {
     glm::mat3 to;
     //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
@@ -119,11 +119,11 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& Filename)
     bool Ret = false;
 
     auto importer = new Assimp::Importer();
-    m_pScene = importer->ReadFile(Filename.c_str(), ASSIMP_LOAD_FLAGS);
+    m_pScene = importer->ReadFile(Filename.c_str(), s_assimp_flags);
 
     if(m_pScene)
     {
-        m_GlobalInverseTransform = aiMatrix4x4ToGlm(m_pScene->mRootNode->mTransformation);
+        m_GlobalInverseTransform = aiMatrixToGlm(m_pScene->mRootNode->mTransformation);
         m_GlobalInverseTransform = glm::inverse(m_GlobalInverseTransform);
         Ret = InitFromScene(m_pScene, Filename);
     }
@@ -264,7 +264,7 @@ void engine::SkinnedMesh::LoadBones(uint32_t MeshIndex, const aiMesh* pMesh, std
             m_NumBones++;
             BoneInfo bi;
             m_BoneInfo.push_back(bi);
-            m_BoneInfo[BoneIndex].BoneOffset = aiMatrix4x4ToGlm(pMesh->mBones[i]->mOffsetMatrix);
+            m_BoneInfo[BoneIndex].BoneOffset = aiMatrixToGlm(pMesh->mBones[i]->mOffsetMatrix);
             m_BoneMapping[BoneName] = BoneIndex;
         }
         else
@@ -495,7 +495,7 @@ void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* p
 
     const aiAnimation* pAnimation = m_pScene->mAnimations[0];
 
-    glm::mat4 NodeTransformation = aiMatrix4x4ToGlm(pNode->mTransformation);
+    glm::mat4 NodeTransformation = aiMatrixToGlm(pNode->mTransformation);
 
     const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
 
@@ -510,7 +510,7 @@ void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* p
         // Interpolate rotation and generate rotation transformation matrix
         aiQuaternion RotationQ;
         CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
-        glm::mat4 RotationM = aiMatrix4x4ToGlm(RotationQ.GetMatrix());
+        glm::mat4 RotationM = aiMatrixToGlm(RotationQ.GetMatrix());
 
         // Interpolate translation and generate translation transformation matrix
         aiVector3D Translation;
