@@ -213,12 +213,13 @@ example_layer::example_layer()
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
-		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxLeft.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")});
+		{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxLeft.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")
+		});
 
 	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
 	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
