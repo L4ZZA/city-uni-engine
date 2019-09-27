@@ -15,10 +15,11 @@ namespace engine
     class renderer_api  
     {  
     public: 
-        ~renderer_api() = default; 
+        ~renderer_api() = default;
         static void init();  
         static void clear();  
         static void clear_color(const glm::vec4& color);  
+        static void resize_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
         
         static void enable_wireframe();  
         static void disable_wireframe();  
