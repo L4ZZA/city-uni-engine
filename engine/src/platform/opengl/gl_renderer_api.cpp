@@ -45,6 +45,11 @@ void engine::renderer_api::clear_color(const glm::vec4& color)
     glClearColor(color.r, color.g, color.b, color.a);
 }
 
+void engine::renderer_api::resize_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    glViewport(x, y, width, height);
+}
+
 void engine::renderer_api::draw_indexed(const ref<vertex_array>& vertex_array)
 {
     glDrawElements(GL_TRIANGLES, vertex_array->index_buffer()->count(), GL_UNSIGNED_INT, nullptr);

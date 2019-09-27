@@ -12,6 +12,7 @@ namespace engine
     {
     public:
         static void init();
+        static void resize(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
         static void begin_scene(camera& camera, const ref<shader>& shader);
         static void end_scene();

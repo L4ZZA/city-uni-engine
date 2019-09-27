@@ -12,6 +12,11 @@ namespace engine
             renderer_api::init();
         }
 
+        static void resize_viewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+        {
+            renderer_api::resize_viewport(x,y,width, height);
+        }
+
         static void clear_color(const glm::vec4 &color)
         {
             renderer_api::clear_color(color);
