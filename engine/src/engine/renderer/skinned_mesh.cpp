@@ -364,7 +364,7 @@ void engine::SkinnedMesh::Render()
 
         if(m_Textures[MaterialIndex])
         {
-            m_Textures[MaterialIndex]->bind(GL_TEXTURE0);
+            m_Textures[MaterialIndex]->bind(0);
         }
 
         glDrawElementsBaseVertex(GL_TRIANGLES,
