@@ -17,6 +17,11 @@ void engine::renderer::init()
 	renderer::shaders_library()->load("assets/shaders/text_2D.glsl");
 }
 
+void engine::renderer::resize(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+    render_command::resize_viewport(x,y,width, height);
+}
+
 void engine::renderer::begin_scene(camera& camera, const ref<shader>& shader)
 {
     s_scene_data->view_projection_matrix = camera.view_projection_matrix();

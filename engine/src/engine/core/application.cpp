@@ -7,6 +7,7 @@
 
 engine::application* engine::application::s_instance{ nullptr }; 
 bool engine::application::s_running{ true }; 
+bool engine::application::s_minimized{ false }; 
 
 //----------------------------------------------------------------------------- 
 
@@ -37,7 +38,8 @@ void engine::application::run()
         for (auto* layer : m_layers_stack)
         {
             layer->on_update(time_step);
-            layer->on_render();
+            if(!application::s_minimized)
+                layer->on_render();
         }
 
         m_window->on_update();
@@ -50,6 +52,7 @@ void engine::application::on_event(event& event)
     event_dispatcher dispatcher(event); 
     // dispatch event on window X pressed 
     dispatcher.dispatch<window_closed_event>(BIND_EVENT_FN(application::on_window_close)); 
+    dispatcher.dispatch<window_resize_event>(BIND_EVENT_FN(application::on_window_resized)); 
 
     //LOG_CORE_TRACE("{0}", event); 
 
@@ -76,7 +79,23 @@ void engine::application::push_overlay(layer* overlay)
 bool engine::application::on_window_close(window_closed_event&) 
 { 
     exit(); 
-    return true; 
+    const bool event_handled = false;
+    return event_handled; 
+} 
+
+bool engine::application::on_window_resized(window_resize_event &e) 
+{ 
+    if(e.height() == 0 || e.width() == 0)
+    {
+        application::s_minimized = true;
+        return false;
+    }
+    application::s_minimized = false;
+
+    render_command::resize_viewport(0, 0, e.width(), e.height());
+
+    const bool event_handled = false;
+    return event_handled; 
 } 
 
 void engine::application::exit() 
