@@ -6,7 +6,11 @@ project "freetype"
   objdir ("inter/" .. outputdir .. "/%{prj.name}")
 
   files {
-    "%{prj.name}/**.h"
+    "src/**.h"
+  }
+  
+  includedirs{
+      "src/",
   }
 
   filter "system:windows"
