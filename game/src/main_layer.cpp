@@ -198,7 +198,9 @@ example_layer::example_layer()
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     auto mesh_shader = engine::renderer::shaders_library()->get("mesh_static");
+	auto mesh__material_shader = engine::renderer::shaders_library()->get("mesh_material");
 	auto mesh_lighting_shader = engine::renderer::shaders_library()->get("mesh_lighting");
+	auto text_shader = engine::renderer::shaders_library()->get("text_2D");
 
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
@@ -206,7 +208,12 @@ example_layer::example_layer()
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->bind();
 	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->set_uniform("u_sampler", 0);
 
+	std::dynamic_pointer_cast<engine::gl_shader>(text_shader)->bind();
+	std::dynamic_pointer_cast<engine::gl_shader>(text_shader)->set_uniform("projection",
+		glm::ortho(0.f, (float)engine::application::window().width(), 0.f, (float)engine::application::window().height()));
+
 	m_light = engine::light::create(glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 0.1f, 1.f, 0.5f);
+	m_material = engine::material::create(32.0f, glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.5f, 0.5f, 0.5f));
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
@@ -274,6 +281,8 @@ example_layer::example_layer()
 	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
 	m_physics_manager = engine::bullet_manager::create(m_game_objects);
+
+	m_text_manager = engine::text_manager::create();
 }
 
 example_layer::~example_layer() {}
@@ -357,16 +366,28 @@ void example_layer::on_render()
 	}
 	engine::renderer::submit(textured_lighting_shader, m_skybox, skybox_tranform);
 
-	for (const auto& object : m_game_objects)
-	{
-		engine::renderer::submit(textured_lighting_shader, object);
-	}
+	
 
     engine::renderer::end_scene();
 
-	std::stack<glm::mat4> matrix_stack;
-	matrix_stack.push(glm::mat4(1.0f));
-	
+
+	const auto textured_material_shader = engine::renderer::shaders_library()->get("mesh_material");
+	engine::renderer::begin_scene(m_3d_camera, textured_material_shader);
+
+	m_light->submit(textured_material_shader);
+	m_material->submit(textured_material_shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("view_pos", m_3d_camera.position());
+
+	for (const auto& object : m_game_objects)
+	{
+		engine::renderer::submit(textured_material_shader, object);
+	}
+
+	engine::renderer::end_scene();
+
+
+	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
+	m_text_manager->render_text(text_shader, "Hello engine", 400.f, 400.f, 1.f, glm::vec3(0.f,255.f,0.f));
 
 	//engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
 

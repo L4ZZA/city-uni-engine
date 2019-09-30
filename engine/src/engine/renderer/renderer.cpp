@@ -13,6 +13,8 @@ void engine::renderer::init()
     renderer::shaders_library()->load("assets/shaders/mesh_static.glsl");
     //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
 	renderer::shaders_library()->load("assets/shaders/mesh_lighting.glsl");
+	renderer::shaders_library()->load("assets/shaders/mesh_material.glsl");
+	renderer::shaders_library()->load("assets/shaders/text_2D.glsl");
 }
 
 void engine::renderer::begin_scene(camera& camera, const ref<shader>& shader)

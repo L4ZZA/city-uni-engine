@@ -22,6 +22,8 @@
 #include "engine/renderer/model.h"
 #include "engine/renderer/camera.h"
 #include "engine/renderer/light.h"
+#include "engine/renderer/material.h"
+#include "engine/renderer/text_manager.h"
 
 // ---entities------------------------
 #include "engine/entities/game_object.h"

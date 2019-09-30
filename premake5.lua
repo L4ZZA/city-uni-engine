@@ -51,6 +51,7 @@ IncludeDir["assimp"]		= "engine/external/assimp/include/"
 IncludeDir["assimpcfg"]		= "engine/external/assimp/config/"
 IncludeDir["bullet"]		= "engine/external/bullet/"
 IncludeDir["fmod"]			= "engine/external/FMOD/include/"
+IncludeDir["freetype"]		= "engine/external/freetype/include/"
 
 -- library directories relative to root folder (sln dir)
 LibDir = {}
@@ -62,6 +63,7 @@ LibDir["bullet_cls"]		= "engine/external/bullet/BulletCollision/lib/"
 LibDir["bullet_dnc"]		= "engine/external/bullet/BulletDynamics/lib/"
 LibDir["bullet_lm"]			= "engine/external/bullet/LinearMath/lib/"
 LibDir["fmod"]				= "engine/external/FMOD/lib/x64/"
+LibDir["freetype"]			= "engine/external/freetype/lib/"
 
 
 group "dependencies"
@@ -120,6 +122,7 @@ project "engine"
 		"%{IncludeDir.bullet}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.fmod}",
+		"%{IncludeDir.freetype}",
     }
 
 	libdirs
@@ -132,6 +135,7 @@ project "engine"
         -- "%{LibDir.bullet_dnc}",
         -- "%{LibDir.bullet_lm}",
 		"%{LibDir.fmod}",
+		"%{LibDir.freetype}",
     }
 
     links
@@ -145,6 +149,7 @@ project "engine"
 		"BulletDynamics",
 		"LinearMath",
 		"fmod_vc.lib",
+		"freetype.lib",
     }
 
     -- filters are used to apply property to some specific configurations only
