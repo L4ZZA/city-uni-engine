@@ -14,9 +14,9 @@ void engine::renderer::init()
     s_instance->m_shader_library = std::make_unique<shader_library>();
     renderer_api::init();
 
+    renderer::shaders_library()->load("assets/shaders/texture.glsl");
     renderer::shaders_library()->load("assets/shaders/static_mesh.glsl");
     renderer::shaders_library()->load("assets/shaders/animated_mesh.glsl");
-    //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
 }
 
 void engine::renderer::resize(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
