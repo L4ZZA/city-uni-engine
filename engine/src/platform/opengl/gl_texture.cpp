@@ -26,20 +26,22 @@ engine::gl_texture_2d::gl_texture_2d(const std::string& path)
         data_format = GL_RGBA;
     }
 
-    glCreateTextures(GL_TEXTURE_2D, 1, &m_id);
-    // allocating memory to gpu to store the texture data
-    const int mipmap_levels = 4;
-    glTextureStorage2D(m_id, mipmap_levels, internal_format, m_width, m_height);
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &m_id);
+	glBindTexture(GL_TEXTURE_2D, m_id);
+	// allocating memory to gpu to store the texture data
+	const int mipmap_levels = 4;
+	glTexStorage2D(GL_TEXTURE_2D, mipmap_levels, internal_format, m_width, m_height);
 
-    // set texture params 
-    glTextureParameteri(m_id, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-    glTextureParameteri(m_id, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(m_id, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTextureParameteri(m_id, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// set texture params 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    // upload texture to gpu 
-    glTextureSubImage2D(m_id, 0, 0, 0, m_width, m_height, data_format, GL_UNSIGNED_BYTE, data);
-	glGenerateTextureMipmap(m_id);
+	// upload texture to gpu 
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, data_format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
     // freeing allocated image buffer
     stbi_image_free(data);
@@ -52,6 +54,6 @@ engine::gl_texture_2d::~gl_texture_2d()
 
 void engine::gl_texture_2d::bind(uint32_t slot /*= 0*/) const
 {
-    glBindTextureUnit(slot, m_id);
+	glBindTexture(GL_TEXTURE_2D, m_id);
 }
 
