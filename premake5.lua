@@ -51,7 +51,7 @@ IncludeDir["assimp"]        = "engine/external/assimp/include/"
 IncludeDir["assimpcfg"]     = "engine/external/assimp/config/"
 IncludeDir["bullet"]        = "engine/external/bullet/"
 IncludeDir["fmod"]          = "engine/external/FMOD/include/"
-IncludeDir["freetype"]      = "engine/external/freetype/src/"
+IncludeDir["freetype"]      = "engine/external/freetype/include/"
 
 -- library directories relative to root folder (sln dir)
 LibDir = {}
@@ -160,6 +160,8 @@ project "engine"
             "ENGINE_PLATFORM_WIN",
             "ENGINE_BUILD_DLL",
             "GLFW_INCLUDE_NONE",
+            "_WIN32",       -- for freetype
+            "DLL_IMPORT",   -- for freetype
         }
 
     filter "configurations:Debug"
@@ -201,6 +203,7 @@ project "game"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.bullet}",
+        "%{IncludeDir.freetype}",
     }
 
     links
