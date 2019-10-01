@@ -32,25 +32,26 @@ std::pair<float, float> engine::win_input::mouse_position_impl() const
     double x_pos, y_pos;
     glfwGetCursorPos(static_cast<GLFWwindow*>(window), &x_pos, &y_pos);
 
+	float x = static_cast<float>(x_pos);
+	float y = static_cast<float>(y_pos);
+
     if(s_first_mouse)
     {
-        s_last_position.first  = x_pos;
-        s_last_position.second = y_pos;
+        s_last_position.first  = x;
+        s_last_position.second = y;
         s_first_mouse = false;
     }
-
-    float x = static_cast<float>(x_pos);
-    float y = static_cast<float>(y_pos);
+   
     if(!our_window.is_cursor_visible())
     {
         float delta_x = x - s_last_position.first;
         float delta_y = s_last_position.second - y; // reversed since y-coordinates range from bottom to top
-        s_last_position.first  = x_pos;
-        s_last_position.second = y_pos;
+        s_last_position.first  = x;
+        s_last_position.second = y;
         return { delta_x, delta_y };
     }
 
-    return { static_cast<float>(x_pos), static_cast<float>(y_pos) };
+    return { x, y };
 }
 
 float engine::win_input::mouse_x_impl() const

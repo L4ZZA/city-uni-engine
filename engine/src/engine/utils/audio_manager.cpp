@@ -62,7 +62,7 @@ bool engine::audio_manager::clean_all()
 
 void engine::audio_manager::stop_all()
 {
-	for (int i = 0; i < max_channels; i++)
+	for (uint32_t i = 0; i < max_channels; i++)
 	{
 		FMOD::Channel* pChannel = nullptr;
 		result = m_fmod_system->getChannel(i, &pChannel);

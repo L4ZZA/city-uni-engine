@@ -58,7 +58,8 @@ void engine::renderer::submit(
     const ref<shader>& shader, 
 	const ref<game_object>& object)
 {
-	glm::mat4 transform = object->transform();
+	glm::mat4 transform = glm::mat4(1.0f);
+	object->transform(transform);
 	object->bind_textures();
     const bool has_meshes = !object->meshes().empty();
 	if (has_meshes)

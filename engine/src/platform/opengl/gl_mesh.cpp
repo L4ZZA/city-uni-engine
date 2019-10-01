@@ -9,10 +9,10 @@ engine::gl_mesh::gl_mesh(
     m_indices = indices;
 
     // sending vertex data to gpu
-    ref<vertex_buffer> vb(vertex_buffer::create((float*) vertices.data(), vertices.size() * sizeof(vertex)));
+    ref<vertex_buffer> vb(vertex_buffer::create((float*) vertices.data(), (uint32_t)vertices.size() * sizeof(vertex)));
 
     // sending index data to gpu
-    ref<index_buffer> ib(index_buffer::create((uint32_t*)indices.data(), indices.size()));
+    ref<index_buffer> ib(index_buffer::create((uint32_t*)indices.data(), (uint32_t)indices.size()));
 
     const buffer_layout layout
     {

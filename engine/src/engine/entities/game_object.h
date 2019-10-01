@@ -93,7 +93,7 @@ namespace engine
 		void turn_towards(glm::vec3 direction);
 
 		// create a transform matrix using the object's position, rotation and scale member variables
-		const glm::mat4& transform();
+		const void transform(glm::mat4 &object_transform);
 
 		// bind the object's textures if there are any
 		void bind_textures();

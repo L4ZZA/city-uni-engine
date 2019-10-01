@@ -4,7 +4,7 @@
 
 namespace engine
 {
-	struct sound
+	class sound
 	{
 	protected:
 		std::string         m_name{};

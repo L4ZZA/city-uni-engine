@@ -72,7 +72,7 @@ engine::bullet_manager::~bullet_manager()
 	delete m_dispatcher;
 	delete m_constraint_solver;
 	delete m_collision_configuration;
-	for (uint32_t i = 0; i < m_collision_shapes.size(); i++)
+	for (uint32_t i = 0; i < (uint32_t)m_collision_shapes.size(); i++)
 	{
 		delete (m_collision_shapes)[i];
 	}
@@ -105,7 +105,7 @@ void	engine::bullet_manager::init_physics(const std::vector<engine::ref<engine::
 		add_physical_object(game_objects.at(i), dynamics_world);
 	}
 
-	wp->setGravity(btVector3(0, -9.8, 0));
+	wp->setGravity(btVector3(0, -9.8f, 0));
 }
 
 //Creating a rigidBody from a collision shape
@@ -250,7 +250,7 @@ void engine::bullet_manager::dynamics_world_update(const std::vector<engine::ref
 	///step the simulation
 	if (m_dynamics_world)
 	{
-		m_dynamics_world->stepSimulation(dt, 0);//ms / 1000000.f);
+		m_dynamics_world->stepSimulation((float)dt, 0);//ms / 1000000.f);
 	}
 	for (int32_t i = 0; i < game_objects.size(); i++)
 	{

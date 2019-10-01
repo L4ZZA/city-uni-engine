@@ -41,16 +41,13 @@ engine::game_object::game_object(const bool is_static, int32_t type, glm::vec3 b
 
 engine::game_object::~game_object() {}
 
-const glm::mat4& engine::game_object::transform()
+const void engine::game_object::transform(glm::mat4 &object_transform)
 {
-    // apply object's transformations including an offset to synchronise it with the bullet_physics simulation
-    // by centering the object's centre of mass on its position
-    glm::mat4 object_transform = glm::mat4(1.0f);
-    object_transform = glm::translate(object_transform, position() - offset() * scale());
-    object_transform = glm::rotate(object_transform, rotation_amount(), rotation_axis());
-    object_transform = glm::scale(object_transform, scale());
-
-    return object_transform;
+	// apply object's transformations including an offset to synchronise it with the bullet_physics simulation
+	// by centering the object's centre of mass on its position
+	object_transform = glm::translate(object_transform, position() - offset() * scale());
+	object_transform = glm::rotate(object_transform, rotation_amount(), rotation_axis());
+	object_transform = glm::scale(object_transform, scale());
 }
 
 void engine::game_object::bind_textures()

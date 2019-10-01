@@ -75,7 +75,7 @@ static const std::string flat_color_fragment_shader = R"(
 
 example_layer::example_layer() 
     :m_2d_camera(-1.6f, 1.6f, -0.9f, 0.9f), 
-    m_3d_camera(engine::application::window().width(), engine::application::window().height()) 
+    m_3d_camera((float)engine::application::window().width(), (float)engine::application::window().height())
 {
     // hide the mouse and lock it inside the window
     //engine::input::anchor_mouse(true);
