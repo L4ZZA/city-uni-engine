@@ -351,12 +351,13 @@ void example_layer::on_render()
 		texture->bind();
 	}
 	engine::renderer::submit(textured_shader, m_skybox, skybox_tranform);
-
 	for (const auto& object : m_game_objects)
 	{
 		engine::renderer::submit(textured_shader, object);
 	}
 
+    const auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
+    animated_mesh_shader->bind();
     m_skinned_mesh.Render();
 
     engine::renderer::end_scene();
