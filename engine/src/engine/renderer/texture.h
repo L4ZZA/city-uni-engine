@@ -1,4 +1,4 @@
-﻿    #pragma once
+    #pragma once
 
 namespace engine
 {
@@ -22,5 +22,6 @@ namespace engine
     {
     public:
         static ref<texture_2d> create(const std::string& path);
+		static ref<texture_2d> create(unsigned char r, unsigned char g, unsigned char b);
     };
 }

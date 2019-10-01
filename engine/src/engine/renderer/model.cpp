@@ -108,6 +108,18 @@ engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScen
 
         std::vector<ref<texture_2d>> specularMaps = load_textures(material, aiTextureType_SPECULAR, "specular");
 		m_textures.insert(m_textures.end(), specularMaps.begin(), specularMaps.end());
+
+		if (diffuseMaps.empty() && specularMaps.empty())
+		{
+			aiColor3D color(0.0f, 0.0f, 0.0f);
+			material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+
+			BYTE data[3];
+			data[0] = (BYTE)(color[0] * 255);
+			data[1] = (BYTE)(color[1] * 255);
+			data[2] = (BYTE)(color[2] * 255);
+			m_textures.push_back(engine::texture_2d::create(data[2], data[1], data[0]));
+		}
     }
     return mesh::create(vertices, indices);
 }

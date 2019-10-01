@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "engine/renderer/texture.h"
 
 namespace engine
@@ -7,6 +7,7 @@ namespace engine
     {
     public:
         gl_texture_2d(const std::string& path);
+		gl_texture_2d(unsigned char r, unsigned char g, unsigned char b);
         ~gl_texture_2d();
         void bind(uint32_t slot = 0) const override;
 
