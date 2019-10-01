@@ -34,6 +34,8 @@ void engine::text_manager::init()
 				LOG_CORE_ERROR("[text] Failed to load Glyph");
 				continue;
 			}
+            
+		    // TODO: use texture_2d class instead 
 			// Generate texture
 			GLuint texture;
 			glGenTextures(1, &texture);
@@ -59,14 +61,18 @@ void engine::text_manager::init()
 				texture,
 				glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 				glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                // TODO: Use static cast
 				(uint32_t)face->glyph->advance.x
 			};
 			characters.insert(std::pair<GLchar, engine::character>(c, character));
 		}
 
+        // use renderer command pipeline for blending
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+
+        // use vertex array class, buffer_layout class, etc. like in mesh
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
 		glBindVertexArray(VAO);
@@ -85,7 +91,10 @@ void engine::text_manager::render_text(const engine::ref<engine::shader> s, std:
 	// Activate corresponding render state
 	std::dynamic_pointer_cast<engine::gl_shader>(s)->bind();
 	std::dynamic_pointer_cast<engine::gl_shader>(s)->set_uniform("textColor", colour);
+
+    // Should just bing the texture object m_texture->bind()
 	glActiveTexture(GL_TEXTURE0);
+    // Should just bing the vertex_array object m_va->bind()
 	glBindVertexArray(VAO);
 
 	// Iterate through all characters

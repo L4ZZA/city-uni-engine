@@ -2,6 +2,8 @@
 #include "engine.h"
 #include <fmod.hpp>
 
+// TODO: move all audio relate stuff in engine/audio/ folder
+
 namespace engine
 {
 	class sound

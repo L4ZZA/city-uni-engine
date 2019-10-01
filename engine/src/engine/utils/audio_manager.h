@@ -1,6 +1,9 @@
 #pragma once
+// TODO: BAAAAAAAD!!!!!!! should never include like this. should halways start from engine (which is a additional include directory) or add the correct path to the library for FMOD
 #include "../FMOD/include/fmod.hpp"
 #include "engine/core.h"
+
+// TODO: move all audio relate stuff in engine/audio/ folder
 
 namespace engine
 {
@@ -20,13 +23,13 @@ namespace engine
 		/// \brief the global variable for talking to FMOD
 		static FMOD::System *                       m_fmod_system;
 		/// \brief A map of all the events
-		hash_map<std::string, sound *>               m_sounds{};
+		hash_map<std::string, sound *>              m_sounds{};
 
 		/// \brief Number of total channels available
 		static uint32_t                             max_channels;
 
 		/// \brief Number of total channels already in use;
-		static uint32_t                                  used_channels;
+		static uint32_t                             used_channels;
 
 		//-------------------------------------------------------------------------
 
@@ -47,11 +50,11 @@ namespace engine
 		//-------------------------------------------------------------------------
 
 		/// \brief 
-		/// \param filePath Path to the sound file.
+		/// \param file_path Path to the sound file.
 		/// \param type Specifies the properties of the file.
 		/// \param name Unique identifier of the sound.
 		/// \return True if the sound has been loaded correctly.
-		bool load_sound(const std::string &filePath, const sound_type &type, const std::string &name);
+		bool load_sound(const std::string &file_path, const sound_type &type, const std::string &name);
 
 		/// \brief plays the specified sound
 		void play(const std::string &sound);
@@ -61,8 +64,8 @@ namespace engine
 
 		//-------------------------------------------------------------------------
 	private:
-		bool load_event(const std::string &filePath, const std::string &name);
-		bool load_track(const std::string &filePath, const std::string &name);
+		bool load_event(const std::string &file_path, const std::string &name);
+		bool load_track(const std::string &file_path, const std::string &name);
 
 		//-------------------------------------------------------------------------
 	public:

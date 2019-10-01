@@ -6,8 +6,6 @@
 
 #include <fmod_errors.h>
 
-//#pragma comment(lib, "lib/fmodex_vc.lib")
-
 //=============================================================================
 
 FMOD::System * engine::audio_manager::m_fmod_system{ nullptr };

@@ -1,6 +1,8 @@
 #pragma once
 #include "sound.h"
 
+// TODO: move all audio relate stuff in engine/audio/ folder
+
 namespace engine
 {
 	/// \brief Short lasting sound, generally paired up with events
