@@ -52,4 +52,6 @@ namespace engine
     /// \brief ref counted pointer to an object. [Usually used for resources]
     template<typename T>
     using ref = std::shared_ptr<T>;
+    
+	using byte = unsigned char;
 }
