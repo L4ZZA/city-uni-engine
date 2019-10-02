@@ -20,124 +20,172 @@
 
 #include "engine/core.h"
 #include "engine/renderer/texture.h"
+#include "engine/renderer/shader.h"
 
 #include <map>
 #include <vector>
 #include <assimp/scene.h>       // Output data structure
+#include "vertex_array.h"
+
+struct aiNode;
+struct aiAnimation;
+struct aiNodeAnim;
+struct aiScene;
+namespace Assimp{ class Importer; }
 
 namespace engine
 {
-    class SkinnedMesh
+	struct Vertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec3 Tangent;
+		glm::vec3 Binormal;
+		glm::vec2 Texcoord;
+	};
+
+	struct AnimatedVertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec3 Tangent;
+		glm::vec3 Binormal;
+		glm::vec2 Texcoord;
+
+		uint32_t IDs[4] = { 0, 0,0, 0 };
+		float Weights[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+		void AddBoneData(uint32_t BoneID, float Weight)
+		{
+			for (size_t i = 0; i < 4; i++)
+			{
+				if (Weights[i] == 0.0)
+				{
+					IDs[i] = BoneID;
+					Weights[i] = Weight;
+					return;
+				}
+			}
+
+			// TODO: Keep top weights
+			LOG_CORE_WARN("Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
+		}
+	};
+    
+	static const int NumAttributes = 5;
+    
+	struct Index
+	{
+        union
+        {
+            uint32_t vec[3];
+            struct{ uint32_t V1, V2, V3; };
+        };
+	};
+	static_assert(sizeof(Index) == 3 * sizeof(uint32_t));
+    
+	struct BoneInfo
+	{
+		glm::mat4 BoneOffset;
+		glm::mat4 FinalTransformation;
+	};
+    
+	struct VertexBoneData
+	{
+		uint32_t IDs[4];
+		float Weights[4];
+
+		VertexBoneData()
+		{
+			memset(IDs, 0, sizeof(IDs));
+			memset(Weights, 0, sizeof(Weights));
+		};
+
+		void AddBoneData(uint32_t BoneID, float Weight)
+		{
+			for (size_t i = 0; i < 4; i++)
+			{
+				if (Weights[i] == 0.0)
+				{
+					IDs[i] = BoneID;
+					Weights[i] = Weight;
+					return;
+				}
+			}
+			
+			// should never get here - more bones than we have space for
+			CORE_ASSERT(false, "[VertexBoneData] Too many bones!");
+		}
+	};
+    
+	class Submesh
+	{
+	public:
+		uint32_t BaseVertex;
+		uint32_t BaseIndex;
+		uint32_t MaterialIndex;
+		uint32_t IndexCount;
+
+		glm::mat4 Transform;
+	};
+
+    class skinned_mesh
     {
     public:
-        SkinnedMesh();
+        skinned_mesh(const std::string& filename);
 
-        ~SkinnedMesh();
-
-        bool LoadMesh(const std::string& filename);
-
-        void Render();
-
-        uint32_t NumBones() const
-        {
-            return m_NumBones;
-        }
-
-        void BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& transforms);
+        void DumpVertexBuffer();
+        ref<shader> GetMeshShader() { return m_MeshShader; }
+        std::vector<ref<texture>> GetMaterials() { return m_textures; }
+        const std::string& GetFilePath() const { return m_FilePath; }
 
     private:
-    #define NUM_BONES_PER_VEREX 4
+        void BoneTransform(float time);
+        void ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
+        void TraverseNodes(aiNode* node, int level = 0);
 
-        struct BoneInfo
-        {
-            glm::mat4 BoneOffset;
-            glm::mat4 FinalTransformation;
+		const aiNodeAnim* FindNodeAnim(const aiAnimation* animation, const std::string& nodeName);
+		uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		uint32_t FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		uint32_t FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		glm::vec3 InterpolateTranslation(float animationTime, const aiNodeAnim* nodeAnim);
+		glm::quat InterpolateRotation(float animationTime, const aiNodeAnim* nodeAnim);
+		glm::vec3 InterpolateScale(float animationTime, const aiNodeAnim* nodeAnim);
+        std::vector<ref<texture_2d>> load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const;
+		
+        
+	private:
+		std::vector<Submesh> m_Submeshes;
+		
+		std::unique_ptr<Assimp::Importer> m_Importer;
 
-            BoneInfo()
-            {
-                BoneOffset = glm::mat4(0);
-                FinalTransformation = glm::mat4(0);
-            }
-        };
+		glm::mat4 m_InverseTransform;
 
-        struct VertexBoneData
-        {
-            uint32_t IDs[NUM_BONES_PER_VEREX];
-            float Weights[NUM_BONES_PER_VEREX];
+		uint32_t m_BoneCount = 0;
+		std::vector<BoneInfo> m_BoneInfo;
 
-            VertexBoneData()
-            {
-                Reset();
-            };
+		ref<vertex_array> m_VertexArray;
 
-            void Reset()
-            {
-                memset(IDs, 0, sizeof(uint32_t) * NUM_BONES_PER_VEREX);
-                memset(Weights, 0, sizeof(float) * NUM_BONES_PER_VEREX);
-            }
+		std::vector<Vertex> m_StaticVertices;
+		std::vector<AnimatedVertex> m_AnimatedVertices;
+		std::vector<Index> m_Indices;
+		std::unordered_map<std::string, uint32_t> m_BoneMapping;
+		std::vector<glm::mat4> m_BoneTransforms;
+		const aiScene* m_Scene;
 
-            void AddBoneData(uint32_t BoneID, float Weight);
-        };
+		// Materials
+		ref<shader>  m_MeshShader;
+		//ref<texture> m_Material;
+		std::vector<ref<texture>> m_textures;
 
-        void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
-        void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
-        void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
-        uint32_t FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
-        uint32_t FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
-        uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
-        const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string& NodeName);
-        void ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
-        bool InitFromScene(const aiScene* pScene, const std::string& filename);
-        void InitMesh(uint32_t MeshIndex,
-                      const aiMesh* paiMesh,
-                      std::vector<glm::vec3>& Positions,
-                      std::vector<glm::vec3>& Normals,
-                      std::vector<glm::vec2>& TexCoords,
-                      std::vector<VertexBoneData>& Bones,
-                      std::vector<unsigned int>& Indices);
-        void LoadBones(uint32_t MeshIndex, const aiMesh* paiMesh, std::vector<VertexBoneData>& Bones);
-        bool InitMaterials(const aiScene* pScene, const std::string& Filename);
-        void Clear();
+		// Animation
+		bool m_IsAnimated = false;
+		float m_AnimationTime = 0.0f;
+		float m_WorldTime = 0.0f;
+		float m_TimeMultiplier = 1.0f;
+		bool m_AnimationPlaying = true;
 
-    #define INVALID_MATERIAL 0xFFFFFFFF
-
-        enum VB_TYPES
-        {
-            INDEX_BUFFER = 0,
-            POS_VB,
-            NORMAL_VB,
-            TEXCOORD_VB,
-            BONE_VB,
-            NUM_VBs
-        };
-
-        uint32_t m_VAO;
-        std::array<uint32_t, NUM_VBs> m_Buffers;
-
-        struct submesh
-        {
-            submesh()
-            {
-                NumIndices    = 0;
-                BaseVertex    = 0;
-                BaseIndex     = 0;
-                MaterialIndex = INVALID_MATERIAL;
-            }
-
-            unsigned int NumIndices;
-            unsigned int BaseVertex;
-            unsigned int BaseIndex;
-            unsigned int MaterialIndex;
-        };
-
-        std::vector<submesh> m_Entries;
-        std::vector<ref<texture_2d>> m_Textures;
-
-        std::map<std::string, uint32_t> m_BoneMapping; // maps a bone name to its index
-        uint32_t m_NumBones;
-        std::vector<BoneInfo> m_BoneInfo;
-        glm::mat4 m_GlobalInverseTransform;
-
-        const aiScene* m_pScene;
+		std::string m_FilePath;
+        std::string m_directory;
     };
 }

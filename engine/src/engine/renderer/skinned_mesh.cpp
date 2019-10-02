@@ -20,548 +20,481 @@
 #include "pch.h"
 #include "engine/core.h"
 #include "skinned_mesh.h"
-#include "glad/glad.h"
-#include <assimp/Importer.hpp>      // C++ importer interface
-#include <assimp/postprocess.h> // Post processing flags
+
+#include <glad/glad.h>
+
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 #include "engine/utils/assimp_extensions.h"
+#include "renderer.h"
 
-#define GLCheckError() (glGetError() == GL_NO_ERROR)
+static const uint32_t s_MeshImportFlags =
+aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
+aiProcess_Triangulate |             // Make sure we're triangles
+aiProcess_SortByPType |             // Split meshes by primitive type
+aiProcess_GenNormals |              // Make sure we have legit normals
+aiProcess_GenUVCoords |             // Convert UVs if required 
+aiProcess_OptimizeMeshes |          // Batch draws where possible
+aiProcess_ValidateDataStructure;    // Validation
 
-#define POSITION_LOCATION    0
-#define TEX_COORD_LOCATION   1
-#define NORMAL_LOCATION      2
-#define BONE_ID_LOCATION     3
-#define BONE_WEIGHT_LOCATION 4
-
-static auto s_assimp_flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
-static Assimp::Importer* importer;
-
-void engine::SkinnedMesh::VertexBoneData::AddBoneData(uint32_t BoneID, float Weight)
+struct LogStream : public Assimp::LogStream
 {
-    for(uint32_t i = 0; i < NUM_BONES_PER_VEREX; i++)
+    static void Initialize()
     {
-        if(Weights[i] == 0.0)
+        if(Assimp::DefaultLogger::isNullLogger())
         {
-            IDs[i] = BoneID;
-            Weights[i] = Weight;
-            return;
+            Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
+            Assimp::DefaultLogger::get()->attachStream(new LogStream, Assimp::Logger::Err | Assimp::Logger::Warn);
         }
     }
 
-    // should never get here - more bones than we have space for
-    CORE_ASSERT(false, "[SkinnedMesh] Too many bones added.");
-}
+    virtual void write(const char* message) override
+    {
+        LOG_CORE_ERROR("[LogStream] Assimp error: {0}", message);
+    }
+};
 
-engine::SkinnedMesh::SkinnedMesh()
+static Assimp::Importer* importer;
+
+engine::skinned_mesh::skinned_mesh(const std::string& filename)
+    : m_FilePath(filename)
 {
-    LOG_CORE_INFO("[SkinnedMesh] Obect created.");
-    m_VAO = 0;
-    memset(m_Buffers.data(), 0, sizeof(uint32_t) * NUM_VBs);
-    m_NumBones = 0;
-    m_pScene = nullptr;
-}
+    LogStream::Initialize();
+    LOG_CORE_INFO("Loading mesh: {0}", filename);
+    m_Importer = std::make_unique<Assimp::Importer>();
+
+    const aiScene* scene = m_Importer->ReadFile(filename, s_MeshImportFlags);
+    if(!scene || !scene->HasMeshes())
+        LOG_CORE_ERROR("Failed to load mesh file: {0}", filename);
+
+    m_directory = m_FilePath.substr(0, m_FilePath.find_last_of('/') + 1);
+
+    m_IsAnimated = scene->mAnimations != nullptr;
+    m_MeshShader = m_IsAnimated ? renderer::shaders_library()->get("animated_mesh") : renderer::shaders_library()->get("static_mesh");
+    
+    m_InverseTransform = glm::inverse(Assimp::ToGlm(scene->mRootNode->mTransformation));
 
 
-engine::SkinnedMesh::~SkinnedMesh()
-{
-    Clear();
-    delete importer;
-}
 
+    uint32_t vertexCount = 0;
+    uint32_t indexCount = 0;
 
-void engine::SkinnedMesh::Clear()
-{
-    for(uint32_t i = 0; i < m_Textures.size(); i++)
+    m_Submeshes.reserve(scene->mNumMeshes);
+    for(size_t m = 0; m < scene->mNumMeshes; m++)
     {
-        m_Textures[i].reset();
-    }
+        aiMesh* mesh = scene->mMeshes[m];
 
-    if(m_Buffers[0] != 0)
-    {
-        glDeleteBuffers(m_Buffers.size(), m_Buffers.data());
-    }
+        Submesh submesh;
+        submesh.BaseVertex = vertexCount;
+        submesh.BaseIndex = indexCount;
+        submesh.MaterialIndex = mesh->mMaterialIndex;
+        submesh.IndexCount = mesh->mNumFaces * 3;
+        m_Submeshes.push_back(submesh);
 
-    if(m_VAO != 0)
-    {
-        glDeleteVertexArrays(1, &m_VAO);
-        m_VAO = 0;
-    }
-}
+        vertexCount += mesh->mNumVertices;
+        indexCount += submesh.IndexCount;
 
-bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
-{
-    // Release the previously loaded mesh (if it exists)
-    Clear();
+        CORE_ASSERT(mesh->HasPositions(), "Meshes require positions.");
+        CORE_ASSERT(mesh->HasNormals(), "Meshes require normals.");
 
-    LOG_CORE_INFO("[SkinnedMesh] Loading mesh: {}", filename);
-
-    // Create the VAO
-    glGenVertexArrays(1, &m_VAO);
-    glBindVertexArray(m_VAO);
-
-    // Create the buffers for the vertices attributes
-    glGenBuffers(m_Buffers.size(), m_Buffers.data());
-
-    bool Ret = false;
-
-    importer = new Assimp::Importer();
-    m_pScene = importer->ReadFile(filename.c_str(), s_assimp_flags);
-
-    if(m_pScene)
-    {
-        m_GlobalInverseTransform = Assimp::ToGlm(m_pScene->mRootNode->mTransformation);
-        m_GlobalInverseTransform = glm::inverse(m_GlobalInverseTransform);
-        Ret = InitFromScene(m_pScene, filename);
-    }
-    else
-    {
-        LOG_CORE_ERROR("Error parsing '{}': '{}'\n", filename.c_str(), importer->GetErrorString());
-    }
-
-    // Make sure the VAO is not changed from the outside
-    glBindVertexArray(0);
-    return Ret;
-}
-
-bool engine::SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& filename)
-{
-    m_Entries.resize(pScene->mNumMeshes);
-    m_Textures.resize(pScene->mNumMaterials);
-
-    std::vector<glm::vec3> Positions;
-    std::vector<glm::vec3> Normals;
-    std::vector<glm::vec2> TexCoords;
-    std::vector<VertexBoneData> Bones;
-    std::vector<uint32_t> Indices;
-
-    uint32_t NumVertices = 0;
-    uint32_t NumIndices = 0;
-
-    // Count the number of vertices and indices
-    for(uint32_t i = 0; i < m_Entries.size(); i++)
-    {
-        m_Entries[i].MaterialIndex = pScene->mMeshes[i]->mMaterialIndex;
-        m_Entries[i].NumIndices = pScene->mMeshes[i]->mNumFaces * 3;
-        m_Entries[i].BaseVertex = NumVertices;
-        m_Entries[i].BaseIndex = NumIndices;
-
-        NumVertices += pScene->mMeshes[i]->mNumVertices;
-        NumIndices += m_Entries[i].NumIndices;
-    }
-
-    // Reserve space in the vectors for the vertex attributes and indices
-    Positions.reserve(NumVertices);
-    Normals.reserve(NumVertices);
-    TexCoords.reserve(NumVertices);
-    Bones.resize(NumVertices);
-    Indices.reserve(NumIndices);
-
-    // Initialize the meshes in the scene one by one
-    for(uint32_t i = 0; i < m_Entries.size(); i++)
-    {
-        const aiMesh* paiMesh = pScene->mMeshes[i];
-        InitMesh(i, paiMesh, Positions, Normals, TexCoords, Bones, Indices);
-    }
-
-    if(!InitMaterials(pScene, filename))
-    {
-        return false;
-    }
-
-    // Generate and populate the buffers with vertex attributes and the indices
-    glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[POS_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Positions[0]) * Positions.size(), &Positions[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(POSITION_LOCATION);
-    glVertexAttribPointer(POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[TEXCOORD_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexCoords[0]) * TexCoords.size(), &TexCoords[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(TEX_COORD_LOCATION);
-    glVertexAttribPointer(TEX_COORD_LOCATION, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[NORMAL_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Normals[0]) * Normals.size(), &Normals[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(NORMAL_LOCATION);
-    glVertexAttribPointer(NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_Buffers[BONE_VB]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Bones[0]) * Bones.size(), &Bones[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(BONE_ID_LOCATION);
-    glVertexAttribIPointer(BONE_ID_LOCATION, 4, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
-    glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
-    glVertexAttribPointer(BONE_WEIGHT_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)16);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Buffers[INDEX_BUFFER]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices[0]) * Indices.size(), &Indices[0], GL_STATIC_DRAW);
-
-    return GLCheckError();
-}
-
-
-void engine::SkinnedMesh::InitMesh(uint32_t MeshIndex,
-                                   const aiMesh* paiMesh,
-                                   std::vector<glm::vec3>& Positions,
-                                   std::vector<glm::vec3>& Normals,
-                                   std::vector<glm::vec2>& TexCoords,
-                                   std::vector<VertexBoneData>& Bones,
-                                   std::vector<uint32_t>& Indices)
-{
-    const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-    // Populate the vertex attribute vectors
-    for(uint32_t i = 0; i < paiMesh->mNumVertices; i++)
-    {
-        const aiVector3D* pPos = &(paiMesh->mVertices[i]);
-        const aiVector3D* pNormal = &(paiMesh->mNormals[i]);
-        const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-
-        Positions.push_back(glm::vec3(pPos->x, pPos->y, pPos->z));
-        Normals.push_back(glm::vec3(pNormal->x, pNormal->y, pNormal->z));
-        TexCoords.push_back(glm::vec2(pTexCoord->x, pTexCoord->y));
-    }
-
-    LoadBones(MeshIndex, paiMesh, Bones);
-
-    // Populate the index buffer
-    for(uint32_t i = 0; i < paiMesh->mNumFaces; i++)
-    {
-        const aiFace& Face = paiMesh->mFaces[i];
-        CORE_ASSERT(Face.mNumIndices == 3, "[skinned_mesh] Each face should have 3 indices");
-        Indices.push_back(Face.mIndices[0]);
-        Indices.push_back(Face.mIndices[1]);
-        Indices.push_back(Face.mIndices[2]);
-    }
-}
-
-
-void engine::SkinnedMesh::LoadBones(uint32_t MeshIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& Bones)
-{
-    for(uint32_t i = 0; i < pMesh->mNumBones; i++)
-    {
-        uint32_t BoneIndex = 0;
-        std::string BoneName(pMesh->mBones[i]->mName.data);
-
-        if(m_BoneMapping.find(BoneName) == m_BoneMapping.end())
+        // Vertices
+        if(m_IsAnimated)
         {
-            // Allocate an index for a new bone
-            BoneIndex = m_NumBones;
-            m_NumBones++;
-            BoneInfo bi;
-            bi.BoneOffset = Assimp::ToGlm(pMesh->mBones[i]->mOffsetMatrix);
-            m_BoneInfo.push_back(bi);
-            m_BoneMapping[BoneName] = BoneIndex;
+            for(size_t i = 0; i < mesh->mNumVertices; i++)
+            {
+                AnimatedVertex vertex;
+                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+
+                if(mesh->HasTangentsAndBitangents())
+                {
+                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                }
+
+                if(mesh->HasTextureCoords(0))
+                    vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+
+                m_AnimatedVertices.push_back(vertex);
+            }
         }
         else
         {
-            BoneIndex = m_BoneMapping[BoneName];
-        }
-
-        for(uint32_t j = 0; j < pMesh->mBones[i]->mNumWeights; j++)
-        {
-            uint32_t VertexID = m_Entries[MeshIndex].BaseVertex + pMesh->mBones[i]->mWeights[j].mVertexId;
-            float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
-            Bones[VertexID].AddBoneData(BoneIndex, Weight);
-        }
-    }
-}
-
-
-bool engine::SkinnedMesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
-{
-    LOG_CORE_INFO("[SkinnedMesh] Loading materials.");
-    
-    // Extract the directory part from the file name
-    std::string::size_type SlashIndex = Filename.find_last_of("/");
-    std::string Dir;
-
-    if(SlashIndex == std::string::npos)
-    {
-        Dir = ".";
-    }
-    else if(SlashIndex == 0)
-    {
-        Dir = "/";
-    }
-    else
-    {
-        Dir = Filename.substr(0, SlashIndex);
-    }
-
-    bool ret = true;
-
-    // Initialize the materials
-    for(uint32_t i = 0; i < pScene->mNumMaterials; i++)
-    {
-        const aiMaterial* pMaterial = pScene->mMaterials[i];
-
-        m_Textures[i] = nullptr;
-
-        if(pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-        {
-            aiString Path;
-
-            if(pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, nullptr, nullptr, nullptr, nullptr, nullptr) == AI_SUCCESS)
+            for(size_t i = 0; i < mesh->mNumVertices; i++)
             {
-                std::string p(Path.data);
+                Vertex vertex;
+                vertex.Position = {mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+                vertex.Normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
 
-                if(p.substr(0, 2) == ".\\")
+                if(mesh->HasTangentsAndBitangents())
                 {
-                    p = p.substr(2, p.size() - 2);
+                    vertex.Tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                    vertex.Binormal = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
                 }
 
-               std:: string FullPath = Dir + "/" + p;
+                if(mesh->HasTextureCoords(0))
+                    vertex.Texcoord = {mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
 
-                m_Textures[i] = texture_2d::create(FullPath);
+                m_StaticVertices.push_back(vertex);
+            }
+        }
 
-                //if(!m_Textures[i]->Load())
-                //{
-                //    printf("Error loading texture '%s'\n", FullPath.c_str());
-                //    delete m_Textures[i];
-                //    m_Textures[i] = nullptr;
-                //    Ret = false;
-                //}
-                //else
-                //{
-                //    printf("%d - loaded texture '%s'\n", i, FullPath.c_str());
-                //}
+        // Indices
+        for(size_t i = 0; i < mesh->mNumFaces; i++)
+        {
+            CORE_ASSERT(mesh->mFaces[i].mNumIndices == 3, "Must have 3 indices.");
+            m_Indices.push_back({mesh->mFaces[i].mIndices[0], mesh->mFaces[i].mIndices[1], mesh->mFaces[i].mIndices[2]});
+        }
+
+            
+        // == Process materials/textures
+        if(mesh->mMaterialIndex >= 0)
+        {
+            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+            std::vector<ref<texture_2d>> diffuseMaps = load_textures(material, aiTextureType_DIFFUSE, "diffuse");
+		    m_textures.insert(m_textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+            std::vector<ref<texture_2d>> specularMaps = load_textures(material, aiTextureType_SPECULAR, "specular");
+		    m_textures.insert(m_textures.end(), specularMaps.begin(), specularMaps.end());
+        }
+    }
+
+
+    LOG_CORE_TRACE("NODES:");
+    LOG_CORE_TRACE("-----------------------------");
+    TraverseNodes(scene->mRootNode);
+    LOG_CORE_TRACE("-----------------------------");
+
+
+
+    // Bones
+    if(m_IsAnimated)
+    {
+        for(size_t m = 0; m < scene->mNumMeshes; m++)
+        {
+            aiMesh* mesh = scene->mMeshes[m];
+            Submesh& submesh = m_Submeshes[m];
+
+            for(size_t i = 0; i < mesh->mNumBones; i++)
+            {
+                aiBone* bone = mesh->mBones[i];
+                std::string boneName(bone->mName.data);
+                int boneIndex = 0;
+
+                if(m_BoneMapping.find(boneName) == m_BoneMapping.end())
+                {
+                    // Allocate an index for a new bone
+                    boneIndex = m_BoneCount;
+                    m_BoneCount++;
+                    BoneInfo bi;
+                    m_BoneInfo.push_back(bi);
+                    m_BoneInfo[boneIndex].BoneOffset = Assimp::ToGlm(bone->mOffsetMatrix);
+                    m_BoneMapping[boneName] = boneIndex;
+                }
+                else
+                {
+                    LOG_CORE_TRACE("Found existing bone in map");
+                    boneIndex = m_BoneMapping[boneName];
+                }
+
+                for(size_t j = 0; j < bone->mNumWeights; j++)
+                {
+                    int VertexID = submesh.BaseVertex + bone->mWeights[j].mVertexId;
+                    float Weight = bone->mWeights[j].mWeight;
+                    m_AnimatedVertices[VertexID].AddBoneData(boneIndex, Weight);
+                }
             }
         }
     }
 
-    return ret;
-}
-
-
-void engine::SkinnedMesh::Render()
-{
-    glBindVertexArray(m_VAO);
-
-    for(uint32_t i = 0; i < m_Entries.size(); i++)
+    m_VertexArray = vertex_array::create();
+    if(m_IsAnimated)
     {
-        const uint32_t MaterialIndex = m_Entries[i].MaterialIndex;
-
-        CORE_ASSERT(MaterialIndex < m_Textures.size());
-
-        if(m_Textures[MaterialIndex])
-        {
-            m_Textures[MaterialIndex]->bind(0);
-        }
-
-        glDrawElementsBaseVertex(GL_TRIANGLES,
-                                 m_Entries[i].NumIndices,
-                                 GL_UNSIGNED_INT,
-                                 (void*)(sizeof(uint32_t) * m_Entries[i].BaseIndex),
-                                 m_Entries[i].BaseVertex);
+        auto vb = vertex_buffer::create(m_AnimatedVertices.data(), m_AnimatedVertices.size() * sizeof(AnimatedVertex));
+        vb->layout({
+            { e_shader_data_type::float3, "a_Position" },
+            { e_shader_data_type::float3, "a_Normal" },
+            { e_shader_data_type::float3, "a_Tangent" },
+            { e_shader_data_type::float3, "a_Binormal" },
+            { e_shader_data_type::float2, "a_TexCoord" },
+            { e_shader_data_type::int4,   "a_BoneIDs" },
+            { e_shader_data_type::float4, "a_BoneWeights" },
+        });
+        m_VertexArray->set_buffer(vb);
+    }
+    else
+    {
+        auto vb = vertex_buffer::create(m_StaticVertices.data(), m_StaticVertices.size() * sizeof(Vertex));
+        vb->layout({
+            { e_shader_data_type::float3, "a_Position" },
+            { e_shader_data_type::float3, "a_Normal" },
+            { e_shader_data_type::float3, "a_Tangent" },
+            { e_shader_data_type::float3, "a_Binormal" },
+            { e_shader_data_type::float2, "a_TexCoord" },
+        });
+        m_VertexArray->set_buffer(vb);
     }
 
-    // Make sure the VAO is not changed from the outside    
-    glBindVertexArray(0);
+    auto ib = index_buffer::create(m_Indices.data(), m_Indices.size() * sizeof(Index));
+    m_VertexArray->set_buffer(ib);
+    m_Scene = scene;
 }
 
+void engine::skinned_mesh::TraverseNodes(aiNode* node, int level)
+{
+    std::string levelText;
+    for(int i = 0; i < level; i++)
+        levelText += "-";
+    LOG_CORE_TRACE("{0}Node name: {1}", levelText, std::string(node->mName.data));
+    for(uint32_t i = 0; i < node->mNumMeshes; i++)
+    {
+        uint32_t mesh = node->mMeshes[i];
+        m_Submeshes[mesh].Transform = Assimp::ToGlm(node->mTransformation);
+    }
 
-uint32_t engine::SkinnedMesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
+    for(uint32_t i = 0; i < node->mNumChildren; i++)
+    {
+        aiNode* child = node->mChildren[i];
+        TraverseNodes(child, level + 1);
+    }
+}
+
+void engine::skinned_mesh::DumpVertexBuffer()
+{
+    // TODO: Convert to ImGui
+    LOG_CORE_TRACE("------------------------------------------------------");
+    LOG_CORE_TRACE("Vertex Buffer Dump");
+    LOG_CORE_TRACE("Mesh: {0}", m_FilePath);
+    if(m_IsAnimated)
+    {
+        for(size_t i = 0; i < m_AnimatedVertices.size(); i++)
+        {
+            auto& vertex = m_AnimatedVertices[i];
+            LOG_CORE_TRACE("Vertex: {0}", i);
+            LOG_CORE_TRACE("Position: {0}, {1}, {2}", vertex.Position.x, vertex.Position.y, vertex.Position.z);
+            LOG_CORE_TRACE("Normal: {0}, {1}, {2}", vertex.Normal.x, vertex.Normal.y, vertex.Normal.z);
+            LOG_CORE_TRACE("Binormal: {0}, {1}, {2}", vertex.Binormal.x, vertex.Binormal.y, vertex.Binormal.z);
+            LOG_CORE_TRACE("Tangent: {0}, {1}, {2}", vertex.Tangent.x, vertex.Tangent.y, vertex.Tangent.z);
+            LOG_CORE_TRACE("TexCoord: {0}, {1}", vertex.Texcoord.x, vertex.Texcoord.y);
+            LOG_CORE_TRACE("--");
+        }
+    }
+    else
+    {
+        for(size_t i = 0; i < m_StaticVertices.size(); i++)
+        {
+            auto& vertex = m_StaticVertices[i];
+            LOG_CORE_TRACE("Vertex: {0}", i);
+            LOG_CORE_TRACE("Position: {0}, {1}, {2}", vertex.Position.x, vertex.Position.y, vertex.Position.z);
+            LOG_CORE_TRACE("Normal: {0}, {1}, {2}", vertex.Normal.x, vertex.Normal.y, vertex.Normal.z);
+            LOG_CORE_TRACE("Binormal: {0}, {1}, {2}", vertex.Binormal.x, vertex.Binormal.y, vertex.Binormal.z);
+            LOG_CORE_TRACE("Tangent: {0}, {1}, {2}", vertex.Tangent.x, vertex.Tangent.y, vertex.Tangent.z);
+            LOG_CORE_TRACE("TexCoord: {0}, {1}", vertex.Texcoord.x, vertex.Texcoord.y);
+            LOG_CORE_TRACE("--");
+        }
+    }
+    LOG_CORE_TRACE("------------------------------------------------------");
+}
+
+void engine::skinned_mesh::BoneTransform(float time)
+{
+    ReadNodeHierarchy(time, m_Scene->mRootNode, glm::mat4(1.0f));
+    m_BoneTransforms.resize(m_BoneCount);
+    for(size_t i = 0; i < m_BoneCount; i++)
+        m_BoneTransforms[i] = m_BoneInfo[i].FinalTransformation;
+}
+
+void engine::skinned_mesh::ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform)
+{
+    std::string name(pNode->mName.data);
+    const aiAnimation* animation = m_Scene->mAnimations[0];
+    glm::mat4 nodeTransform(Assimp::ToGlm(pNode->mTransformation));
+    const aiNodeAnim* nodeAnim = FindNodeAnim(animation, name);
+
+    if(nodeAnim)
+    {
+        glm::vec3 translation = InterpolateTranslation(AnimationTime, nodeAnim);
+        glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(translation.x, translation.y, translation.z));
+
+        glm::quat rotation = InterpolateRotation(AnimationTime, nodeAnim);
+        glm::mat4 rotationMatrix = glm::toMat4(rotation);
+
+        glm::vec3 scale = InterpolateScale(AnimationTime, nodeAnim);
+        glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, scale.z));
+
+        nodeTransform = translationMatrix * rotationMatrix * scaleMatrix;
+    }
+
+    glm::mat4 transform = ParentTransform * nodeTransform;
+
+    if(m_BoneMapping.find(name) != m_BoneMapping.end())
+    {
+        uint32_t BoneIndex = m_BoneMapping[name];
+        m_BoneInfo[BoneIndex].FinalTransformation = m_InverseTransform * transform * m_BoneInfo[BoneIndex].BoneOffset;
+    }
+
+    for(uint32_t i = 0; i < pNode->mNumChildren; i++)
+        ReadNodeHierarchy(AnimationTime, pNode->mChildren[i], transform);
+}
+
+const aiNodeAnim* engine::skinned_mesh::FindNodeAnim(const aiAnimation* animation, const std::string& nodeName)
+{
+    for(uint32_t i = 0; i < animation->mNumChannels; i++)
+    {
+        const aiNodeAnim* nodeAnim = animation->mChannels[i];
+        if(std::string(nodeAnim->mNodeName.data) == nodeName)
+            return nodeAnim;
+    }
+    return nullptr;
+}
+
+uint32_t engine::skinned_mesh::FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
     for(uint32_t i = 0; i < pNodeAnim->mNumPositionKeys - 1; i++)
     {
         if(AnimationTime < (float)pNodeAnim->mPositionKeys[i + 1].mTime)
-        {
             return i;
-        }
     }
-
-    CORE_ASSERT(false,"");
 
     return 0;
 }
 
-
-uint32_t engine::SkinnedMesh::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
+uint32_t engine::skinned_mesh::FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
     CORE_ASSERT(pNodeAnim->mNumRotationKeys > 0);
 
     for(uint32_t i = 0; i < pNodeAnim->mNumRotationKeys - 1; i++)
     {
-        if(AnimationTime < static_cast<float>(pNodeAnim->mRotationKeys[i + 1].mTime))
-        {
+        if(AnimationTime < (float)pNodeAnim->mRotationKeys[i + 1].mTime)
             return i;
-        }
     }
-
-    CORE_ASSERT(false,"");
 
     return 0;
 }
 
-
-uint32_t engine::SkinnedMesh::FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
+uint32_t engine::skinned_mesh::FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim)
 {
     CORE_ASSERT(pNodeAnim->mNumScalingKeys > 0);
 
     for(uint32_t i = 0; i < pNodeAnim->mNumScalingKeys - 1; i++)
     {
-        if(AnimationTime < static_cast<float>(pNodeAnim->mScalingKeys[i + 1].mTime))
-        {
+        if(AnimationTime < (float)pNodeAnim->mScalingKeys[i + 1].mTime)
             return i;
-        }
     }
-
-    CORE_ASSERT(false,"");
 
     return 0;
 }
 
-
-void engine::SkinnedMesh::CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+glm::vec3 engine::skinned_mesh::InterpolateTranslation(float animationTime, const aiNodeAnim* nodeAnim)
 {
-    if(pNodeAnim->mNumPositionKeys == 1)
+    if(nodeAnim->mNumPositionKeys == 1)
     {
-        Out = pNodeAnim->mPositionKeys[0].mValue;
-        return;
+        // No interpolation necessary for single value
+        auto v = nodeAnim->mPositionKeys[0].mValue;
+        return {v.x, v.y, v.z};
     }
 
-    uint32_t PositionIndex = FindPosition(AnimationTime, pNodeAnim);
+    uint32_t PositionIndex = FindPosition(animationTime, nodeAnim);
     uint32_t NextPositionIndex = (PositionIndex + 1);
-    CORE_ASSERT(NextPositionIndex < pNodeAnim->mNumPositionKeys);
-    const auto DeltaTime = static_cast<float>(pNodeAnim->mPositionKeys[NextPositionIndex].mTime - pNodeAnim->mPositionKeys[PositionIndex].mTime);
-    double Factor = (AnimationTime - static_cast<double>(pNodeAnim->mPositionKeys[PositionIndex].mTime)) / DeltaTime;
-    CORE_ASSERT(Factor >= 0.0f && Factor <= 1.0f);
-    const aiVector3D& Start = pNodeAnim->mPositionKeys[PositionIndex].mValue;
-    const aiVector3D& End = pNodeAnim->mPositionKeys[NextPositionIndex].mValue;
+    CORE_ASSERT(NextPositionIndex < nodeAnim->mNumPositionKeys);
+    ai_real DeltaTime = (float)(nodeAnim->mPositionKeys[NextPositionIndex].mTime - nodeAnim->mPositionKeys[PositionIndex].mTime);
+    ai_real Factor = (animationTime - nodeAnim->mPositionKeys[PositionIndex].mTime) / DeltaTime;
+    if(Factor < 0.0f)
+        Factor = 0.0f;
+    CORE_ASSERT(Factor <= 1.0f, "Factor must be below 1.0f");
+    const aiVector3D& Start = nodeAnim->mPositionKeys[PositionIndex].mValue;
+    const aiVector3D& End = nodeAnim->mPositionKeys[NextPositionIndex].mValue;
     aiVector3D Delta = End - Start;
-    Out = Start + Factor * Delta;
+    aiVector3D v_factor = {Factor,Factor,Factor};
+    aiVector3D aiVec = Start + Factor * Delta;
+    return {aiVec.x, aiVec.y, aiVec.z};
 }
 
-
-void engine::SkinnedMesh::CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+glm::quat engine::skinned_mesh::InterpolateRotation(float animationTime, const aiNodeAnim* nodeAnim)
 {
-    // we need at least two values to interpolate...
-    if(pNodeAnim->mNumRotationKeys == 1)
+    if(nodeAnim->mNumRotationKeys == 1)
     {
-        Out = pNodeAnim->mRotationKeys[0].mValue;
-        return;
+        // No interpolation necessary for single value
+        auto v = nodeAnim->mRotationKeys[0].mValue;
+        return glm::quat(v.w, v.x, v.y, v.z);
     }
 
-    uint32_t RotationIndex = FindRotation(AnimationTime, pNodeAnim);
+    uint32_t RotationIndex = FindRotation(animationTime, nodeAnim);
     uint32_t NextRotationIndex = (RotationIndex + 1);
-    CORE_ASSERT(NextRotationIndex < pNodeAnim->mNumRotationKeys);
-    float DeltaTime = (float)(pNodeAnim->mRotationKeys[NextRotationIndex].mTime - pNodeAnim->mRotationKeys[RotationIndex].mTime);
-    float Factor = (AnimationTime - (float)pNodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime;
-    CORE_ASSERT(Factor >= 0.0f && Factor <= 1.0f);
-    const aiQuaternion& StartRotationQ = pNodeAnim->mRotationKeys[RotationIndex].mValue;
-    const aiQuaternion& EndRotationQ = pNodeAnim->mRotationKeys[NextRotationIndex].mValue;
-    aiQuaternion::Interpolate(Out, StartRotationQ, EndRotationQ, Factor);
-    Out = Out.Normalize();
+    CORE_ASSERT(NextRotationIndex < nodeAnim->mNumRotationKeys);
+    float DeltaTime = (float)(nodeAnim->mRotationKeys[NextRotationIndex].mTime - nodeAnim->mRotationKeys[RotationIndex].mTime);
+    float Factor = (animationTime - (float)nodeAnim->mRotationKeys[RotationIndex].mTime) / DeltaTime;
+    if(Factor < 0.0f)
+        Factor = 0.0f;
+    CORE_ASSERT(Factor <= 1.0f, "Factor must be below 1.0f");
+    const aiQuaternion& StartRotationQ = nodeAnim->mRotationKeys[RotationIndex].mValue;
+    const aiQuaternion& EndRotationQ = nodeAnim->mRotationKeys[NextRotationIndex].mValue;
+    auto q = aiQuaternion();
+    aiQuaternion::Interpolate(q, StartRotationQ, EndRotationQ, Factor);
+    q = q.Normalize();
+    return glm::quat(q.w, q.x, q.y, q.z);
 }
 
-
-void engine::SkinnedMesh::CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim)
+glm::vec3 engine::skinned_mesh::InterpolateScale(float animationTime, const aiNodeAnim* nodeAnim)
 {
-    if(pNodeAnim->mNumScalingKeys == 1)
+    if(nodeAnim->mNumScalingKeys == 1)
     {
-        Out = pNodeAnim->mScalingKeys[0].mValue;
-        return;
+        // No interpolation necessary for single value
+        auto v = nodeAnim->mScalingKeys[0].mValue;
+        return {v.x, v.y, v.z};
     }
 
-    uint32_t ScalingIndex = FindScaling(AnimationTime, pNodeAnim);
-    uint32_t NextScalingIndex = (ScalingIndex + 1);
-    CORE_ASSERT(NextScalingIndex < pNodeAnim->mNumScalingKeys);
-    float DeltaTime = (float)(pNodeAnim->mScalingKeys[NextScalingIndex].mTime - pNodeAnim->mScalingKeys[ScalingIndex].mTime);
-    double Factor = (AnimationTime - static_cast<double>(pNodeAnim->mScalingKeys[ScalingIndex].mTime)) / DeltaTime;
-    CORE_ASSERT(Factor >= 0.0f && Factor <= 1.0f);
-    const aiVector3D& Start = pNodeAnim->mScalingKeys[ScalingIndex].mValue;
-    const aiVector3D& End = pNodeAnim->mScalingKeys[NextScalingIndex].mValue;
-    aiVector3D Delta = End - Start;
-    Out = Start + Factor * Delta;
+    uint32_t index = FindScaling(animationTime, nodeAnim);
+    uint32_t nextIndex = (index + 1);
+    CORE_ASSERT(nextIndex < nodeAnim->mNumScalingKeys);
+    ai_real deltaTime = (nodeAnim->mScalingKeys[nextIndex].mTime - nodeAnim->mScalingKeys[index].mTime);
+    ai_real factor = (animationTime - nodeAnim->mScalingKeys[index].mTime) / deltaTime;
+    if(factor < 0.0f)
+        factor = 0.0f;
+    CORE_ASSERT(factor <= 1.0f, "Factor must be below 1.0f");
+    const auto& start = nodeAnim->mScalingKeys[index].mValue;
+    const auto& end = nodeAnim->mScalingKeys[nextIndex].mValue;
+    auto delta = end - start;
+    auto aiVec = start + factor * delta;
+    return {aiVec.x, aiVec.y, aiVec.z};
 }
 
-
-void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform)
+std::vector<engine::ref<engine::texture_2d>> engine::skinned_mesh::load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const
 {
-    std::string NodeName(pNode->mName.data);
-
-    const aiAnimation* pAnimation = m_pScene->mAnimations[0];
-
-    glm::mat4 NodeTransformation = Assimp::ToGlm(pNode->mTransformation);
-
-    const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
-
-    if(pNodeAnim)
+    static std::vector<ref<texture_2d>> textures_loaded;
+    std::vector<ref<texture_2d>> textures;
+    for(uint32_t i = 0; i < mat->GetTextureCount(type); i++)
     {
-        // Interpolate scaling and generate scaling transformation matrix
-        aiVector3D Scaling;
-        CalcInterpolatedScaling(Scaling, AnimationTime, pNodeAnim);
-        glm::mat4 ScalingM;
-        ScalingM = glm::scale(ScalingM, {Scaling.x, Scaling.y, Scaling.z});
+        aiString filename;
+        mat->GetTexture(type, i, &filename);
 
-        // Interpolate rotation and generate rotation transformation matrix
-        aiQuaternion RotationQ;
-        CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
-        glm::mat4 RotationM = Assimp::ToGlm(RotationQ.GetMatrix());
-
-        // Interpolate translation and generate translation transformation matrix
-        aiVector3D Translation;
-        CalcInterpolatedPosition(Translation, AnimationTime, pNodeAnim);
-        glm::mat4 TranslationM;
-        TranslationM = glm::translate(TranslationM, {Translation.x, Translation.y, Translation.z});
-
-        // Combine the above transformations
-        NodeTransformation = TranslationM * RotationM * ScalingM;
-    }
-
-    glm::mat4 GlobalTransformation = ParentTransform * NodeTransformation;
-
-    if(m_BoneMapping.find(NodeName) != m_BoneMapping.end())
-    {
-        uint32_t BoneIndex = m_BoneMapping[NodeName];
-        m_BoneInfo[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation * m_BoneInfo[BoneIndex].BoneOffset;
-    }
-
-    for(uint32_t i = 0; i < pNode->mNumChildren; i++)
-    {
-        ReadNodeHeirarchy(AnimationTime, pNode->mChildren[i], GlobalTransformation);
-    }
-}
-
-
-void engine::SkinnedMesh::BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& transforms)
-{
-    const glm::mat4 Identity(1);
-
-    if(!m_pScene)
-        return;
-    if(!m_pScene->HasAnimations())
-        return;
-
-    //CORE_ASSERT(m_pScene, "Scene does not exist.");
-    //CORE_ASSERT(m_pScene->mAnimations, "Animations do not exist.");
-    auto animations_ptr = m_pScene->mAnimations[0];
-    CORE_ASSERT(animations_ptr, "animations missing.");
-    float TicksPerSecond = (float)(animations_ptr->mTicksPerSecond != 0 ? animations_ptr->mTicksPerSecond : 25.0f);
-    float TimeInTicks = TimeInSeconds * TicksPerSecond;
-    float AnimationTime = fmod(TimeInTicks, (float)animations_ptr->mDuration);
-
-    ReadNodeHeirarchy(AnimationTime, m_pScene->mRootNode, Identity);
-
-    transforms.resize(m_NumBones);
-
-    for(uint32_t i = 0; i < m_NumBones; i++)
-    {
-        transforms[i] = m_BoneInfo[i].FinalTransformation;
-    }
-}
-
-
-const aiNodeAnim* engine::SkinnedMesh::FindNodeAnim(const aiAnimation* pAnimation, const std::string& NodeName)
-{
-    for(uint32_t i = 0; i < pAnimation->mNumChannels; i++)
-    {
-        const aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
-
-        if(std::string(pNodeAnim->mNodeName.data) == NodeName)
+        bool skip = false;
+        for(uint32_t j = 0; j < textures_loaded.size(); j++)
         {
-            return pNodeAnim;
+            if(std::strcmp(textures_loaded[j]->path().data(), filename.C_Str()) == 0)
+            {
+                textures.push_back(textures_loaded[j]);
+                skip = true;
+                break;
+            }
+        }
+        if(!skip)
+        {   // if texture hasn't been loaded already, load it
+            const std::string full_path = m_directory + std::string(filename.C_Str());
+            ref<texture_2d> texture2d = texture_2d::create(full_path);
+            textures.push_back(texture2d);
+            textures_loaded.push_back(texture2d); // add to loaded textures
         }
     }
 
-    return nullptr;
+    return textures;
 }
