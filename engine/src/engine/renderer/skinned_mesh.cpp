@@ -30,11 +30,12 @@
 
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <assimp/Importer.hpp>
+//#include <assimp/Importer.hpp>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
 #include "engine/utils/assimp_extensions.h"
 #include "renderer.h"
+#include "platform/opengl/gl_shader.h"
 
 static const uint32_t s_MeshImportFlags =
 aiProcess_CalcTangentSpace |        // Create binormals/tangents just in case
@@ -61,8 +62,6 @@ struct LogStream : public Assimp::LogStream
         LOG_CORE_ERROR("[LogStream] Assimp error: {0}", message);
     }
 };
-
-static Assimp::Importer* importer;
 
 engine::skinned_mesh::skinned_mesh(const std::string& filename)
     : m_FilePath(filename)
@@ -247,6 +246,51 @@ engine::skinned_mesh::skinned_mesh(const std::string& filename)
     auto ib = index_buffer::create(m_Indices.data(), m_Indices.size() * sizeof(Index));
     m_VertexArray->set_buffer(ib);
     m_Scene = scene;
+}
+
+void engine::skinned_mesh::on_update(const timestep& ts)
+{
+	if (m_IsAnimated)
+	{
+		if (m_AnimationPlaying)
+		{
+			m_WorldTime += ts;
+
+			float ticksPerSecond = (float)(m_Scene->mAnimations[0]->mTicksPerSecond != 0 ? m_Scene->mAnimations[0]->mTicksPerSecond : 25.0f) * m_TimeMultiplier;
+			m_AnimationTime += ts * ticksPerSecond;
+			m_AnimationTime = fmod(m_AnimationTime, (float)m_Scene->mAnimations[0]->mDuration);
+		}
+
+		BoneTransform(m_AnimationTime);
+	}
+}
+
+void engine::skinned_mesh::on_render(const glm::mat4& transform /*= glm::mat4(1.f)*/)
+{
+	bool materialOverride = !m_textures.empty();
+    if(materialOverride)
+    {
+        for(auto const& tex : m_textures)
+        {
+            tex->bind();
+        }
+    }
+
+    for (Submesh& submesh : m_Submeshes)
+	{
+		if (m_IsAnimated)
+		{
+			for (size_t i = 0; i < m_BoneTransforms.size(); i++)
+			{
+				std::string uniformName = std::string("u_BoneTransforms[") + std::to_string(i) + std::string("]");
+				std::static_pointer_cast<gl_shader>(m_MeshShader)->set_uniform(uniformName, m_BoneTransforms[i]);
+			}
+		}
+
+		if (!materialOverride)
+			std::static_pointer_cast<gl_shader>(m_MeshShader)->set_uniform("u_ModelMatrix", transform * submesh.Transform);
+		glDrawElementsBaseVertex(GL_TRIANGLES, submesh.IndexCount, GL_UNSIGNED_INT, (void*)(sizeof(uint32_t) * submesh.BaseIndex), submesh.BaseVertex);
+	}
 }
 
 void engine::skinned_mesh::TraverseNodes(aiNode* node, int level)

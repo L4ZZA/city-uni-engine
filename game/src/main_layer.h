@@ -80,9 +80,8 @@ private:
 	engine::ref<engine::texture_2d>     m_terrain_texture{};
 	engine::ref<engine::texture_2d>     m_skybox_texture{};
 	engine::ref<engine::skybox>			m_skybox{};
-    engine::SkinnedMesh                 m_skinned_mesh;
+    engine::ref<engine::skinned_mesh>   m_skinned_mesh;
     DirectionalLight                    m_directionalLight;
-    //std::vector<glm::mat4>              m_bones_transform;
     float                               m_running_time = 0.f;
 
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};

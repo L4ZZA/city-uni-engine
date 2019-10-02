@@ -236,7 +236,7 @@ example_layer::example_layer()
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
-    m_skinned_mesh.LoadMesh("assets/models/animated/boblampclean.md5mesh");
+    m_skinned_mesh.reset(new engine::skinned_mesh("assets/models/animated/boblampclean.md5mesh"));
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
 		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
@@ -289,6 +289,7 @@ void example_layer::on_update(const engine::timestep& time_step)
     m_3d_camera.on_update(time_step);
     
     m_running_time += time_step;
+    m_skinned_mesh->on_update(time_step);
 
 	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
@@ -316,8 +317,8 @@ void example_layer::on_render()
     engine::render_command::clear_color({0.2f, 0.3f, 0.3f, 1.0f}); 
     engine::render_command::clear();
 
-    //const auto mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
-    //engine::renderer::begin_scene(m_3d_camera, mesh_shader); 
+    const auto mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
+    engine::renderer::begin_scene(m_3d_camera, mesh_shader); 
 
     /*std::vector<glm::vec3> cubePositions 
     { 
@@ -339,24 +340,24 @@ void example_layer::on_render()
         transform = glm::translate(transform, cubePositions[i]); 
         float angle = 20.0f * i; 
         transform = glm::rotate(transform, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f)); 
-        //transform = glm::scale(transform, glm::vec3(1.5f)); 
-        // big square 
+        transform = glm::scale(transform, glm::vec3(1.5f)); 
+         big square 
         m_texture->bind(); 
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
         m_face_texture->bind(); 
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
     }*/
 
- //   // TODO - delete method and use -> engine::renderer::submit() instead
-	//glm::mat4 skybox_tranform(1.0f);
-	//skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
-	//engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
-	//
- //   //for (const auto& object : m_game_objects)
-	////{
-	////	engine::renderer::submit(mesh_shader, object);
-	////}
- //   engine::renderer::end_scene();
+    // TODO - delete method and use -> engine::renderer::submit() instead
+	glm::mat4 skybox_tranform(1.0f);
+	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
+	
+    //for (const auto& object : m_game_objects)
+	//{
+	//	engine::renderer::submit(mesh_shader, object);
+	//}
+    engine::renderer::end_scene();
 
 	//std::stack<glm::mat4> matrix_stack;
 	//matrix_stack.push(glm::mat4(1.0f));
@@ -365,23 +366,7 @@ void example_layer::on_render()
     const auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
     engine::renderer::begin_scene(m_3d_camera, animated_mesh_shader); 
 
-    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gEyeWorldPos", m_3d_camera.position());
-    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gWVP", m_3d_camera.view_projection_matrix());
-    std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform("gWorld", m_3d_camera.view_matrix());
-
-    std::vector<glm::mat4> transforms;
-    m_skinned_mesh.BoneTransform(m_running_time, transforms);
-    for(uint32_t i = 0; i < transforms.size(); i++)
-    {
-        std::string bone_name("gBones[");
-        bone_name += std::to_string(i);
-        bone_name += "]";
-        bool transpose = true;
-        std::dynamic_pointer_cast<engine::gl_shader>(animated_mesh_shader)->set_uniform(bone_name, transforms[i], transpose);
-        
-    }
-
-    m_skinned_mesh.Render();
+    m_skinned_mesh->on_render();
 
     engine::renderer::end_scene();
 

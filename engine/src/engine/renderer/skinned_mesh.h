@@ -19,8 +19,10 @@
 #pragma once
 
 #include "engine/core.h"
+#include "engine/core/timestep.h"
 #include "engine/renderer/texture.h"
 #include "engine/renderer/shader.h"
+#include <assimp/Importer.hpp>
 
 #include <map>
 #include <vector>
@@ -31,7 +33,7 @@ struct aiNode;
 struct aiAnimation;
 struct aiNodeAnim;
 struct aiScene;
-namespace Assimp{ class Importer; }
+//namespace Assimp{ struct Importer; }
 
 namespace engine
 {
@@ -132,7 +134,10 @@ namespace engine
     class skinned_mesh
     {
     public:
-        skinned_mesh(const std::string& filename);
+        skinned_mesh(const std::string &filename);
+
+        void on_update(const timestep &ts);
+        void on_render(const glm::mat4 &transform = glm::mat4(1.f));
 
         void DumpVertexBuffer();
         ref<shader> GetMeshShader() { return m_MeshShader; }
