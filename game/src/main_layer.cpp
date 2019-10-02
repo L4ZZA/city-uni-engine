@@ -246,41 +246,43 @@ example_layer::example_layer()
 														engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
 														engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")});
 
-	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
-	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
-	engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
-	engine::game_object_properties terrain_props;
-	terrain_props.meshes = { terrain_shape->mesh() };
-	terrain_props.textures = terrain_textures;
-	m_game_objects.push_back(engine::game_object::create(terrain_props));
+	//// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
+	//std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
+	//engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
+	//engine::game_object_properties terrain_props;
+	//terrain_props.meshes = { terrain_shape->mesh() };
+	//terrain_props.textures = terrain_textures;
+	//m_game_objects.push_back(engine::game_object::create(terrain_props));
 
-	engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
-	engine::game_object_properties cuboid_props;
-	cuboid_props.position = { 0.f, 5.f, -5.f };
-	cuboid_props.meshes = { cuboid_shape->mesh() };
-	cuboid_props.textures = { m_texture };
-	m_game_objects.push_back(engine::game_object::create(cuboid_props));
+	//engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
+	//engine::game_object_properties cuboid_props;
+	//cuboid_props.position = { 0.f, 5.f, -5.f };
+	//cuboid_props.meshes = { cuboid_shape->mesh() };
+	//cuboid_props.textures = { m_texture };
+	//m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
-	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
-	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
+	//// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
+	//engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
+	//engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
-	engine::game_object_properties dragon_props;
-	dragon_props.meshes = dragon_model->meshes();
-	dragon_props.textures = { dragon_texture };
-	dragon_props.scale = 1.f / dragon_model->size();
-	//first dragon object
-	dragon_props.position = { 2.f, 1.f, -2.f };
-	m_game_objects.push_back(engine::game_object::create(dragon_props));
-
-	//second dragon object
-	//dragon_props.position = { -2.f, 1.f, -2.f };
+	//engine::game_object_properties dragon_props;
+	//dragon_props.meshes = dragon_model->meshes();
+	//dragon_props.textures = { dragon_texture };
+	//dragon_props.scale = 1.f / dragon_model->size();
+	////first dragon object
+	//dragon_props.position = { 2.f, 1.f, -2.f };
 	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
-	m_manager = engine::bullet_manager::create(m_game_objects);
+	////second dragon object
+	////dragon_props.position = { -2.f, 1.f, -2.f };
+	////m_game_objects.push_back(engine::game_object::create(dragon_props));
+
+	//m_manager = engine::bullet_manager::create(m_game_objects);
 }
 
-example_layer::~example_layer() {}
+example_layer::~example_layer()
+{
+}
 
 void example_layer::on_update(const engine::timestep& time_step) 
 {
@@ -312,8 +314,8 @@ void example_layer::on_render()
     engine::render_command::clear_color({0.2f, 0.3f, 0.3f, 1.0f}); 
     engine::render_command::clear();
 
-    const auto textured_shader = engine::renderer::shaders_library()->get("static_mesh");
-    engine::renderer::begin_scene(m_3d_camera, textured_shader); 
+    //const auto mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
+    //engine::renderer::begin_scene(m_3d_camera, mesh_shader); 
 
     /*std::vector<glm::vec3> cubePositions 
     { 
@@ -343,28 +345,25 @@ void example_layer::on_render()
         engine::renderer::submit(m_textured_shader, m_cube_va, transform); 
     }*/
 
-    // TODO - delete method and use -> engine::renderer::submit() instead
-	glm::mat4 skybox_tranform(1.0f);
-	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
-	for (const auto& texture : m_skybox->textures())
-	{
-		texture->bind();
-	}
-	engine::renderer::submit(textured_shader, m_skybox, skybox_tranform);
-	for (const auto& object : m_game_objects)
-	{
-		engine::renderer::submit(textured_shader, object);
-	}
+ //   // TODO - delete method and use -> engine::renderer::submit() instead
+	//glm::mat4 skybox_tranform(1.0f);
+	//skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
+	//engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
+	//
+ //   //for (const auto& object : m_game_objects)
+	////{
+	////	engine::renderer::submit(mesh_shader, object);
+	////}
+ //   engine::renderer::end_scene();
+
+	//std::stack<glm::mat4> matrix_stack;
+	//matrix_stack.push(glm::mat4(1.0f));
 
     const auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
     animated_mesh_shader->bind();
     m_skinned_mesh.Render();
 
     engine::renderer::end_scene();
-
-	std::stack<glm::mat4> matrix_stack;
-	matrix_stack.push(glm::mat4(1.0f));
-	
 
 	//engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
 
