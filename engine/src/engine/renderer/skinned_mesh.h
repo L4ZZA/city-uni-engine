@@ -1,6 +1,6 @@
 /*
 
-	Copyright 2011 Etay Meiri
+    Copyright 2011 Etay Meiri
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@
 #include <vector>
 #include <assimp/scene.h>       // Output data structure
 
-namespace engine{
+namespace engine
+{
     class SkinnedMesh
     {
     public:
@@ -36,21 +37,21 @@ namespace engine{
         bool LoadMesh(const std::string& filename);
 
         void Render();
-	    
+
         uint32_t NumBones() const
         {
             return m_NumBones;
         }
-        
-        void BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& Transforms);
-        
+
+        void BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& transforms);
+
     private:
-        #define NUM_BONES_PER_VEREX 4
+    #define NUM_BONES_PER_VEREX 4
 
         struct BoneInfo
         {
             glm::mat4 BoneOffset;
-            glm::mat4 FinalTransformation;        
+            glm::mat4 FinalTransformation;
 
             BoneInfo()
             {
@@ -58,9 +59,9 @@ namespace engine{
                 FinalTransformation = glm::mat4(0);
             }
         };
-        
+
         struct VertexBoneData
-        {        
+        {
             uint32_t IDs[NUM_BONES_PER_VEREX];
             float Weights[NUM_BONES_PER_VEREX];
 
@@ -68,19 +69,19 @@ namespace engine{
             {
                 Reset();
             };
-            
+
             void Reset()
             {
                 memset(IDs, 0, sizeof(uint32_t) * NUM_BONES_PER_VEREX);
-                memset(Weights, 0, sizeof(float) * NUM_BONES_PER_VEREX);        
+                memset(Weights, 0, sizeof(float) * NUM_BONES_PER_VEREX);
             }
-            
+
             void AddBoneData(uint32_t BoneID, float Weight);
         };
 
         void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
         void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
-        void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);    
+        void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
         uint32_t FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
         uint32_t FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
         uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
@@ -99,21 +100,22 @@ namespace engine{
         void Clear();
 
     #define INVALID_MATERIAL 0xFFFFFFFF
-      
-    enum VB_TYPES 
-    {
-        INDEX_BUFFER = 0,
-        POS_VB,
-        NORMAL_VB,
-        TEXCOORD_VB,
-        BONE_VB,
-        NUM_VBs            
-    };
+
+        enum VB_TYPES
+        {
+            INDEX_BUFFER = 0,
+            POS_VB,
+            NORMAL_VB,
+            TEXCOORD_VB,
+            BONE_VB,
+            NUM_VBs
+        };
 
         uint32_t m_VAO;
         std::array<uint32_t, NUM_VBs> m_Buffers;
 
-        struct submesh {
+        struct submesh
+        {
             submesh()
             {
                 NumIndices    = 0;
@@ -121,21 +123,21 @@ namespace engine{
                 BaseIndex     = 0;
                 MaterialIndex = INVALID_MATERIAL;
             }
-            
+
             unsigned int NumIndices;
             unsigned int BaseVertex;
             unsigned int BaseIndex;
             unsigned int MaterialIndex;
         };
-        
+
         std::vector<submesh> m_Entries;
         std::vector<ref<texture_2d>> m_Textures;
-         
-        std::map<std::string,uint32_t> m_BoneMapping; // maps a bone name to its index
+
+        std::map<std::string, uint32_t> m_BoneMapping; // maps a bone name to its index
         uint32_t m_NumBones;
         std::vector<BoneInfo> m_BoneInfo;
         glm::mat4 m_GlobalInverseTransform;
-        
+
         const aiScene* m_pScene;
     };
 }

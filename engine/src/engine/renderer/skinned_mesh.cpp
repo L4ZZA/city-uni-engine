@@ -34,6 +34,7 @@
 #define BONE_WEIGHT_LOCATION 4
 
 static auto s_assimp_flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+static Assimp::Importer* importer;
 
 void engine::SkinnedMesh::VertexBoneData::AddBoneData(uint32_t BoneID, float Weight)
 {
@@ -64,6 +65,7 @@ engine::SkinnedMesh::SkinnedMesh()
 engine::SkinnedMesh::~SkinnedMesh()
 {
     Clear();
+    delete importer;
 }
 
 
@@ -86,7 +88,6 @@ void engine::SkinnedMesh::Clear()
     }
 }
 
-
 bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
 {
     // Release the previously loaded mesh (if it exists)
@@ -103,7 +104,7 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
 
     bool Ret = false;
 
-    auto importer = new Assimp::Importer();
+    importer = new Assimp::Importer();
     m_pScene = importer->ReadFile(filename.c_str(), s_assimp_flags);
 
     if(m_pScene)
@@ -119,10 +120,8 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
 
     // Make sure the VAO is not changed from the outside
     glBindVertexArray(0);
-    delete importer;
     return Ret;
 }
-
 
 bool engine::SkinnedMesh::InitFromScene(const aiScene* pScene, const std::string& filename)
 {
@@ -248,8 +247,8 @@ void engine::SkinnedMesh::LoadBones(uint32_t MeshIndex, const aiMesh* pMesh, std
             BoneIndex = m_NumBones;
             m_NumBones++;
             BoneInfo bi;
+            bi.BoneOffset = Assimp::ToGlm(pMesh->mBones[i]->mOffsetMatrix);
             m_BoneInfo.push_back(bi);
-            m_BoneInfo[BoneIndex].BoneOffset = Assimp::ToGlm(pMesh->mBones[i]->mOffsetMatrix);
             m_BoneMapping[BoneName] = BoneIndex;
         }
         else
@@ -524,21 +523,30 @@ void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* p
 }
 
 
-void engine::SkinnedMesh::BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& Transforms)
+void engine::SkinnedMesh::BoneTransform(float TimeInSeconds, std::vector<glm::mat4>& transforms)
 {
     const glm::mat4 Identity(1);
 
-    float TicksPerSecond = (float)(m_pScene->mAnimations[0]->mTicksPerSecond != 0 ? m_pScene->mAnimations[0]->mTicksPerSecond : 25.0f);
+    if(!m_pScene)
+        return;
+    if(!m_pScene->HasAnimations())
+        return;
+
+    //CORE_ASSERT(m_pScene, "Scene does not exist.");
+    //CORE_ASSERT(m_pScene->mAnimations, "Animations do not exist.");
+    auto animations_ptr = m_pScene->mAnimations[0];
+    CORE_ASSERT(animations_ptr, "animations missing.");
+    float TicksPerSecond = (float)(animations_ptr->mTicksPerSecond != 0 ? animations_ptr->mTicksPerSecond : 25.0f);
     float TimeInTicks = TimeInSeconds * TicksPerSecond;
-    float AnimationTime = fmod(TimeInTicks, (float)m_pScene->mAnimations[0]->mDuration);
+    float AnimationTime = fmod(TimeInTicks, (float)animations_ptr->mDuration);
 
     ReadNodeHeirarchy(AnimationTime, m_pScene->mRootNode, Identity);
 
-    Transforms.resize(m_NumBones);
+    transforms.resize(m_NumBones);
 
     for(uint32_t i = 0; i < m_NumBones; i++)
     {
-        Transforms[i] = m_BoneInfo[i].FinalTransformation;
+        transforms[i] = m_BoneInfo[i].FinalTransformation;
     }
 }
 
