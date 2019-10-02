@@ -20,10 +20,11 @@ namespace engine
         void set_uniform(const std::string& name, const glm::vec2& vec); 
         void set_uniform(const std::string& name, const glm::vec3& vec); 
         void set_uniform(const std::string& name, const glm::vec4& vec); 
-        void set_uniform(const std::string& name, const glm::mat4& mat); 
+        void set_uniform(const std::string& name, const glm::mat4& mat, bool transpose = false); 
 
     private:
         void compile(const std::unordered_map<uint32_t, std::string>& sources);
+        int32_t get_uniform_location(uint32_t program_id, const std::string& name) const;
         static std::string read_file(const std::string& file_path);
         static std::unordered_map<uint32_t, std::string> pre_process(const std::string& source);
         static std::string extract_name(const std::string& file_path);
@@ -31,5 +32,6 @@ namespace engine
     private:
         uint32_t m_program_id{0};
         std::string m_name{};
+        mutable std::unordered_map<std::string, int32_t> m_uniform_location_cache;
     };
 }
