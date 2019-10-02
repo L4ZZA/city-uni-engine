@@ -23,6 +23,6 @@ engine::gl_mesh::gl_mesh(
     vb->layout(layout);
 
     m_va = engine::vertex_array::create();
-    m_va->add_buffer(vb);
-    m_va->add_buffer(ib);
+    m_va->set_buffer(vb);
+    m_va->set_buffer(ib);
 }

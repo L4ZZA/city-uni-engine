@@ -17,7 +17,7 @@ namespace engine
         {
         }
 
-        static buffer copy(void* data, uint32_t size)
+        static buffer copy(const void* data, uint32_t size)
         {
             buffer buffer;
             buffer.allocate(size);

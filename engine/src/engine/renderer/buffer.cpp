@@ -4,13 +4,18 @@
 #include "platform/opengl/gl_buffer.h"
 
 //=================== vertex buffer =======================================
+ 
+engine::ref<engine::vertex_buffer>  engine::vertex_buffer::create(const float *vertices, uint32_t size) 
+{ 
+    return create((void*)vertices, size);
+} 
 
-engine::ref<engine::vertex_buffer>  engine::vertex_buffer::create(const float * vertices, uint32_t size)
+engine::ref<engine::vertex_buffer>  engine::vertex_buffer::create(const void *data, uint32_t size)
 {
     switch (renderer::api())
     {
     case e_api_type::none: CORE_ASSERT(false, "[vertex_buffer] e_renderer_api::none currently not supported!"); return nullptr;
-    case e_api_type::open_gl: return std::make_shared<gl_vertex_buffer>(vertices, size);
+    case e_api_type::open_gl: return std::make_shared<gl_vertex_buffer>(data, size);
     }
 
     CORE_ASSERT(false, "[vertex_buffer] Unknown renderer api!");
@@ -21,10 +26,15 @@ engine::ref<engine::vertex_buffer>  engine::vertex_buffer::create(const float * 
 
 engine::ref<engine::index_buffer> engine::index_buffer::create(const uint32_t* indices, uint32_t count)
 {
+    return create((void*)indices, count * sizeof(uint32_t));
+}
+
+engine::ref<engine::index_buffer> engine::index_buffer::create(const void* data, uint32_t size)
+{
     switch (renderer::api())
     {
     case e_api_type::none: CORE_ASSERT(false, "[vertex_buffer] e_renderer_api::none currently not supported!"); return nullptr;
-    case e_api_type::open_gl: return std::make_shared<gl_index_buffer>(indices, count);
+    case e_api_type::open_gl: return std::make_shared<gl_index_buffer>(data, size);
     }
 
     CORE_ASSERT(false, "[vertex_buffer] Unknown renderer api!");
