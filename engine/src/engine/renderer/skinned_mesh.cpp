@@ -23,6 +23,7 @@
 #include "glad/glad.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/postprocess.h> // Post processing flags
+#include "engine/utils/assimp_extensions.h"
 
 #define GLCheckError() (glGetError() == GL_NO_ERROR)
 
@@ -34,26 +35,6 @@
 
 static auto s_assimp_flags = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
-static glm::mat4 aiMatrixToGlm(const aiMatrix4x4 & from)
-{
-    glm::mat4 to;
-    //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-    to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; to[3][0] = from.a4;
-    to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; to[3][1] = from.b4;
-    to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; to[3][2] = from.c4;
-    to[0][3] = from.d1; to[1][3] = from.d2; to[2][3] = from.d3; to[3][3] = from.d4;
-    return to;
-}
-static glm::mat3 aiMatrixToGlm(const aiMatrix3x3 & from)
-{
-    glm::mat3 to;
-    //the a,b,c,d in assimp is the row ; the 1,2,3,4 is the column
-    to[0][0] = from.a1; to[1][0] = from.a2; to[2][0] = from.a3; 
-    to[0][1] = from.b1; to[1][1] = from.b2; to[2][1] = from.b3; 
-    to[0][2] = from.c1; to[1][2] = from.c2; to[2][2] = from.c3; 
-    //to[0][3] = 0.0f; to[1][3] = from.d2; to[2][3] = from.d3; 
-    return to;
-}
 void engine::SkinnedMesh::VertexBoneData::AddBoneData(uint32_t BoneID, float Weight)
 {
     for(uint32_t i = 0; i < NUM_BONES_PER_VEREX; i++)
@@ -127,7 +108,7 @@ bool engine::SkinnedMesh::LoadMesh(const std::string& filename)
 
     if(m_pScene)
     {
-        m_GlobalInverseTransform = aiMatrixToGlm(m_pScene->mRootNode->mTransformation);
+        m_GlobalInverseTransform = Assimp::ToGlm(m_pScene->mRootNode->mTransformation);
         m_GlobalInverseTransform = glm::inverse(m_GlobalInverseTransform);
         Ret = InitFromScene(m_pScene, filename);
     }
@@ -268,7 +249,7 @@ void engine::SkinnedMesh::LoadBones(uint32_t MeshIndex, const aiMesh* pMesh, std
             m_NumBones++;
             BoneInfo bi;
             m_BoneInfo.push_back(bi);
-            m_BoneInfo[BoneIndex].BoneOffset = aiMatrixToGlm(pMesh->mBones[i]->mOffsetMatrix);
+            m_BoneInfo[BoneIndex].BoneOffset = Assimp::ToGlm(pMesh->mBones[i]->mOffsetMatrix);
             m_BoneMapping[BoneName] = BoneIndex;
         }
         else
@@ -501,7 +482,7 @@ void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* p
 
     const aiAnimation* pAnimation = m_pScene->mAnimations[0];
 
-    glm::mat4 NodeTransformation = aiMatrixToGlm(pNode->mTransformation);
+    glm::mat4 NodeTransformation = Assimp::ToGlm(pNode->mTransformation);
 
     const aiNodeAnim* pNodeAnim = FindNodeAnim(pAnimation, NodeName);
 
@@ -516,7 +497,7 @@ void engine::SkinnedMesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* p
         // Interpolate rotation and generate rotation transformation matrix
         aiQuaternion RotationQ;
         CalcInterpolatedRotation(RotationQ, AnimationTime, pNodeAnim);
-        glm::mat4 RotationM = aiMatrixToGlm(RotationQ.GetMatrix());
+        glm::mat4 RotationM = Assimp::ToGlm(RotationQ.GetMatrix());
 
         // Interpolate translation and generate translation transformation matrix
         aiVector3D Translation;
