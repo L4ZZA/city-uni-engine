@@ -75,7 +75,7 @@ static const std::string flat_color_fragment_shader = R"(
 
 example_layer::example_layer() 
     :m_2d_camera(-1.6f, 1.6f, -0.9f, 0.9f), 
-    m_3d_camera(engine::application::window().width(), engine::application::window().height()) 
+    m_3d_camera((float)engine::application::window().width(), (float)engine::application::window().height())
 {
     // hide the mouse and lock it inside the window
     //engine::input::anchor_mouse(true);
@@ -198,21 +198,35 @@ example_layer::example_layer()
     m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
     m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     auto mesh_shader = engine::renderer::shaders_library()->get("mesh_static");
+	auto mesh__material_shader = engine::renderer::shaders_library()->get("mesh_material");
+	auto mesh_lighting_shader = engine::renderer::shaders_library()->get("mesh_lighting");
+	auto text_shader = engine::renderer::shaders_library()->get("text_2D");
 
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->bind();
     std::dynamic_pointer_cast<engine::gl_shader>(mesh_shader)->set_uniform("u_sampler", 0);
+
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->bind();
+	std::dynamic_pointer_cast<engine::gl_shader>(mesh_lighting_shader)->set_uniform("u_sampler", 0);
+
+	std::dynamic_pointer_cast<engine::gl_shader>(text_shader)->bind();
+	std::dynamic_pointer_cast<engine::gl_shader>(text_shader)->set_uniform("projection",
+		glm::ortho(0.f, (float)engine::application::window().width(), 0.f, (float)engine::application::window().height()));
+
+	m_light = engine::light::create(glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 0.1f, 1.f, 0.5f);
+	m_material = engine::material::create(32.0f, glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(1.0f, 0.5f, 0.31f), glm::vec3(0.5f, 0.5f, 0.5f));
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
 
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
-		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxLeft.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
-														engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")});
+		{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxRight.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxBack.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxLeft.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxTop.bmp"),
+		  engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")
+		});
 
 	// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
 	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
@@ -220,17 +234,38 @@ example_layer::example_layer()
 	engine::game_object_properties terrain_props;
 	terrain_props.meshes = { terrain_shape->mesh() };
 	terrain_props.textures = terrain_textures;
+	terrain_props.is_static = true;
+	terrain_props.type = 0;
+	terrain_props.bounding_shape = glm::vec3(100.f, 0.5f, 100.f);
+	terrain_props.restitution = 0.92f;
 	m_game_objects.push_back(engine::game_object::create(terrain_props));
 
 	engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
 	engine::game_object_properties cuboid_props;
-	cuboid_props.position = { 0.f, 5.f, -5.f };
+	cuboid_props.position = { 4.f, 10.f, -5.f };
 	cuboid_props.meshes = { cuboid_shape->mesh() };
 	cuboid_props.textures = { m_texture };
+	cuboid_props.type = 0;
+	cuboid_props.bounding_shape = glm::vec3(0.5f);
+	//cuboid_props.rotation_axis = glm::normalize(glm::vec3(0.5, 1.f, 0.f));
+	//cuboid_props.rotation_amount = 0.5f;
+	cuboid_props.restitution = 0.1f;
+	cuboid_props.mass = 0.000001f;
 	m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
+	engine::ref<engine::sphere> sphere_shape = engine::sphere::create(10, 20, 0.5f);
+	engine::game_object_properties sphere_props;
+	sphere_props.position = { 0.f, 5.f, -5.f };
+	sphere_props.meshes = { sphere_shape->mesh() };
+	sphere_props.textures = { m_texture };
+	sphere_props.type = 1;
+	sphere_props.bounding_shape = glm::vec3(0.5f);
+	sphere_props.restitution = 0.92f;
+	sphere_props.mass = 0.000001f;
+	m_game_objects.push_back(engine::game_object::create(sphere_props));
+
 	// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
-	engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
+	/*engine::ref <engine::model> dragon_model = engine::model::create("assets/models/dragon.obj");
 	engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
 	engine::game_object_properties dragon_props;
@@ -239,13 +274,15 @@ example_layer::example_layer()
 	dragon_props.scale = 1.f / dragon_model->size();
 	//first dragon object
 	dragon_props.position = { 2.f, 1.f, -2.f };
-	m_game_objects.push_back(engine::game_object::create(dragon_props));
+	m_game_objects.push_back(engine::game_object::create(dragon_props));*/
 
 	//second dragon object
 	//dragon_props.position = { -2.f, 1.f, -2.f };
 	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
-	m_manager = engine::bullet_manager::create(m_game_objects);
+	m_physics_manager = engine::bullet_manager::create(m_game_objects);
+
+	m_text_manager = engine::text_manager::create();
 }
 
 example_layer::~example_layer() {}
@@ -253,6 +290,8 @@ example_layer::~example_layer() {}
 void example_layer::on_update(const engine::timestep& time_step) 
 {
     m_3d_camera.on_update(time_step);
+
+	m_physics_manager->dynamics_world_update(m_game_objects, double(time_step));
 
 	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
@@ -281,7 +320,14 @@ void example_layer::on_render()
     engine::render_command::clear();
 
     const auto textured_shader = engine::renderer::shaders_library()->get("mesh_static");
-    engine::renderer::begin_scene(m_3d_camera, textured_shader); 
+    //engine::renderer::begin_scene(m_3d_camera, textured_shader);
+
+	const auto textured_lighting_shader = engine::renderer::shaders_library()->get("mesh_lighting");
+	engine::renderer::begin_scene(m_3d_camera, textured_lighting_shader);
+
+	m_light->submit(textured_lighting_shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("view_pos", m_3d_camera.position());
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("shininess", 1.0f);
 
     /*std::vector<glm::vec3> cubePositions 
     { 
@@ -318,18 +364,30 @@ void example_layer::on_render()
 	{
 		texture->bind();
 	}
-	engine::renderer::submit(textured_shader, m_skybox, skybox_tranform);
+	engine::renderer::submit(textured_lighting_shader, m_skybox, skybox_tranform);
 
-	for (const auto& object : m_game_objects)
-	{
-		engine::renderer::submit(textured_shader, object);
-	}
+	
 
     engine::renderer::end_scene();
 
-	std::stack<glm::mat4> matrix_stack;
-	matrix_stack.push(glm::mat4(1.0f));
-	
+
+	const auto textured_material_shader = engine::renderer::shaders_library()->get("mesh_material");
+	engine::renderer::begin_scene(m_3d_camera, textured_material_shader);
+
+	m_light->submit(textured_material_shader);
+	m_material->submit(textured_material_shader);
+	std::dynamic_pointer_cast<engine::gl_shader>(textured_lighting_shader)->set_uniform("view_pos", m_3d_camera.position());
+
+	for (const auto& object : m_game_objects)
+	{
+		engine::renderer::submit(textured_material_shader, object);
+	}
+
+	engine::renderer::end_scene();
+
+
+	const auto text_shader = engine::renderer::shaders_library()->get("text_2D");
+	m_text_manager->render_text(text_shader, "Hello engine", 400.f, 400.f, 1.f, glm::vec3(0.f,255.f,0.f));
 
 	//engine::renderer::begin_scene(m_2d_camera, m_flat_color_shader); 
 

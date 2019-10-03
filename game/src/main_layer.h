@@ -1,6 +1,5 @@
 #pragma once
 #include <engine.h>
-#include "engine/utils/timer.h"
 
 class example_layer : public engine::layer
 {
@@ -25,9 +24,13 @@ private:
 	engine::ref<engine::texture_2d>     m_terrain_texture{};
 	engine::ref<engine::texture_2d>     m_skybox_texture{};
 	engine::ref<engine::skybox>			m_skybox{};
+	engine::ref<engine::light>			m_light{};
+	engine::ref<engine::material>		m_material{};
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
-	engine::ref<engine::bullet_manager> m_manager;
+	engine::ref<engine::bullet_manager> m_physics_manager{};
+	engine::ref<engine::audio_manager>  m_audio_manager{};
+	engine::ref<engine::text_manager>	m_text_manager{};
 
     engine::orthographic_camera       m_2d_camera; 
     engine::perspective_camera        m_3d_camera; 

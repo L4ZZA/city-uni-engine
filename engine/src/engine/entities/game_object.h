@@ -19,6 +19,8 @@ namespace engine
 	    glm::vec3 rotation_axis{0.f, 1.f, 0.f};
         int32_t type = 0;
         float mass = 1.f;
+		float restitution = 0.1f;
+		float friction = 0.9f;
         float rotation_amount = 0.f;
         bool is_static = false;
 	};
@@ -55,6 +57,8 @@ namespace engine
 		glm::vec3 scale() const { return m_scale; }
 		bool      is_static() const { return s_static; }
 		float     mass() const { return m_mass; }
+		float	  restitution() const { return m_restitution; }
+		float	  friction() const { return m_friction; }
 		int32_t   type() const { return m_type; }
 		glm::vec3 bounding_shape() const { return m_bounding_shape; }
 		const std::vector<ref<mesh>>& meshes() const { return m_meshes; }
@@ -89,7 +93,7 @@ namespace engine
 		void turn_towards(glm::vec3 direction);
 
 		// create a transform matrix using the object's position, rotation and scale member variables
-		const glm::mat4& transform();
+		const void transform(glm::mat4 &object_transform);
 
 		// bind the object's textures if there are any
 		void bind_textures();
@@ -132,6 +136,10 @@ namespace engine
 		glm::vec3		m_scale{ 1.0f };
 		// object's mass
 		float			m_mass{ 1.0f };
+		// object's restitution
+		float			m_restitution{ 0.1f };
+		// object's friction
+		float			m_friction{ 0.9f };
         // static/non-static object
 		bool			s_static{ false };
 
@@ -140,6 +148,6 @@ namespace engine
 		// object's bounding shape dimensions
 		glm::vec3		m_bounding_shape{ 0.f };
 		//object's offset from the local origin
-		glm::vec3 m_offset = glm::vec3(0.0f);
+		glm::vec3 m_offset{ 0.f };
     };
 }

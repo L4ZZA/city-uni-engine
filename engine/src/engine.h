@@ -21,8 +21,12 @@
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/model.h"
 #include "engine/renderer/camera.h"
+#include "engine/renderer/light.h"
+#include "engine/renderer/material.h"
+#include "engine/renderer/text_manager.h"
 
 // ---entities------------------------
+#include "engine/entities/game_object.h"
 #include "engine/entities/shapes/cuboid.h"
 #include "engine/entities/shapes/sphere.h"
 #include "engine/entities/terrain.h"
@@ -30,3 +34,4 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
+#include "engine/utils/audio_manager.h"

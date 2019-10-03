@@ -42,7 +42,10 @@
 
 #define BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
+#define SAFE_RELEASE(p) if(!p) { delete p; }
+
 #include <memory>
+#include <unordered_map>
 namespace engine
 {
     /// \brief safe and scoped pointer to an object. [Like unique_ptr]
@@ -52,4 +55,7 @@ namespace engine
     /// \brief ref counted pointer to an object. [Usually used for resources]
     template<typename T>
     using ref = std::shared_ptr<T>;
+
+	template<typename K, typename V>
+	using hash_map = std::unordered_map<K, V>;
 }
