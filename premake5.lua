@@ -41,34 +41,34 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- include directories relative to root folder (sln dir)
 IncludeDir = {}
-IncludeDir["spdlog"]        = "engine/external/spdlog/include/"
-IncludeDir["GLFW"]          = "engine/external/GLFW/include/"
-IncludeDir["Glad"]          = "engine/external/Glad/include/"
+IncludeDir["spdlog"]        = "engine/external/spdlog/include"
+IncludeDir["GLFW"]          = "engine/external/GLFW/include"
+IncludeDir["Glad"]          = "engine/external/Glad/include"
 IncludeDir["glm"]           = "engine/external/glm"
-IncludeDir["stb_image"]     = "engine/external/stb_image/"
+IncludeDir["stb_image"]     = "engine/external/stb_image"
 IncludeDir["ImGui"]         = "engine/external/imgui"
-IncludeDir["assimp"]        = "engine/external/assimp/include/"
-IncludeDir["assimpcfg"]     = "engine/external/assimp/config/"
-IncludeDir["bullet"]        = "engine/external/bullet/"
-IncludeDir["fmod"]          = "engine/external/FMOD/include/"
-IncludeDir["freetype"]      = "engine/external/freetype/include/"
+IncludeDir["assimp"]        = "engine/external/assimp/include"
+IncludeDir["assimpcfg"]     = "engine/external/assimp/config"
+IncludeDir["bullet"]        = "engine/external/bullet"
+IncludeDir["fmod"]          = "engine/external/FMOD/include"
+IncludeDir["freetype"]      = "engine/external/freetype/include"
 
 -- library directories relative to root folder (sln dir)
 LibDir = {}
-LibDir["stb_image"]         = "engine/external/stb_image/lib/"
-LibDir["GLFW"]              = "engine/external/GLFW/lib/"
-LibDir["Glad"]              = "engine/external/Glad/lib/"
-LibDir["assimp"]            = "engine/external/assimp/lib/"
-LibDir["bullet_cls"]        = "engine/external/bullet/BulletCollision/lib/"
-LibDir["bullet_dnc"]        = "engine/external/bullet/BulletDynamics/lib/"
-LibDir["bullet_lm"]         = "engine/external/bullet/LinearMath/lib/"
-LibDir["fmod"]              = "engine/external/FMOD/lib/x64/"
+LibDir["stb_image"]         = "engine/external/stb_image/lib"
+LibDir["GLFW"]              = "engine/external/GLFW/lib"
+LibDir["Glad"]              = "engine/external/Glad/lib"
+LibDir["assimp"]            = "engine/external/assimp/lib"
+LibDir["bullet_cls"]        = "engine/external/bullet/BulletCollision/lib"
+LibDir["bullet_dnc"]        = "engine/external/bullet/BulletDynamics/lib"
+LibDir["bullet_lm"]         = "engine/external/bullet/LinearMath/lib"
+LibDir["fmod"]              = "engine/external/FMOD/lib/x64"
 
 
 group "dependencies"
     -- iclude other premake files
-    include "engine/external/GLFW/"
-    include "engine/external/Glad/"
+    include "engine/external/GLFW"
+    include "engine/external/Glad"
     include "engine/external/stb_image"
     include "engine/external/assimp"
     include "engine/external/bullet/BulletCollision"
@@ -149,6 +149,11 @@ project "engine"
         "LinearMath",
         "fmod_vc.lib",
         "freetype",
+    }
+
+    postbuildcommands
+    {
+        ('{COPY} ../%{LibDir.fmod}/fmod_vc.lib ../bin/' .. outputdir .. '/game/fmod_vc.lib*')
     }
 
     -- filters are used to apply property to some specific configurations only
