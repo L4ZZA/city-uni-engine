@@ -34,7 +34,7 @@ struct aiAnimation;
 struct aiNodeAnim;
 struct aiScene;
 //namespace Assimp{ struct Importer; }
-
+/*
 namespace engine
 {
 	struct Vertex
@@ -193,4 +193,134 @@ namespace engine
 		std::string m_FilePath;
         std::string m_directory;
     };
+}*/
+
+namespace engine {
+	class skinned_mesh
+	{
+	public:
+		skinned_mesh();
+
+		~skinned_mesh();
+
+		void on_update(const timestep& ts);
+
+		void on_render(const glm::mat4& transform, const ref<shader>& meshShader);
+
+		static ref<skinned_mesh> create(const std::string& Filename);
+
+		uint32_t NumBones() const
+		{
+			return m_NumBones;
+		}
+
+		void BoneTransform(float time);
+
+	private:
+#define NUM_BONES_PER_VEREX 4
+#define ZERO_MEM(a) memset(a, 0, sizeof(a))
+#define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
+#define SAFE_DELETE(p) if (p) { delete p; p = NULL; }
+		static const uint32_t MAX_BONES = 100;
+
+		struct BoneInfo
+		{
+			glm::mat4 BoneOffset;
+			glm::mat4 FinalTransformation;
+
+			BoneInfo()
+			{
+				BoneOffset = glm::mat4(0.f);
+				FinalTransformation = glm::mat4(0.f);
+			}
+		};
+
+		struct VertexBoneData
+		{
+			uint32_t IDs[NUM_BONES_PER_VEREX];
+			float Weights[NUM_BONES_PER_VEREX];
+
+			VertexBoneData()
+			{
+				Reset();
+			};
+
+			void Reset()
+			{
+				ZERO_MEM(IDs);
+				ZERO_MEM(Weights);
+			}
+
+			void AddBoneData(uint32_t BoneID, float Weight);
+		};
+
+		
+
+		void SetBoneTransform(uint32_t Index, const glm::mat4& Transform);
+
+		bool LoadMesh(const std::string& Filename);
+
+		glm::vec3 InterpolateScale(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		glm::quat InterpolateRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		glm::vec3 InterpolateTranslation(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		uint32_t FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		uint32_t FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
+		const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const std::string& NodeName);
+		void ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
+		bool InitFromScene(const aiScene* pScene, const std::string& Filename);
+		void InitMesh(uint32_t MeshIndex,
+			const aiMesh* paiMesh,
+			std::vector<glm::vec3>& Positions,
+			std::vector<glm::vec3>& Normals,
+			std::vector<glm::vec2>& TexCoords,
+			std::vector<VertexBoneData>& Bones,
+			std::vector<unsigned int>& Indices);
+		void LoadBones(uint32_t MeshIndex, const aiMesh* paiMesh, std::vector<VertexBoneData>& Bones);
+		bool InitMaterials(const aiScene* pScene, const std::string& Filename);
+		void Clear();
+
+#define INVALID_MATERIAL 0xFFFFFFFF
+
+		enum VB_TYPES {
+			INDEX_BUFFER,
+			POS_VB,
+			NORMAL_VB,
+			TEXCOORD_VB,
+			BONE_VB,
+			NUM_VBs
+		};
+
+		uint32_t m_VAO;
+		uint32_t m_Buffers[NUM_VBs];
+
+		struct MeshEntry {
+			MeshEntry()
+			{
+				NumIndices = 0;
+				BaseVertex = 0;
+				BaseIndex = 0;
+				MaterialIndex = INVALID_MATERIAL;
+			}
+
+			unsigned int NumIndices;
+			unsigned int BaseVertex;
+			unsigned int BaseIndex;
+			unsigned int MaterialIndex;
+		};
+
+		std::vector<MeshEntry> m_Entries;
+		std::vector<ref<texture_2d>> m_textures;
+		std::vector<glm::mat4> m_BoneTransforms;
+
+		std::map<std::string, uint32_t> m_BoneMapping; // maps a bone name to its index
+		uint32_t m_NumBones;
+		std::vector<BoneInfo> m_BoneInfo;
+		glm::mat4 m_GlobalInverseTransform;
+
+		const aiScene* m_pScene;
+		Assimp::Importer m_Importer;
+		bool m_AnimationPlaying = true;
+	};
 }
+

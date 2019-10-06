@@ -86,6 +86,8 @@ private:
 
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
+	engine::ref<engine::game_object> m_cube{};
+
 	engine::ref<engine::bullet_manager> m_manager;
 
     engine::orthographic_camera       m_2d_camera; 

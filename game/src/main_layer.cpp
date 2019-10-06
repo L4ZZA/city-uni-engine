@@ -195,8 +195,8 @@ example_layer::example_layer()
  //   m_cube_va->add_buffer(cube_ib);
 
     //TODO - move shaders to files and put them into shader library
-    m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
-    m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
+    //m_color_shader = engine::shader::create("vertex_color_shader", vertex_shader, fragment_shader);
+   // m_flat_color_shader = engine::shader::create("uniform_color_shader", flat_color_vertex_shader, flat_color_fragment_shader);
     auto static_mesh_shader = engine::renderer::shaders_library()->get("static_mesh");
     auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
 
@@ -236,7 +236,8 @@ example_layer::example_layer()
 
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
-    m_skinned_mesh.reset(new engine::skinned_mesh("assets/models/animated/boblampclean.md5mesh"));
+    m_skinned_mesh = engine::skinned_mesh::create("assets/models/animated/mannequin/free3Dmodel.dae");
+	//engine::ref <engine::model> bob = engine::model::create("assets/models/animated/mannequin/free3Dmodel.obj");
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
 		std::vector<engine::ref<engine::texture_2d>>{ engine::texture_2d::create("assets/textures/skybox/SkyboxFront.bmp"),
@@ -247,18 +248,19 @@ example_layer::example_layer()
 														engine::texture_2d::create("assets/textures/skybox/SkyboxBottom.bmp")});
 
 	//// Moss texture based on this image available under CC - BY 2.0 by Robert Benner : http://www.flickr.com/photos/mullica/5750625959/in/photostream/
-	//std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
-	//engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
-	//engine::game_object_properties terrain_props;
-	//terrain_props.meshes = { terrain_shape->mesh() };
-	//terrain_props.textures = terrain_textures;
-	//m_game_objects.push_back(engine::game_object::create(terrain_props));
+	std::vector<engine::ref<engine::texture_2d>> terrain_textures = { engine::texture_2d::create("assets/textures/moss2.png") };
+	engine::ref<engine::terrain> terrain_shape = engine::terrain::create(100.f, 0.5f, 100.f);
+	engine::game_object_properties terrain_props;
+	terrain_props.meshes = { terrain_shape->mesh() };
+	terrain_props.textures = terrain_textures;
+	m_game_objects.push_back(engine::game_object::create(terrain_props));
 
-	//engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
-	//engine::game_object_properties cuboid_props;
-	//cuboid_props.position = { 0.f, 5.f, -5.f };
-	//cuboid_props.meshes = { cuboid_shape->mesh() };
-	//cuboid_props.textures = { m_texture };
+	engine::ref<engine::cuboid> cuboid_shape = engine::cuboid::create(glm::vec3(0.5f), false);
+	engine::game_object_properties cuboid_props;
+	cuboid_props.position = { 0.f, 5.f, -5.f };
+	cuboid_props.meshes = { cuboid_shape->mesh() };
+	cuboid_props.textures = { m_texture };
+	m_cube = engine::game_object::create(cuboid_props);
 	//m_game_objects.push_back(engine::game_object::create(cuboid_props));
 
 	//// dragon texture from http://www.myfreetextures.com/four-dragon-scale-background-textures/
@@ -266,10 +268,10 @@ example_layer::example_layer()
 	//engine::ref<engine::texture_2d> dragon_texture = engine::texture_2d::create("assets/textures/dragon.png");
 
 	//engine::game_object_properties dragon_props;
-	//dragon_props.meshes = dragon_model->meshes();
-	//dragon_props.textures = { dragon_texture };
-	//dragon_props.scale = 1.f / dragon_model->size();
-	////first dragon object
+	//dragon_props.meshes = bob->meshes();
+	//dragon_props.textures = bob->textures();
+	//dragon_props.scale = 1.f / bob->size();
+	//first dragon object
 	//dragon_props.position = { 2.f, 1.f, -2.f };
 	//m_game_objects.push_back(engine::game_object::create(dragon_props));
 
@@ -353,10 +355,15 @@ void example_layer::on_render()
 	skybox_tranform = glm::translate(skybox_tranform, m_3d_camera.position());
 	engine::renderer::submit(mesh_shader, m_skybox, skybox_tranform);
 	
-    //for (const auto& object : m_game_objects)
-	//{
-	//	engine::renderer::submit(mesh_shader, object);
-	//}
+    for (const auto& object : m_game_objects)
+	{
+		engine::renderer::submit(mesh_shader, object);
+	}
+	//glm::mat4 cube_transform = glm::mat4(1.0f);
+	//cube_transform = glm::translate(cube_transform, glm::vec3(0.0f, 1.0f, -5.0f));
+
+	//engine::renderer::submit(mesh_shader, m_cube->meshes().at(0), cube_transform);
+
     engine::renderer::end_scene();
 
 	//std::stack<glm::mat4> matrix_stack;
@@ -366,7 +373,11 @@ void example_layer::on_render()
     const auto animated_mesh_shader = engine::renderer::shaders_library()->get("animated_mesh");
     engine::renderer::begin_scene(m_3d_camera, animated_mesh_shader); 
 
-    m_skinned_mesh->on_render();
+	glm::mat4 aniTransform = glm::mat4(1.0f);
+	aniTransform = glm::translate(aniTransform, glm::vec3(0.0f, 1.0f, -5.0f));
+	aniTransform = glm::scale(aniTransform, glm::vec3(0.01f));
+
+    m_skinned_mesh->on_render(aniTransform, animated_mesh_shader);
 
     engine::renderer::end_scene();
 
