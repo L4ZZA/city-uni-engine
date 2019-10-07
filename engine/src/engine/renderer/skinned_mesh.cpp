@@ -439,7 +439,7 @@ engine::skinned_mesh::skinned_mesh()
 	m_VAO = 0;
 	ZERO_MEM(m_Buffers);
 	m_NumBones = 0;
-	m_pScene = NULL;
+	m_current_animation_index = 0;
 }
 
 
@@ -478,7 +478,7 @@ bool engine::skinned_mesh::LoadMesh(const std::string& Filename)
 
 	m_pScene = m_Importer.ReadFile(Filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 
-	if (m_pScene) {
+	if (&m_pScene) {
 		m_GlobalInverseTransform = glm::inverse(Assimp::ToGlm(m_pScene->mRootNode->mTransformation));
 		Ret = InitFromScene(m_pScene, Filename);
 	}
@@ -495,6 +495,7 @@ bool engine::skinned_mesh::LoadMesh(const std::string& Filename)
 
 bool engine::skinned_mesh::InitFromScene(const aiScene* pScene, const std::string& Filename)
 {
+	AddAnimations(pScene);
 	m_Entries.resize(pScene->mNumMeshes);
 	m_textures.resize(pScene->mNumMaterials);
 
@@ -715,7 +716,7 @@ void engine::skinned_mesh::on_render(const glm::mat4& transform /*= glm::mat4(1.
 void engine::skinned_mesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform)
 {
 	std::string name(pNode->mName.data);
-	const aiAnimation* animation = m_pScene->mAnimations[0];
+	const aiAnimation* animation = m_pAnimations[m_current_animation_index];
 	glm::mat4 nodeTransform(Assimp::ToGlm(pNode->mTransformation));
 	const aiNodeAnim* nodeAnim = FindNodeAnim(animation, name);
 
@@ -747,14 +748,14 @@ void engine::skinned_mesh::ReadNodeHeirarchy(float AnimationTime, const aiNode* 
 
 void engine::skinned_mesh::on_update(const timestep& ts)
 {
-	if (m_pScene->mAnimations != nullptr)
+	if (m_AnimationPlaying)
 	{
-		if (m_AnimationPlaying)
+		if (m_pAnimations[m_current_animation_index])
 		{
 
-			float TicksPerSecond = (float)(m_pScene->mAnimations[0]->mTicksPerSecond != 0 ? m_pScene->mAnimations[0]->mTicksPerSecond : 25.0f);// *m_TimeMultiplier;
+			float TicksPerSecond = (float)(m_pAnimations[m_current_animation_index]->mTicksPerSecond != 0 ? m_pAnimations[m_current_animation_index]->mTicksPerSecond : 25.0f);// *m_TimeMultiplier;
 			float TimeInTicks = ts * TicksPerSecond;
-			float AnimationTime = fmod(TimeInTicks, (float)m_pScene->mAnimations[0]->mDuration);
+			float AnimationTime = fmod(TimeInTicks, (float)m_pAnimations[m_current_animation_index]->mDuration);
 
 			BoneTransform(AnimationTime);
 		}
@@ -898,9 +899,44 @@ glm::vec3 engine::skinned_mesh::InterpolateScale(float animationTime, const aiNo
 	return { aiVec.x, aiVec.y, aiVec.z };
 }
 
+void engine::skinned_mesh::AddAnimations(const aiScene* pScene)
+{
+	uint32_t numAnimations = pScene->mNumAnimations;
+	for (uint32_t i = 0; i != numAnimations; i++)
+	{
+		if (pScene->mAnimations[i])
+		{
+			m_pAnimations.push_back(pScene->mAnimations[i]);
+		}
+	}
+}
+
+void engine::skinned_mesh::LoadAnimationFile(const std::string& Filename)
+{
+	engine::ref<engine::Animation> animation = engine::Animation::create();
+	animation->m_pScene = animation->m_aImporter.ReadFile(Filename.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
+	if (animation->m_pScene) {
+		AddAnimations(animation->m_pScene);
+	}
+	else {
+		printf("Error parsing '%s': '%s'\n", Filename.c_str(), animation->m_aImporter.GetErrorString());
+	}
+	m_extra_animations.push_back(animation);
+}
+
+
+
+
 engine::ref<engine::skinned_mesh> engine::skinned_mesh::create(const std::string& Filename)
 {
 	engine::ref<engine::skinned_mesh> mesh = std::make_shared<engine::skinned_mesh>();
 	mesh->LoadMesh(Filename);
 	return mesh;
+}
+
+engine::ref<engine::Animation> engine::Animation::create()
+{
+	engine::ref<engine::Animation> animation = std::make_shared<engine::Animation>();
+	return animation;
 }

@@ -237,6 +237,8 @@ example_layer::example_layer()
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
     m_skinned_mesh = engine::skinned_mesh::create("assets/models/animated/mannequin/free3Dmodel.dae");
+	m_skinned_mesh->LoadAnimationFile("assets/models/animated/mannequin/jump.dae");
+	//"assets/models/animated/mannequin/idle.dae";
 	//engine::ref <engine::model> bob = engine::model::create("assets/models/animated/mannequin/free3Dmodel.obj");
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
 	m_skybox = engine::skybox::create(50.f,
@@ -280,6 +282,8 @@ example_layer::example_layer()
 	////m_game_objects.push_back(engine::game_object::create(dragon_props));
 
 	//m_manager = engine::bullet_manager::create(m_game_objects);
+
+	m_skinned_mesh->switch_animation(1);
 }
 
 example_layer::~example_layer()
@@ -291,7 +295,8 @@ void example_layer::on_update(const engine::timestep& time_step)
     m_3d_camera.on_update(time_step);
     
     m_running_time += time_step;
-    m_skinned_mesh->on_update(time_step);
+
+    m_skinned_mesh->on_update(m_running_time);
 
 	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,

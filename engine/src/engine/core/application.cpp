@@ -28,6 +28,7 @@ engine::application::~application()
 
 void engine::application::run()
 {
+	m_last_frame_time = static_cast<float>(glfwGetTime()); //  discount the initialisation time
     while (s_running)
     {
         const auto time = static_cast<float>(glfwGetTime()); //  platform independent

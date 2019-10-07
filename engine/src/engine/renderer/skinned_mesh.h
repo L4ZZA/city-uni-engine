@@ -196,6 +196,9 @@ namespace engine
 }*/
 
 namespace engine {
+
+	struct Animation;
+
 	class skinned_mesh
 	{
 	public:
@@ -216,12 +219,18 @@ namespace engine {
 
 		void BoneTransform(float time);
 
+		void switch_animation(uint32_t index) { m_current_animation_index = index; }
+
+		void LoadAnimationFile(const std::string& Filename);
+
 	private:
 #define NUM_BONES_PER_VEREX 4
 #define ZERO_MEM(a) memset(a, 0, sizeof(a))
 #define ARRAY_SIZE_IN_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 #define SAFE_DELETE(p) if (p) { delete p; p = NULL; }
 		static const uint32_t MAX_BONES = 100;
+
+		
 
 		struct BoneInfo
 		{
@@ -280,6 +289,10 @@ namespace engine {
 		bool InitMaterials(const aiScene* pScene, const std::string& Filename);
 		void Clear();
 
+		void AddAnimations(const aiScene* pScene);
+		
+
+
 #define INVALID_MATERIAL 0xFFFFFFFF
 
 		enum VB_TYPES {
@@ -319,8 +332,26 @@ namespace engine {
 		glm::mat4 m_GlobalInverseTransform;
 
 		const aiScene* m_pScene;
+		std::vector<engine::ref<engine::Animation>>		m_extra_animations;
+		std::vector<aiAnimation*> m_pAnimations;
+		uint32_t m_current_animation_index;
 		Assimp::Importer m_Importer;
+
 		bool m_AnimationPlaying = true;
+	};
+
+	struct Animation
+	{
+		Assimp::Importer m_aImporter;
+		const aiScene* m_pScene;
+		std::vector<aiAnimation*> m_pAnimations;
+
+
+		Animation()
+		{
+			m_pScene = NULL;
+		}
+		static ref<Animation> create();
 	};
 }
 
