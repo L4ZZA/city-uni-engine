@@ -171,8 +171,8 @@ FMOD::System* engine::audio_manager::system()
 
 engine::audio_manager* engine::audio_manager::instance()
 {
-	static auto* instance = new audio_manager();
-    return instance;
+    static audio_manager instance;
+    return &instance;
 }
 
 uint32_t engine::audio_manager::available_channels()
