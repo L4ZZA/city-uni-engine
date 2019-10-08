@@ -237,7 +237,11 @@ example_layer::example_layer()
 	m_texture = engine::texture_2d::create("assets/textures/checkerboard.png");
 	m_face_texture = engine::texture_2d::create("assets/textures/face.png");
     m_skinned_mesh = engine::skinned_mesh::create("assets/models/animated/mannequin/free3Dmodel.dae");
+	m_skinned_mesh->LoadAnimationFile("assets/models/animated/mannequin/walking.dae");
+	m_skinned_mesh->LoadAnimationFile("assets/models/animated/mannequin/idle.dae");
 	m_skinned_mesh->LoadAnimationFile("assets/models/animated/mannequin/jump.dae");
+	m_skinned_mesh->LoadAnimationFile("assets/models/animated/mannequin/standard_run.dae");
+		
 	//"assets/models/animated/mannequin/idle.dae";
 	//engine::ref <engine::model> bob = engine::model::create("assets/models/animated/mannequin/free3Dmodel.obj");
 	// skybox texture from http://www.vwall.it/wp-content/plugins/canvasio3dpro/inc/resource/cubeMaps/
@@ -284,6 +288,11 @@ example_layer::example_layer()
 	//m_manager = engine::bullet_manager::create(m_game_objects);
 
 	m_skinned_mesh->switch_animation(1);
+
+	const aiNodeAnim* nodeAnim = m_skinned_mesh->animations().at(1)->mChannels[0];
+	aiVector3D animStart = nodeAnim->mPositionKeys[0].mValue;
+	aiVector3D animEnd = nodeAnim->mPositionKeys[nodeAnim->mNumPositionKeys - 1].mValue;
+	m_anim_displacement = (float)(animEnd - animStart).Length();
 }
 
 example_layer::~example_layer()
@@ -297,6 +306,10 @@ void example_layer::on_update(const engine::timestep& time_step)
     m_running_time += time_step;
 
     m_skinned_mesh->on_update(m_running_time);
+
+	m_anim_timer += time_step;
+	if (m_anim_timer > m_skinned_mesh->animations().at(1)->mDuration) m_anim_timer -= m_skinned_mesh->animations().at(1)->mDuration;
+
 
 	/*m_game_objects.at(2)->turn_towards(glm::cross(m_game_objects.at(2)->position() -
 		glm::vec3(m_3d_camera.position().x, m_game_objects.at(2)->position().y,
@@ -379,7 +392,10 @@ void example_layer::on_render()
     engine::renderer::begin_scene(m_3d_camera, animated_mesh_shader); 
 
 	glm::mat4 aniTransform = glm::mat4(1.0f);
-	aniTransform = glm::translate(aniTransform, glm::vec3(0.0f, 1.0f, -5.0f));
+
+	
+	
+	aniTransform = glm::translate(aniTransform, glm::vec3(0.0f, 1.0f, -5.0f - (m_anim_timer / m_skinned_mesh->animations().at(1)->mDuration)*(m_anim_displacement* 0.01f)));
 	aniTransform = glm::scale(aniTransform, glm::vec3(0.01f));
 
     m_skinned_mesh->on_render(aniTransform, animated_mesh_shader);

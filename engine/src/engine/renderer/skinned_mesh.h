@@ -223,6 +223,8 @@ namespace engine {
 
 		void LoadAnimationFile(const std::string& Filename);
 
+		const std::vector<aiAnimation*> animations() { return m_pAnimations; }
+
 	private:
 #define NUM_BONES_PER_VEREX 4
 #define ZERO_MEM(a) memset(a, 0, sizeof(a))

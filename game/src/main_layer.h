@@ -84,6 +84,9 @@ private:
     DirectionalLight                    m_directionalLight;
     float                               m_running_time = 0.f;
 
+	float								m_anim_timer = 0.0f;
+	float								m_anim_displacement = 0.f;
+
 	std::vector<engine::ref<engine::game_object>>     m_game_objects{};
 
 	engine::ref<engine::game_object> m_cube{};
