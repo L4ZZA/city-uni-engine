@@ -153,7 +153,7 @@ project "engine"
 
     postbuildcommands
     {
-        ('{COPY} ../%{LibDir.fmod}/fmod_vc.lib ../bin/' .. outputdir .. '/game/fmod_vc.lib*')
+        ('{COPY} ../%{LibDir.fmod}/fmod.dll ../bin/' .. outputdir .. '/game/fmod.dll*')
     }
 
     -- filters are used to apply property to some specific configurations only

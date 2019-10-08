@@ -11,6 +11,12 @@
 #include "engine/core/input.h"
 #include "engine/key_codes.h"
 
+// ---events--------------------------
+#include "engine/events/event.h"
+#include "engine/events/key_event.h"
+#include "engine/events/mouse_event.h"
+#include "engine/events/application_event.h"
+
 // ---renderer------------------------
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/render_command.h"
@@ -34,4 +40,4 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
-#include "engine/utils/audio_manager.h"
+#include "engine/audio/audio_manager.h"

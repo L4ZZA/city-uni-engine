@@ -283,6 +283,10 @@ example_layer::example_layer()
 	m_physics_manager = engine::bullet_manager::create(m_game_objects);
 
 	m_text_manager = engine::text_manager::create();
+
+    auto aud_manager = engine::audio_manager::instance();
+    aud_manager->load_sound("assets/audio/race-track.wav", engine::e_sound_type::track, "main_track");
+    aud_manager->play("main_track");
 }
 
 example_layer::~example_layer() {}
@@ -417,11 +421,6 @@ void example_layer::on_event(engine::event& event)
         if(e.key_code() == engine::key_codes::KEY_TAB) 
         { 
             engine::render_command::toggle_wireframe();
-
-			
-
-		
-
         } 
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     } 
