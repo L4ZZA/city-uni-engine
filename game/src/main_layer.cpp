@@ -1,9 +1,9 @@
 #include "main_layer.h"
 #include "platform/opengl/gl_shader.h"
 
+#include "engine/events/key_event.h"
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
-#include "engine/events/key_event.h"
 
 
 // TODO - move all shaders into shader library
@@ -285,7 +285,10 @@ example_layer::example_layer()
 	m_text_manager = engine::text_manager::create();
 
     auto aud_manager = engine::audio_manager::instance();
-    aud_manager->load_sound("assets/audio/race-track.wav", engine::e_sound_type::track, "main_track");
+    // main track from: https://freesound.org/people/frankum/sounds/405603/
+    aud_manager->load_sound("assets/audio/newtime_track.wav", engine::e_sound_type::track, "main_track");
+    // bounce sound from: https://freesound.org/people/josepharaoh99/sounds/383240/
+    aud_manager->load_sound("assets/audio/ball_bounce.wav", engine::e_sound_type::event, "bounce");
     aud_manager->play("main_track");
 }
 
@@ -422,6 +425,11 @@ void example_layer::on_event(engine::event& event)
         { 
             engine::render_command::toggle_wireframe();
         } 
+        if(e.key_code() == engine::key_codes::KEY_B) 
+        { 
+            engine::audio_manager::instance()->play("bounce");
+        } 
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     } 
 }
+
