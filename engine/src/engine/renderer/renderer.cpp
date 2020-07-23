@@ -60,7 +60,8 @@ void engine::renderer::submit(
     const ref<shader>& shader, 
 	const ref<game_object>& object)
 {
-	glm::mat4 transform = object->transform();
+	glm::mat4 transform = glm::mat4(1.0f);
+	object->transform(transform);
 	object->bind_textures();
     const bool has_meshes = !object->meshes().empty();
 	if (has_meshes)
@@ -78,6 +79,7 @@ void engine::renderer::submit(
 	const ref<skybox>& skybox,
 	const glm::mat4& transform)
 {
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->set_uniform("skybox_rendering", true);
 	if (skybox->textures().size() == skybox->meshes().size())
 	{
 		uint32_t i = 0;
@@ -89,4 +91,5 @@ void engine::renderer::submit(
 			i++;
 		}
 	}
+	std::dynamic_pointer_cast<engine::gl_shader>(shader)->set_uniform("skybox_rendering", false);
 }

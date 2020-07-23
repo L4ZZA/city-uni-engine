@@ -1,9 +1,9 @@
 #include "main_layer.h"
 #include "platform/opengl/gl_shader.h"
 
+#include "engine/events/key_event.h"
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
-#include "engine/events/key_event.h"
 
 
 // TODO - move all shaders into shader library
@@ -212,3 +212,4 @@ void example_layer::on_event(engine::event &event)
         //PYRO_TRACE("{0}", static_cast<char>(e.key_code())); 
     }
 }
+

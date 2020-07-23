@@ -10,6 +10,12 @@
 #include "engine/core/timestep.h"
 #include "engine/key_codes.h"
 
+// ---events--------------------------
+#include "engine/events/event.h"
+#include "engine/events/key_event.h"
+#include "engine/events/mouse_event.h"
+#include "engine/events/application_event.h"
+
 // ---renderer------------------------
 #include "engine/renderer/renderer.h"
 #include "engine/renderer/render_command.h"
@@ -20,10 +26,14 @@
 #include "engine/renderer/vertex_array.h"
 #include "engine/renderer/model.h"
 #include "engine/renderer/camera.h"
+#include "engine/renderer/light.h"
+#include "engine/renderer/material.h"
+#include "engine/renderer/text_manager.h"
 #include "engine/renderer/mesh.h"
 #include "engine/renderer/skinned_mesh.h"
 
 // ---entities------------------------
+#include "engine/entities/game_object.h"
 #include "engine/entities/shapes/cuboid.h"
 #include "engine/entities/shapes/sphere.h"
 #include "engine/entities/terrain.h"
@@ -31,4 +41,5 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
-#include "engine/utils/timer.h"
+//#include "engine/utils/timer.h"
+#include "engine/audio/audio_manager.h"

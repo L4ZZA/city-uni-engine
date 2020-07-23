@@ -29,7 +29,7 @@ namespace engine
 
 engine::gl_vertex_array::gl_vertex_array()
 {
-    glCreateVertexArrays(1, &m_id);
+	glGenVertexArrays(1, &m_id);
 }
 
 engine::gl_vertex_array::~gl_vertex_array()
