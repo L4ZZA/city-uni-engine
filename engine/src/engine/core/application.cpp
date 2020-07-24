@@ -28,10 +28,10 @@ engine::application::~application()
 
 void engine::application::run()
 {
-	float initialisation_time = static_cast<float>(glfwGetTime());
+	m_last_frame_time = static_cast<float>(glfwGetTime()); //  discount the initialisation time
     while (s_running)
     {
-        const auto time = static_cast<float>(glfwGetTime()) - initialisation_time; //  platform independent
+        const float time = static_cast<float>(glfwGetTime()); //  platform independent
         timestep time_step = time - m_last_frame_time;
         m_last_frame_time = time;
 

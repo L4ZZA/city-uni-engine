@@ -1,5 +1,9 @@
 #include "pch.h"
-#include "renderer.h"
+#include "engine/core.h"
+#include "engine/renderer/renderer.h"
+#include "engine/renderer/vertex_array.h"
+#include "engine/entities/game_object.h"
+#include "engine/entities/skybox.h"
 #include "platform/opengl/gl_shader.h"
 
 engine::renderer::scene_data* engine::renderer::s_scene_data = new scene_data;
@@ -10,9 +14,10 @@ void engine::renderer::init()
     s_instance->m_shader_library = std::make_unique<shader_library>();
     renderer_api::init();
 
-    renderer::shaders_library()->load("assets/shaders/mesh_static.glsl");
-    //renderer::shaders_library()->load("assets/shaders/mesh_animated.glsl");
-	renderer::shaders_library()->load("assets/shaders/mesh_lighting.glsl");
+    //renderer::shaders_library()->load("assets/shaders/texture.glsl");
+    renderer::shaders_library()->load("assets/shaders/static_mesh.glsl");
+    renderer::shaders_library()->load("assets/shaders/animated_mesh.glsl");
+    renderer::shaders_library()->load("assets/shaders/mesh_lighting.glsl");
 	renderer::shaders_library()->load("assets/shaders/mesh_material.glsl");
 	renderer::shaders_library()->load("assets/shaders/text_2D.glsl");
 }

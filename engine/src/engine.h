@@ -6,9 +6,8 @@
 #include "engine/core/layer.h"
 #include "engine/core/logger.h"
 
-#include "engine/core/timestep.h"
-
 #include "engine/core/input.h"
+#include "engine/core/timestep.h"
 #include "engine/key_codes.h"
 
 // ---events--------------------------
@@ -30,6 +29,8 @@
 #include "engine/renderer/light.h"
 #include "engine/renderer/material.h"
 #include "engine/renderer/text_manager.h"
+#include "engine/renderer/mesh.h"
+#include "engine/renderer/skinned_mesh.h"
 
 // ---entities------------------------
 #include "engine/entities/game_object.h"
@@ -40,4 +41,5 @@
 
 // ---utils---------------------------
 #include "engine/utils/bullet_manager.h"
+//#include "engine/utils/timer.h"
 #include "engine/audio/audio_manager.h"

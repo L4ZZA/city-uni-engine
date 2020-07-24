@@ -63,7 +63,7 @@ void engine::gl_shader::unbind() const
 
 void engine::gl_shader::set_uniform(const std::string& name, int32_t val) 
 { 
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str()); 
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name); 
     glUniform1i(uniformLocation, val); 
 
     //LOG_CORE_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(float)", m_program_id, name, val); 
@@ -71,7 +71,7 @@ void engine::gl_shader::set_uniform(const std::string& name, int32_t val)
 
 void engine::gl_shader::set_uniform(const std::string& name, float val) 
 { 
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str()); 
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name); 
     glUniform1f(uniformLocation, val); 
 
     //LOG_CORE_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(float)", m_program_id, name, val); 
@@ -79,7 +79,7 @@ void engine::gl_shader::set_uniform(const std::string& name, float val)
 
 void engine::gl_shader::set_uniform(const std::string& name, const glm::vec2& vec) 
 {
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name);
     glUniform2f(uniformLocation, vec.x, vec.y);
 
     //LOG_CORE_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(float)", m_program_id, name, vec); 
@@ -87,7 +87,7 @@ void engine::gl_shader::set_uniform(const std::string& name, const glm::vec2& ve
 
 void engine::gl_shader::set_uniform(const std::string& name, const glm::vec3& vec) 
 {
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name);
     glUniform3f(uniformLocation, vec.x, vec.y, vec.z);
 
     //LOG_CORE_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(float)", m_program_id, name, vec); 
@@ -95,16 +95,18 @@ void engine::gl_shader::set_uniform(const std::string& name, const glm::vec3& ve
 
 void engine::gl_shader::set_uniform(const std::string& name, const glm::vec4& vec) 
 {
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name);
     glUniform4f(uniformLocation, vec.x, vec.y, vec.z, vec.w);
 
     //LOG_CORE_TRACE("[shader] set_uniform (float) (prog {0}): uniform: '{1}' = {2}(float)", m_program_id, name, vec); 
 } 
 
-void engine::gl_shader::set_uniform(const std::string& name, const glm::mat4& mat) 
+void engine::gl_shader::set_uniform(const std::string& name, const glm::mat4& mat, bool transpose /*= false*/) 
 {
-    const int32_t uniformLocation = glGetUniformLocation(m_program_id, name.c_str());
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, glm::value_ptr(mat));
+    // GLboolean = unsigned char
+    unsigned char transp = transpose ? GL_TRUE : GL_FALSE;
+    const int32_t uniformLocation = get_uniform_location(m_program_id, name);
+    glUniformMatrix4fv(uniformLocation, 1, transp, glm::value_ptr(mat));
 
     //LOG_CORE_TRACE("[shader] set_uniform (glm::mat4) (prog {0}): uniform: '{1}' = {2}(mat4)", m_program_id, name, mat); 
 }
@@ -232,5 +234,22 @@ std::string engine::gl_shader::extract_name(const std::string& file_path)
     const auto last_dot = file_path.rfind('.');
     const auto count = last_dot == std::string::npos ? file_path.size() - last_slash : last_dot - last_slash;
     return file_path.substr(last_slash, count);
+}
+
+int32_t engine::gl_shader::get_uniform_location(uint32_t program_id, const std::string& name) const
+{
+    if(m_uniform_location_cache.find(name) != m_uniform_location_cache.end())
+    {
+        return m_uniform_location_cache[name];
+    }
+
+    const int32_t location = glGetUniformLocation(program_id, name.c_str());
+    m_uniform_location_cache[name] = location;
+
+    if(location == -1)
+        LOG_CORE_WARN("[gl_shader] {} - uniform location not found.", name);
+
+    return location;
+
 } 
 

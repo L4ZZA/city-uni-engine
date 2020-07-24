@@ -47,7 +47,7 @@ void engine::gl_vertex_array::unbind() const
     glBindVertexArray(0);
 }
 
-void engine::gl_vertex_array::add_buffer(const ref<vertex_buffer>& vertex_buffer)
+void engine::gl_vertex_array::set_buffer(const ref<vertex_buffer>& vertex_buffer)
 {
     glBindVertexArray(m_id);
     vertex_buffer->bind();
@@ -66,7 +66,7 @@ void engine::gl_vertex_array::add_buffer(const ref<vertex_buffer>& vertex_buffer
     m_vertex_buffers.push_back(vertex_buffer);
 }
 
-void engine::gl_vertex_array::add_buffer(const ref<engine::index_buffer>& index_buffer)
+void engine::gl_vertex_array::set_buffer(const ref<engine::index_buffer>& index_buffer)
 {
     glBindVertexArray(m_id);
     index_buffer->bind();

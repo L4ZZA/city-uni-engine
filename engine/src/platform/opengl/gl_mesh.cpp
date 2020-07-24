@@ -9,10 +9,10 @@ engine::gl_mesh::gl_mesh(
     m_indices = indices;
 
     // sending vertex data to gpu
-    ref<vertex_buffer> vb(vertex_buffer::create(vertices[0].data, static_cast<uint32_t>(vertices.size() * sizeof(vertex))));
+    ref<vertex_buffer> vb(vertex_buffer::create(vertices[0].data, vertices.size() * sizeof(vertex)));
 
     // sending index data to gpu
-    ref<index_buffer> ib(index_buffer::create(const_cast<uint32_t*>(indices.data()), static_cast<uint32_t>(indices.size())));
+    ref<index_buffer> ib(index_buffer::create(const_cast<uint32_t*>(indices.data()), indices.size()));
 
     const buffer_layout layout
     {
@@ -23,6 +23,6 @@ engine::gl_mesh::gl_mesh(
     vb->layout(layout);
 
     m_va = engine::vertex_array::create();
-    m_va->add_buffer(vb);
-    m_va->add_buffer(ib);
+    m_va->set_buffer(vb);
+    m_va->set_buffer(ib);
 }

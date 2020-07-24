@@ -209,6 +209,8 @@ project "game"
         "%{IncludeDir.glm}",
         "%{IncludeDir.bullet}",
         "%{IncludeDir.freetype}",
+        "%{IncludeDir.assimp}",
+        "%{IncludeDir.assimpcfg}",
     }
 
     links

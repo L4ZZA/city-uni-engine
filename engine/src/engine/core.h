@@ -48,6 +48,8 @@
 #include <unordered_map>
 namespace engine
 {
+    using byte = unsigned char;
+
     /// \brief safe and scoped pointer to an object. [Like unique_ptr]
     template<typename T>
     using scope = std::unique_ptr<T>;

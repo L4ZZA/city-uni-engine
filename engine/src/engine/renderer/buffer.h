@@ -101,12 +101,18 @@ namespace engine
 
     //=================== vertex buffer =======================================
 
+	enum class e_vertex_buffer_usage
+	{
+		none = 0, static_ = 1, dynamic = 2
+	};
+
     /// \brief Vertex buffer (platform agnostic) interface
     class vertex_buffer
     {
     public:
         virtual ~vertex_buffer() = default;
-
+        
+		virtual void set_data(void* buffer, uint32_t size, uint32_t offset = 0) = 0;
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
@@ -115,7 +121,10 @@ namespace engine
         /// \brief Layout getter.
         virtual const buffer_layout& layout() const = 0;
 
-        static ref<vertex_buffer> create(const float* vertices, uint32_t size);
+        virtual uint32_t size() const = 0;
+
+        static ref<vertex_buffer> create(const float * vertices, uint32_t size);
+        static ref<vertex_buffer> create(const void* data, uint32_t size);
     };
 
     //=================== index buffer ========================================
@@ -125,14 +134,18 @@ namespace engine
     {
     public:
         virtual ~index_buffer() = default;
-
+        
+		virtual void set_data(void* buffer, uint32_t size, uint32_t offset = 0) = 0;
         virtual void bind() const = 0;
         virtual void unbind() const = 0;
 
         /// \brief Count getter.
+        virtual uint32_t size() const = 0;
         virtual uint32_t count() const = 0;
+        virtual uint32_t id() const = 0;
 
         static ref<index_buffer> create(const uint32_t* indices, uint32_t count);
+        static ref<index_buffer> create(const void* data, uint32_t size);
     };
 
 }
