@@ -31,6 +31,10 @@ namespace engine
             const ref<game_object>& object);
 		static void submit(
 			const ref<shader>& shader,
+			const glm::mat4& transform,
+			const ref<game_object>& object);
+		static void submit(
+			const ref<shader>& shader,
 			const ref<skybox>& skybox,
 			const glm::mat4& transform = glm::mat4(1.f));
 

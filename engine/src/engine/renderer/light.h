@@ -1,36 +1,68 @@
 #pragma once
+#include "platform/opengl/gl_shader.h"
+
 namespace engine
 {
-	class shader;
 
-	class light
+	struct BaseLight
 	{
-	public:
-		light(const glm::vec3 position, const glm::vec3 colour, const float ambient, const float diffuse, const float specular);
-		~light();
+		glm::vec3 Color;
+		float AmbientIntensity;
+		float DiffuseIntensity;
 
-		glm::vec3 position() const { return m_position; }
-		glm::vec3 colour() const { return m_colour; }
-		float ambient() const { return m_ambient; }
-		float diffuse() const { return m_diffuse; }
-		float specular() const { return m_specular; }
+		BaseLight()
+		{
+			Color = glm::vec3(0.0f, 0.0f, 0.0f);
+			AmbientIntensity = 0.0f;
+			DiffuseIntensity = 0.0f;
+		}
+	};
 
-		void set_position(glm::vec3 position) { m_position = position; }
-		void set_colour(glm::vec3 colour) { m_colour = colour; }
-		void set_ambient(float ambient) { m_ambient = ambient; }
-		void set_diffuse(float diffuse) { m_diffuse = diffuse; }
-		void set_specular(float specular) { m_specular = specular; }
+	struct DirectionalLight : public BaseLight
+	{
+		glm::vec3 Direction;
 
-		static ref<light> create(const glm::vec3 position, const glm::vec3 colour,
-			const float ambient, const float diffuse, const float specular);
+		DirectionalLight()
+		{
+			Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
 
-		void submit(const ref<shader> shader);
+		void submit(const engine::ref<engine::shader> shader);
+	};
 
-	private:
-		glm::vec3 m_position;
-		glm::vec3 m_colour;
-		float m_ambient;
-		float m_diffuse;
-		float m_specular;
+	struct PointLight : public BaseLight
+	{
+		glm::vec3 Position;
+
+		struct
+		{
+			float Constant;
+			float Linear;
+			float Exp;
+		} Attenuation;
+
+		PointLight()
+		{
+			Position = glm::vec3(0.0f, 0.0f, 0.0f);
+			Attenuation.Constant = 1.0f;
+			Attenuation.Linear = 0.001f;
+			Attenuation.Exp = 0.001f;
+		}
+
+		void submit(const engine::ref<engine::shader> shader, uint32_t point_light_index);
+	};
+
+	struct SpotLight : public PointLight
+	{
+		glm::vec3 Direction;
+		float Cutoff;
+
+		SpotLight()
+		{
+			Direction = glm::vec3(0.0f, 0.0f, 0.0f);
+			Cutoff = 0.0f;
+		}
+
+		void submit(const engine::ref<engine::shader> shader, uint32_t spot_light_index);
 	};
 }

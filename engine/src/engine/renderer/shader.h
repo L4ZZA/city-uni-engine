@@ -1,5 +1,4 @@
 #pragma once
-#include "engine/core.h"
 #include "glm/mat4x4.hpp"
 
 namespace engine

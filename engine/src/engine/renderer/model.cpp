@@ -78,7 +78,7 @@ engine::ref<engine::mesh> engine::model::process_mesh(aiMesh* mesh, const aiScen
         // TexCoords
         if(mesh->mTextureCoords[0])
         {// Does it have any texture coordinates?
-            glm::vec2 tex(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+            glm::vec2 tex(mesh->mTextureCoords[0][i].x, 1.f - mesh->mTextureCoords[0][i].y);
             vert.tex_coords = tex;
         }
         else
@@ -137,7 +137,28 @@ std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMate
         //texture.LoadTexture();
         //textures.push_back(texture);
 
-        bool skip = false;
+		std::string p = filename.data;
+		uint32_t count = 0;
+		while ((count < p.size()) && (p[p.size() - 1 - count] != '/' && p[p.size() - 1 - count] != '\\' || count == 0))
+				count++;
+		if (count == p.size())
+			count = (uint32_t)p.size();
+
+		p = p.substr((int)p.size() - count, count);
+
+		count = 0;
+
+		while (p[p.size() - 1 - count] != '.')
+			count++;
+
+		std::string extension = p.substr((int)p.size() - count, count);
+		if (extension != "jpg" && extension != "png" && extension != "bmp" && extension != "tga" &&
+			extension != "gif" && extension != "hdr" && extension != "psd" && extension != "pic" &&
+			extension != "ppm" && extension != "pgm")
+			p = p.substr(0, (int)p.size() - count) + "png";
+
+
+		bool skip = false;
         for(uint32_t j = 0; j < textures_loaded.size(); j++)
         {
             if(std::strcmp(textures_loaded[j]->path().data(), filename.C_Str()) == 0)
@@ -149,8 +170,8 @@ std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMate
         }
         if(!skip)
         {   // if texture hasn't been loaded already, load it
-            const std::string full_path = m_directory + std::string(filename.C_Str());
-            ref<texture_2d> texture2d = texture_2d::create(full_path);
+            const std::string full_path = m_directory + p;
+            ref<texture_2d> texture2d = texture_2d::create(full_path, false);
             textures.push_back(texture2d);
             textures_loaded.push_back(texture2d); // add to loaded textures
         }
@@ -160,7 +181,7 @@ std::vector<engine::ref<engine::texture_2d>> engine::model::load_textures(aiMate
 }
 
 // TODO - objects (any object for now, more edge cases will be explained on the way) should be passed as !!! const& !!!
-void engine::model::min_max_compare(glm::vec3 point)
+void engine::model::min_max_compare(const glm::vec3& point)
 {
 	if (point.x < m_min_point.x)
 		m_min_point.x = point.x;

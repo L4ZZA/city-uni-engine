@@ -12,17 +12,15 @@ engine::event_sound::event_sound(const std::string& name)
 
 bool engine::event_sound::load(const std::string& filePath, bool loop /*= false*/)
 {
-    auto system = audio_manager::system();
-    const auto result = system->createSound(filePath.c_str(), FMOD_DEFAULT | (FMOD_LOOP_OFF + loop), nullptr, &m_sound);
+	auto result = engine::audio_manager::system()->createSound(filePath.c_str(), FMOD_DEFAULT | (FMOD_LOOP_OFF + loop), nullptr, &m_sound);
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }
 
 bool engine::event_sound::play()
 {
-	FMOD::Channel *channel = nullptr;
-    auto system = audio_manager::system();
-    const auto result = system->playSound(m_sound, nullptr, false, &channel);
+	FMOD::Channel *channel = NULL;
+	auto result = engine::audio_manager::system()->playSound(m_sound, NULL, false, &channel);
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }

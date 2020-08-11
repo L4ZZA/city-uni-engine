@@ -6,6 +6,8 @@
 
 #include <fmod_errors.h>
 
+//#pragma comment(lib, "lib/fmodex_vc.lib")
+
 //=============================================================================
 
 FMOD::System * engine::audio_manager::m_fmod_system{ nullptr };
@@ -75,14 +77,14 @@ void engine::audio_manager::stop_all()
 
 //-----------------------------------------------------------------------------
 
-bool engine::audio_manager::load_sound(const std::string& file_path, const engine::e_sound_type& type, const std::string& name)
+bool engine::audio_manager::load_sound(const std::string& file_path, const engine::sound_type& type, const std::string& name)
 {
 	LOG_CORE_INFO("[sound] Creating sound '{0}'.", name);
 
 	bool result = false;
-	if (type == engine::e_sound_type::event)
+	if (type == engine::sound_type::event)
 		result = load_event(file_path, name);
-	else if (type == engine::e_sound_type::track)
+	else if (type == engine::sound_type::track)
 		result = load_track(file_path, name);
 
 	return result;
@@ -158,8 +160,8 @@ void engine::audio_manager::fmod_error_check(FMOD_RESULT result)
 {
 	if (result != FMOD_OK)
 	{
-		const std::string &error_string = FMOD_ErrorString(result);
-		LOG_CORE_ERROR("[audio_manager] An FMOD error has occurred: {}", error_string);
+		const std::string  &error_string = FMOD_ErrorString(result);
+		LOG_CORE_ERROR("[sound] '{0}'", error_string);
 		// Warning: error message commented out -- if headphones not plugged into computer in lab, error occurs
 	}
 }
@@ -169,10 +171,10 @@ FMOD::System* engine::audio_manager::system()
 	return m_fmod_system;
 }
 
-engine::audio_manager* engine::audio_manager::instance()
+engine::ref<engine::audio_manager> engine::audio_manager::instance()
 {
-    static audio_manager instance;
-    return &instance;
+	static engine::audio_manager instance;
+	return std::make_shared<engine::audio_manager>(instance);
 }
 
 uint32_t engine::audio_manager::available_channels()

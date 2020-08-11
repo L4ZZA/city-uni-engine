@@ -10,33 +10,30 @@ engine::track::track(const std::string& name)
 
 bool engine::track::load(const std::string& file_path)
 {
-    auto system = audio_manager::system();
-    const auto result = system->createStream(file_path.c_str(), FMOD_DEFAULT | FMOD_LOOP_NORMAL, nullptr, &m_sound);
+	auto result = engine::audio_manager::system()->createStream(file_path.c_str(), FMOD_DEFAULT | FMOD_LOOP_NORMAL, nullptr, &m_sound);
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }
 
 bool engine::track::play()
 {
-	FMOD::Channel *channel = nullptr;
-    auto system = audio_manager::system();
-    const auto result = system->playSound(m_sound, nullptr, false, &channel);
+	FMOD::Channel *channel = NULL;
+	auto result = engine::audio_manager::system()->playSound(m_sound, NULL, false, &channel);
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }
 
 bool engine::track::pause()
 {
-	FMOD::Channel *channel = nullptr;
-    auto system = audio_manager::system();
-    const auto result = system->playSound(m_sound, nullptr, true, &channel);
+	FMOD::Channel *channel = NULL;
+	auto result = engine::audio_manager::system()->playSound(m_sound, NULL, true, &channel);
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }
 
 bool engine::track::stop() const
 {
-    const auto result = m_channel->stop();
+	auto result = m_channel->stop();
 	engine::audio_manager::fmod_error_check(result);
 	return result == FMOD_OK;
 }

@@ -93,16 +93,30 @@ void engine::win_window::init(window_props const& props)
         s_glfw_initialized = true;
     }
 
-    m_window = glfwCreateWindow(
-        static_cast<int>(props.m_width),
-        static_cast<int>(props.m_height),
-        props.m_title.c_str(),
-        nullptr, nullptr);
+	if (props.m_fullscreen)
+	{
+		int* count = new int;
+		m_window = glfwCreateWindow(
+			static_cast<int>(props.m_width),
+			static_cast<int>(props.m_height),
+			props.m_title.c_str(),
+			glfwGetMonitors(count)[0], nullptr);
+	}
+	else
+	{
+		m_window = glfwCreateWindow(
+			static_cast<int>(props.m_width),
+			static_cast<int>(props.m_height),
+			props.m_title.c_str(),
+			nullptr, nullptr);
+	}
 
     glfwMakeContextCurrent(m_window);
 
 	m_graphics_context = new gl_context(m_window);
 	m_graphics_context->init();
+
+	glfwSetWindowPos(m_window, props.m_pos_x, props.m_pos_y);
 
 	// we're telling glfw to pass the window_data struct to all the defined callbacks
 	// so that we can work with our defined data.

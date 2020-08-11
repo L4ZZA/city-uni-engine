@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "engine/core/timestep.h"
 #define GLM_FORCE_CTOR_INIT
 #include "glm/glm.hpp"
@@ -33,6 +33,8 @@ namespace engine
         virtual const glm::mat4& view_projection_matrix() const = 0;
         virtual float movement_speed() const = 0;
         virtual float rotation_speed() const = 0;
+		virtual void set_movement_speed(float move_speed) = 0;
+		virtual void set_rotation_speed(float rot_speed) = 0;
 
         virtual void position(const glm::vec3& pos) = 0;
         virtual glm::vec3 position() const = 0;
@@ -69,6 +71,9 @@ namespace engine
         float movement_speed() const override { return s_movement_speed; }
         float rotation_speed() const override { return s_rotation_speed; }
 
+		void set_movement_speed(float move_speed) override { s_movement_speed = move_speed; }
+		void set_rotation_speed(float rot_speed) override { s_rotation_speed = rot_speed; }
+
     private:
         void move(e_direction direction, timestep ts);
         void rotate(e_rotation rotation, e_axis rotation_axis, timestep ts);
@@ -83,9 +88,9 @@ namespace engine
         float       m_rotation{0};
 
         /// \bief Movement speed in units per second
-        inline static const float s_movement_speed = 1.0f;
+        inline static float s_movement_speed = 1.0f;
         /// \brief Rotation speed in degrees per second
-        inline static const float s_rotation_speed = 180.0f;
+        inline static float s_rotation_speed = 180.0f;
     };
 
     //================= 3D CAMERA =================
@@ -120,11 +125,20 @@ namespace engine
         void position(const glm::vec3& pos) override { m_position = pos; update_view_matrix(); }
 
         float movement_speed() const override { return s_movement_speed; } 
-        float rotation_speed() const override { return s_rotation_speed; } 
+        float rotation_speed() const override { return s_rotation_speed; }
+
+		void set_movement_speed(float move_speed) override {s_movement_speed = move_speed; }
+		void set_rotation_speed(float rot_speed) override { s_rotation_speed = rot_speed; }
+
+		glm::vec3   front_vector() const { return m_front_vector; }
+		glm::vec3   up_vector() const { return m_up_vector; }
+		glm::vec3   right_vector() const { return m_right_vector; }
 
         const glm::mat4& projection_matrix() const override; 
         const glm::mat4& view_matrix() const override; 
         const glm::mat4& view_projection_matrix() const override;
+
+		void set_view_matrix(glm::vec3 position, glm::vec3 look_at);
 
     private: 
         void process_mouse(float mouse_delta_x, float mouse_delta_y, bool constrain_pitch = true);
@@ -142,9 +156,9 @@ namespace engine
         /// \brief rotation angles for each axis in degrees. 
         glm::vec3   m_rotation_angle{0.f}; 
 
-        glm::vec3   m_front_vector{0.f}; 
+        glm::vec3   m_front_vector{0.f,0.f,1.f}; 
         glm::vec3   m_up_vector{0.f,1.f,0.f}; 
-        glm::vec3   m_righ_vector{0.f}; 
+        glm::vec3   m_right_vector{1.f,0.f,0.f}; 
         glm::vec3   m_world_up_vector{0.f,1.f,0.f}; 
 
         /// \brief 
@@ -161,9 +175,9 @@ namespace engine
         float m_far_plane = 100.f; 
 
         /// \brief in units per seconds. 
-        inline static const float s_movement_speed = SPEED; 
+        inline static float s_movement_speed = SPEED; 
         /// \brief in degrees per second. 
-        inline static const float s_rotation_speed = 90.f;
+        inline static float s_rotation_speed = 90.f;
         /// \brief in degrees per second. 
         inline static const float s_mouse_sensitivity = SENSITIVITY;
     };

@@ -1,8 +1,6 @@
 #pragma once
 #include "engine.h"
-#include <fmod.hpp>
-
-// TODO: move all audio relate stuff in engine/audio/ folder
+#include "../FMOD/include/fmod.hpp"
 
 namespace engine
 {

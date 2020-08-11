@@ -1,10 +1,7 @@
 #include "pch.h"
-#include "engine/core.h"
-#include "engine/renderer/renderer.h"
-#include "engine/renderer/vertex_array.h"
-#include "engine/entities/game_object.h"
-#include "engine/entities/skybox.h"
+#include "renderer.h"
 #include "platform/opengl/gl_shader.h"
+#include "engine/renderer/skinned_mesh.h"
 
 engine::renderer::scene_data* engine::renderer::s_scene_data = new scene_data;
 engine::renderer* engine::renderer::s_instance = new renderer();
@@ -14,10 +11,8 @@ void engine::renderer::init()
     s_instance->m_shader_library = std::make_unique<shader_library>();
     renderer_api::init();
 
-    //renderer::shaders_library()->load("assets/shaders/texture.glsl");
-    renderer::shaders_library()->load("assets/shaders/static_mesh.glsl");
     renderer::shaders_library()->load("assets/shaders/animated_mesh.glsl");
-    renderer::shaders_library()->load("assets/shaders/mesh_lighting.glsl");
+	renderer::shaders_library()->load("assets/shaders/mesh_lighting.glsl");
 	renderer::shaders_library()->load("assets/shaders/mesh_material.glsl");
 	renderer::shaders_library()->load("assets/shaders/text_2D.glsl");
 }
@@ -65,15 +60,54 @@ void engine::renderer::submit(
 {
 	glm::mat4 transform = glm::mat4(1.0f);
 	object->transform(transform);
-	object->bind_textures();
+	
+
+	bool texture_per_mesh = false;
+	if (object->textures().size() == object->meshes().size()) texture_per_mesh = true;
+	else object->bind_textures();
+
     const bool has_meshes = !object->meshes().empty();
 	if (has_meshes)
 	{
 		auto model_meshes = object->meshes();
+		int i = 0;
 		for (const auto& mesh : model_meshes)
 		{
+			if(texture_per_mesh) object->textures().at(i)->bind();
 			submit(shader, mesh, transform);
+			i++;
 		}
+	}
+	else if (object->animated_mesh() != NULL)
+	{
+		object->animated_mesh()->on_render(transform, shader);
+	}
+}
+
+void engine::renderer::submit(
+	const ref<shader>& shader,
+	const glm::mat4& transform,
+	const ref<game_object>& object )
+{
+	bool texture_per_mesh = false;
+	if (object->textures().size() == object->meshes().size()) texture_per_mesh = true;
+	else object->bind_textures();
+
+	const bool has_meshes = !object->meshes().empty();
+	if (has_meshes)
+	{
+		auto model_meshes = object->meshes();
+		int i = 0;
+		for (const auto& mesh : model_meshes)
+		{
+			if (texture_per_mesh) object->textures().at(i)->bind();
+			submit(shader, mesh, transform);
+			i++;
+		}
+	}
+	else if (object->animated_mesh() != NULL)
+	{
+		object->animated_mesh()->on_render(transform, shader);
 	}
 }
 

@@ -22,178 +22,17 @@
 #include "engine/core/timestep.h"
 #include "engine/renderer/texture.h"
 #include "engine/renderer/shader.h"
-#include <assimp/Importer.hpp>
 
 #include <map>
 #include <vector>
-#include <assimp/scene.h>       // Output data structure
+#include "assimp/scene.h"      // Output data structure
+#include "assimp/Importer.hpp"
 #include "vertex_array.h"
 
 struct aiNode;
 struct aiAnimation;
 struct aiNodeAnim;
 struct aiScene;
-//namespace Assimp{ struct Importer; }
-/*
-namespace engine
-{
-	struct Vertex
-	{
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec3 Tangent;
-		glm::vec3 Binormal;
-		glm::vec2 Texcoord;
-	};
-
-	struct AnimatedVertex
-	{
-		glm::vec3 Position;
-		glm::vec3 Normal;
-		glm::vec3 Tangent;
-		glm::vec3 Binormal;
-		glm::vec2 Texcoord;
-
-		uint32_t IDs[4] = { 0, 0,0, 0 };
-		float Weights[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
-
-		void AddBoneData(uint32_t BoneID, float Weight)
-		{
-			for (size_t i = 0; i < 4; i++)
-			{
-				if (Weights[i] == 0.0)
-				{
-					IDs[i] = BoneID;
-					Weights[i] = Weight;
-					return;
-				}
-			}
-
-			// TODO: Keep top weights
-			LOG_CORE_WARN("Vertex has more than four bones/weights affecting it, extra data will be discarded (BoneID={0}, Weight={1})", BoneID, Weight);
-		}
-	};
-    
-	static const int NumAttributes = 5;
-    
-	struct Index
-	{
-        union
-        {
-            uint32_t vec[3];
-            struct{ uint32_t V1, V2, V3; };
-        };
-	};
-	static_assert(sizeof(Index) == 3 * sizeof(uint32_t));
-    
-	struct BoneInfo
-	{
-		glm::mat4 BoneOffset;
-		glm::mat4 FinalTransformation;
-	};
-    
-	struct VertexBoneData
-	{
-		uint32_t IDs[4];
-		float Weights[4];
-
-		VertexBoneData()
-		{
-			memset(IDs, 0, sizeof(IDs));
-			memset(Weights, 0, sizeof(Weights));
-		};
-
-		void AddBoneData(uint32_t BoneID, float Weight)
-		{
-			for (size_t i = 0; i < 4; i++)
-			{
-				if (Weights[i] == 0.0)
-				{
-					IDs[i] = BoneID;
-					Weights[i] = Weight;
-					return;
-				}
-			}
-			
-			// should never get here - more bones than we have space for
-			CORE_ASSERT(false, "[VertexBoneData] Too many bones!");
-		}
-	};
-    
-	class Submesh
-	{
-	public:
-		uint32_t BaseVertex;
-		uint32_t BaseIndex;
-		uint32_t MaterialIndex;
-		uint32_t IndexCount;
-
-		glm::mat4 Transform;
-	};
-
-    class skinned_mesh
-    {
-    public:
-        skinned_mesh(const std::string &filename);
-
-        void on_update(const timestep &ts);
-        void on_render(const glm::mat4 &transform = glm::mat4(1.f));
-
-        void DumpVertexBuffer();
-        ref<shader> GetMeshShader() { return m_MeshShader; }
-        std::vector<ref<texture>> GetMaterials() { return m_textures; }
-        const std::string& GetFilePath() const { return m_FilePath; }
-
-    private:
-        void BoneTransform(float time);
-        void ReadNodeHierarchy(float AnimationTime, const aiNode* pNode, const glm::mat4& ParentTransform);
-        void TraverseNodes(aiNode* node, int level = 0);
-
-		const aiNodeAnim* FindNodeAnim(const aiAnimation* animation, const std::string& nodeName);
-		uint32_t FindPosition(float AnimationTime, const aiNodeAnim* pNodeAnim);
-		uint32_t FindRotation(float AnimationTime, const aiNodeAnim* pNodeAnim);
-		uint32_t FindScaling(float AnimationTime, const aiNodeAnim* pNodeAnim);
-		glm::vec3 InterpolateTranslation(float animationTime, const aiNodeAnim* nodeAnim);
-		glm::quat InterpolateRotation(float animationTime, const aiNodeAnim* nodeAnim);
-		glm::vec3 InterpolateScale(float animationTime, const aiNodeAnim* nodeAnim);
-        std::vector<ref<texture_2d>> load_textures(aiMaterial* mat, aiTextureType type, const std::string& type_name) const;
-		
-        
-	private:
-		std::vector<Submesh> m_Submeshes;
-		
-		std::unique_ptr<Assimp::Importer> m_Importer;
-
-		glm::mat4 m_InverseTransform;
-
-		uint32_t m_BoneCount = 0;
-		std::vector<BoneInfo> m_BoneInfo;
-
-		ref<vertex_array> m_VertexArray;
-
-		std::vector<Vertex> m_StaticVertices;
-		std::vector<AnimatedVertex> m_AnimatedVertices;
-		std::vector<Index> m_Indices;
-		std::unordered_map<std::string, uint32_t> m_BoneMapping;
-		std::vector<glm::mat4> m_BoneTransforms;
-		const aiScene* m_Scene;
-
-		// Materials
-		ref<shader>  m_MeshShader;
-		//ref<texture> m_Material;
-		std::vector<ref<texture>> m_textures;
-
-		// Animation
-		bool m_IsAnimated = false;
-		float m_AnimationTime = 0.0f;
-		float m_WorldTime = 0.0f;
-		float m_TimeMultiplier = 1.0f;
-		bool m_AnimationPlaying = true;
-
-		std::string m_FilePath;
-        std::string m_directory;
-    };
-}*/
 
 namespace engine {
 
@@ -219,11 +58,19 @@ namespace engine {
 
 		void BoneTransform(float time);
 
-		void switch_animation(uint32_t index) { m_current_animation_index = index; }
+		void switch_animation(uint32_t index) { m_current_animation_index = index; m_running_time = 0.0f;}
+		void set_default_animation(uint32_t index) { m_default_animation_index = index; }
+		uint32_t default_animation() { return m_default_animation_index; }
 
 		void LoadAnimationFile(const std::string& Filename);
 
 		const std::vector<aiAnimation*> animations() { return m_pAnimations; }
+
+		// switch that denotes whether the root movement is on or not
+		void switch_root_movement(const bool& on) { m_root_movement_on = on; }
+
+		glm::vec3 size() const { return m_size; }
+		glm::vec3 offset() const { return m_offset; }
 
 	private:
 #define NUM_BONES_PER_VEREX 4
@@ -292,8 +139,12 @@ namespace engine {
 		void Clear();
 
 		void AddAnimations(const aiScene* pScene);
-		
 
+		void ExtractRootMovement(const aiAnimation* animation);
+		
+		///\brief - compares the values of the vertex that is being loaded with min and max values
+		/// if any coordinate is smaller than min or bigger than max, record it as new min/max value
+		void min_max_compare(const aiVector3D& point);
 
 #define INVALID_MATERIAL 0xFFFFFFFF
 
@@ -337,9 +188,38 @@ namespace engine {
 		std::vector<engine::ref<engine::Animation>>		m_extra_animations;
 		std::vector<aiAnimation*> m_pAnimations;
 		uint32_t m_current_animation_index;
+		uint32_t m_default_animation_index;
+
+		float m_running_time;
 		Assimp::Importer m_Importer;
 
 		bool m_AnimationPlaying = true;
+
+		// min values of the model in x, y and z coordinates
+		aiVector3D m_min_point;
+
+		// max values of the model in x, y and z coordinates
+		aiVector3D m_max_point;
+
+		// switch that checks if the current point is the first point loaded for the model
+		bool m_first_point = true;
+
+		// dimensions of the object in x, y and z
+		glm::vec3 m_size;
+
+		// offset of the model from the origin of the local coordinates
+		glm::vec3 m_offset;
+
+		// switch that denotes whether the root movement is on or not
+		bool m_root_movement_on = true;
+
+		// vector of displacements to switch off root movement
+		std::vector<std::vector<aiVector3D>> m_root_movements;
+
+		// offset of the model from the origin of the local coordinates due to root movement
+		glm::vec3 m_current_root_movement_offset;
+
+		bool m_update_root_offset = true;
 	};
 
 	struct Animation

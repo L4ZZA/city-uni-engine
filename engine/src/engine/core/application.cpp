@@ -2,6 +2,7 @@
 #include "application.h"
 #include "engine/renderer/renderer.h"
 #include "GLFW/glfw3.h"
+#include "engine/utils/timer.h"
 
 //----------------------------------------------------------------------------- 
 
@@ -28,23 +29,20 @@ engine::application::~application()
 
 void engine::application::run()
 {
-	m_last_frame_time = static_cast<float>(glfwGetTime()); //  discount the initialisation time
-    while (s_running)
-    {
-        const float time = static_cast<float>(glfwGetTime()); //  platform independent
-        timestep time_step = time - m_last_frame_time;
-        m_last_frame_time = time;
-
-        for (auto* layer : m_layers_stack)
-        {
-            layer->on_update(time_step);
-            if(!application::s_minimized)
-                layer->on_render();
-        }
-
-        m_window->on_update();
-    }
-
+	engine::timer gameLoopTimer;
+	gameLoopTimer.start();
+	while (s_running)
+	{
+		timestep time_step = (float)gameLoopTimer.elapsed();
+		gameLoopTimer.reset();
+		for (auto* layer : m_layers_stack)
+		{
+			layer->on_update(time_step);
+			if (!application::s_minimized)
+				layer->on_render();
+		}
+		m_window->on_update();
+	}
 }
 
 void engine::application::on_event(event& event) 
