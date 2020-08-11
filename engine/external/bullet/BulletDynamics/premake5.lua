@@ -1,6 +1,6 @@
-	project "BulletDynamics"
-	kind "StaticLib"
-	language "C++"
+project "BulletDynamics"
+    kind "StaticLib"
+    language "C++"
     cppdialect "C++17"
     systemversion "latest"
     staticruntime "On"
@@ -9,26 +9,26 @@
     objdir ("inter/" .. outputdir .. "/%{prj.name}")
 
     warnings "Off"
-	includedirs {
-		"..",
-	}
-	files {
-		"Dynamics/*.cpp",
-                "Dynamics/*.h",
-                "ConstraintSolver/*.cpp",
-                "ConstraintSolver/*.h",
-                "Featherstone/*.cpp",
-                "Featherstone/*.h",
-                "MLCPSolvers/*.cpp",
-                "MLCPSolvers/*.h",
-                "Vehicle/*.cpp",
-                "Vehicle/*.h",
-                "Character/*.cpp",
-                "Character/*.h"
+    includedirs {
+        "..",
+    }
+    files {
+        "Dynamics/*.cpp",
+        "Dynamics/*.h",
+        "ConstraintSolver/*.cpp",
+        "ConstraintSolver/*.h",
+        "Featherstone/*.cpp",
+        "Featherstone/*.h",
+        "MLCPSolvers/*.cpp",
+        "MLCPSolvers/*.h",
+        "Vehicle/*.cpp",
+        "Vehicle/*.h",
+        "Character/*.cpp",
+        "Character/*.h"
 
-	}
+    }
 
-	filter "system:windows"
+    filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"

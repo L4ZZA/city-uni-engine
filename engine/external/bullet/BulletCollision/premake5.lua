@@ -1,6 +1,6 @@
 project "BulletCollision"
-	kind "StaticLib"
-	language "C++"
+    kind "StaticLib"
+    language "C++"
     cppdialect "C++17"
     systemversion "latest"
     staticruntime "On"
@@ -10,25 +10,25 @@ project "BulletCollision"
 
     warnings "Off"
 
-	includedirs {
-		"..",
-	}
-	files {
-		"*.cpp",
-		"*.h",
-		"BroadphaseCollision/*.cpp",
-		"BroadphaseCollision/*.h",
-		"CollisionDispatch/*.cpp",
-                "CollisionDispatch/*.h",
-		"CollisionShapes/*.cpp",
-		"CollisionShapes/*.h",
-		"Gimpact/*.cpp",
-		"Gimpact/*.h",
-		"NarrowPhaseCollision/*.cpp",
-		"NarrowPhaseCollision/*.h",
-	}
+    includedirs {
+        "..",
+    }
+    files {
+        "*.cpp",
+        "*.h",
+        "BroadphaseCollision/*.cpp",
+        "BroadphaseCollision/*.h",
+        "CollisionDispatch/*.cpp",
+        "CollisionDispatch/*.h",
+        "CollisionShapes/*.cpp",
+        "CollisionShapes/*.h",
+        "Gimpact/*.cpp",
+        "Gimpact/*.h",
+        "NarrowPhaseCollision/*.cpp",
+        "NarrowPhaseCollision/*.h",
+    }
 
-	filter "system:windows"
+    filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"

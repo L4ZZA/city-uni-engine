@@ -1,6 +1,6 @@
 project "LinearMath"
-	kind "StaticLib"
-	language "C++"
+    kind "StaticLib"
+    language "C++"
     cppdialect "C++17"
     systemversion "latest"
     staticruntime "On"
@@ -8,18 +8,18 @@ project "LinearMath"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("inter/" .. outputdir .. "/%{prj.name}")
 
-	warnings "Off"
-	includedirs {
-		"..",
-	}
-	files {
-		"*.cpp",
-		"*.h",
-		"TaskScheduler/*.cpp",
-		"TaskScheduler/*.h"
-	}
+    warnings "Off"
+    includedirs {
+        "..",
+    }
+    files {
+        "*.cpp",
+        "*.h",
+        "TaskScheduler/*.cpp",
+        "TaskScheduler/*.h"
+    }
 
-	filter "system:windows"
+    filter "system:windows"
         systemversion "latest"
 
     filter "configurations:Debug"
